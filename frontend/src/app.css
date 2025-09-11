@@ -109,6 +109,10 @@
     --color-sidebar-ring: var(--sidebar-ring);
 }
 
+@utility g-px {
+    @apply px-4 md:px-8 lg:px-16;
+}
+
 @layer base {
     * {
         @apply border-border outline-ring/50;
