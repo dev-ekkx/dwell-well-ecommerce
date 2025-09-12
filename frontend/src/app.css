@@ -119,15 +119,6 @@
     }
 
     body {
-        @apply bg-background text-foreground;
+        @apply bg-background text-foreground overflow-clip;
     }
 }
-
-
-/*Custom colors*/
-/*Primary: Hex: #006D77*/
-
-/*Variants:*/
-/*Primary Light: #83C5BE (for backgrounds, hover states, or subtle highlights)*/
-/*Primary Dark: #004E52 (for headers, emphasis, or dark mode contrast)*/
-/*Accent Variant: #EDF6F9 (soft pastel tone, perfect for section backgrounds or cards)*/
