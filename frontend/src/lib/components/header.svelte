@@ -26,7 +26,7 @@
 			await gsap.to(menu, {
 				y: '-100%',
 				duration: 0.3,
-				ease: 'power3.out',
+				ease: 'power1.out',
 				onComplete: () => {
 					isMenuOpen = false;
 				}
@@ -39,7 +39,7 @@
 				gsap.fromTo(
 					menu,
 					{ y: '-100%' },
-					{ y: 0, duration: 0.3, ease: 'power3.out' }
+					{ y: 0, duration: 0.3, ease: 'power1.out' }
 				);
 			}
 		}
@@ -79,7 +79,7 @@
 
 
 <!-- Header component-->
-<header class="g-px flex items-center justify-between gap-4 h-[8vh] fixed top-0 z-50 w-full border-b">
+<header class="g-px flex items-center justify-between gap-4 h-[8vh] fixed top-0 z-50 w-full border-b bg-white">
 	<!--	Logo-->
 	<LogoComponent />
 
@@ -117,7 +117,7 @@
 
 <!--Mobile Menu component-->
 {#if isMenuOpen}
-	<section bind:this={menu} class="h-max z-[40] absolute border border-red-700 top-20 w-full bg-white g-px">
+	<section bind:this={menu} class="h-max z-[40] absolute top-20 w-full bg-white g-px pb-4 shadow-md">
 		<div class="flex flex-col gap-8 pt-6 **:w-2/12">
 			{@render navigation(true)}
 			<Button
