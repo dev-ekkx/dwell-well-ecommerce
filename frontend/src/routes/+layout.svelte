@@ -11,6 +11,6 @@
 </svelte:head>
 
 <HeaderComponent />
-<div class="flex flex-col pt-[8rem] g-px">
+<div class="flex flex-col pt-[6.5rem] md:pt-[7rem] xl:pt-[8rem] g-px">
 	{@render children?.()}
 </div>

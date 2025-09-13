@@ -4,7 +4,7 @@ export function useIsMobileSvelte() {
 	$effect(() => {
 		if (typeof window === 'undefined') return;
 
-		const mediaQuery = window.matchMedia('(max-width: 48rem)');
+		const mediaQuery = window.matchMedia('(max-width: 63.9rem)');
 
 		// set initial value
 		isMobile = mediaQuery.matches;

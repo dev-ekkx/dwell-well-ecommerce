@@ -63,7 +63,7 @@
 		});
 
 		// animate once for the whole state
-		Flip.from(state, { duration: 1, ease: 'back.out', scale: true });
+		Flip.from(state, { duration: 0.7, ease: 'back.out', scale: true });
 
 		return () => gsap.killTweensOf(images);
 	};
@@ -85,7 +85,7 @@
 			targets[prevIndex]?.appendChild(image);
 		});
 
-		Flip.from(state, { duration: 1, ease: 'back.out', scale: true });
+		Flip.from(state, { duration: 0.7, ease: 'back.out', scale: true });
 		return () => gsap.killTweensOf(targets);
 
 	};
@@ -107,7 +107,7 @@
 	};
 
 	onMount(() => {
-		intervalId = setInterval(animateImagesForward, 3000);
+		intervalId = setInterval(animateImagesForward, 5000);
 
 	});
 
@@ -116,64 +116,65 @@
 	});
 </script>
 
-<div class="flex w-max flex-col gap-6">
-	<section class="flex w-[38.2rem] gap-6">
-		<!--Current preview image-->
-		<div bind:this={previewImageContainer}
-				 class="relative flex h-full items-center w-full justify-center rounded-t-full bg-muted"
-				 id="preview-container">
-			<img alt="current" class="img-thumbnail scale-75" src={displayImages[0]} />
+
+<section class="flex gap-3 md:gap-10 md:px-14 md:max-h-[29rem] lg:pt-6 lg:px-0 lg:gap-6 lg:max-h-[35rem]">
+	<!--Current preview image-->
+	<div bind:this={previewImageContainer}
+			 class="relative flex h-full items-center w-full justify-center rounded-t-full bg-muted"
+			 id="preview-container">
+		<img alt="current" class="img-thumbnail scale-75" src={displayImages[0]} />
+
+		<!--	Carousel buttons-->
+		<div class="absolute flex -bottom-16 items-center justify-center gap-4">
+			<button
+				aria-label="arrow-left"
+				class="flex aspect-square w-11 cursor-pointer items-center justify-center rounded-full bg-muted"
+				onclick={handlePrev}
+			>
+				<img alt="arrow" src={ArrowLeftIcon} />
+			</button>
+			<button
+				aria-label="arrow-left"
+				class="flex aspect-square w-11 rotate-180 cursor-pointer items-center justify-center rounded-full bg-muted"
+				onclick={handleNext}
+			>
+				<img alt="arrow" src={ArrowLeftIcon} />
+			</button>
 		</div>
-
-		<!--Images list-->
-		<div class="flex flex-col justify-between gap-4">
-			<!-- First image-->
-			<div
-				bind:this={firstImageContainer}
-				class="relative w-[5.5rem] h-[5.5rem] rounded-full"
-				id="first-image-container"
-			>
-				<div class="absolute rounded-b-full bottom-0 left-0 -z-10 h-1/2 w-full bg-muted"></div>
-				<img alt="first" class="img-thumbnail scale-75" src={displayImages[1]} />
-			</div>
-
-			<!--Second image-->
-			<div
-				bind:this={secondImageContainer}
-				class="relative w-[5.5rem] h-[5.5rem] rounded-full"
-				id="second-image-container"
-			>
-				<div class="absolute rounded-b-full bottom-0 left-0 -z-10 h-1/2 w-full bg-muted"></div>
-				<img alt="second" class="img-thumbnail scale-75" src={displayImages[2]} />
-			</div>
-
-			<!--Third Image-->
-			<div
-				bind:this={thirdImageContainer}
-				class="relative w-[5.5rem] h-[5.5rem] rounded-full"
-				id="third-image-container"
-			>
-				<div class="absolute rounded-b-full bottom-0 left-0 -z-10 h-1/2 w-full bg-muted"></div>
-				<img alt="third" class="img-thumbnail scale-75" src={displayImages[3]} />
-			</div>
-		</div>
-	</section>
-
-	<!--	Carousel buttons-->
-	<div class="ml-[30%] flex w-max items-center justify-center gap-4">
-		<button
-			aria-label="arrow-left"
-			class="flex aspect-square w-11 cursor-pointer items-center justify-center rounded-full bg-muted"
-			onclick={handlePrev}
-		>
-			<img alt="arrow" src={ArrowLeftIcon} />
-		</button>
-		<button
-			aria-label="arrow-left"
-			class="flex aspect-square w-11 rotate-180 cursor-pointer items-center justify-center rounded-full bg-muted"
-			onclick={handleNext}
-		>
-			<img alt="arrow" src={ArrowLeftIcon} />
-		</button>
 	</div>
-</div>
+
+	<!--Images list-->
+	<div class="flex flex-col justify-between gap-4">
+		<!-- First image-->
+		<div
+			bind:this={firstImageContainer}
+			class="relative max-w-[5.5rem] max-h-[5.5rem] rounded-full"
+			id="first-image-container"
+		>
+			<div class="absolute rounded-b-full bottom-0 left-0 -z-10 h-1/2 w-full bg-muted"></div>
+			<img alt="first" class="img-thumbnail scale-75" src={displayImages[1]} />
+		</div>
+
+		<!--Second image-->
+		<div
+			bind:this={secondImageContainer}
+			class="relative max-w-[5.5rem] max-h-[5.5rem] rounded-full"
+			id="second-image-container"
+		>
+			<div class="absolute rounded-b-full bottom-0 left-0 -z-10 h-1/2 w-full bg-muted"></div>
+			<img alt="second" class="img-thumbnail scale-75" src={displayImages[2]} />
+		</div>
+
+		<!--Third Image-->
+		<div
+			bind:this={thirdImageContainer}
+			class="relative max-w-[5.5rem] max-h-[5.5rem] rounded-full"
+			id="third-image-container"
+		>
+			<div class="absolute rounded-b-full bottom-0 left-0 -z-10 h-1/2 w-full bg-muted"></div>
+			<img alt="third" class="img-thumbnail scale-75" src={displayImages[3]} />
+		</div>
+	</div>
+</section>
+
+
