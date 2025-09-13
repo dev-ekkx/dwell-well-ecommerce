@@ -1,98 +1,144 @@
 <script lang="ts">
-	import Image1 from '$lib/assets/images/hero-image1.png';
+	import Image1 from '$lib/assets/images/hero-image5.png';
 	import Image2 from '$lib/assets/images/hero-image2.png';
 	import Image3 from '$lib/assets/images/hero-image3.png';
 	import Image4 from '$lib/assets/images/hero-image4.png';
-	import ArrowLeftIcon from '$lib/assets/arrow-left.svg';
 	import { gsap } from 'gsap';
 	import { Flip } from 'gsap/dist/Flip';
 	import { onDestroy, onMount } from 'svelte';
+	import ArrowLeftIcon from '$lib/assets/arrow-left.svg';
 
 	// Register plugin
 	gsap.registerPlugin(Flip);
 
-	const images = [
-		Image1, Image2, Image3, Image4
-	];
+	const images = [Image1, Image2, Image3, Image4];
 	let displayImages = $state([...images]);
 	let intervalId: number;
 
-	let currentImage = $state(images[0]);
-	let firstImageContainer = $state<HTMLElement | null>(null);
-	let secondImageContainer = $state<HTMLElement | null>(null);
-	let thirdImageContainer = $state<HTMLElement | null>(null);
+	let firstImageContainer = $state<HTMLElement>();
+	let secondImageContainer = $state<HTMLElement>();
+	let thirdImageContainer = $state<HTMLElement>();
+	let previewImageContainer = $state<HTMLElement>();
 
 
-	const flipToNextImage = () => {
-		displayImages = [
-			displayImages[displayImages.length - 1],
-			...displayImages.slice(0, displayImages.length - 1)
-		];
-	};
+	const targets = $derived([
+		firstImageContainer,
+		secondImageContainer,
+		thirdImageContainer,
+		previewImageContainer
+	]);
 
-	const flipToPrevImage = () => {
-		displayImages = [
-			...displayImages.slice(1),
-			displayImages[0]
-		];
-	};
+	const animateImages = () => {
+		const images = document.querySelectorAll('.img-thumbnail');
+		images.forEach((image, index) => {
+			const state = Flip.getState(image);
 
-
-	onMount(() => {
-		intervalId = setInterval(flipToNextImage, 5000);
+			const target = targets[index] ?? previewImageContainer;
+			target?.appendChild(image);
+			Flip.from(state, {
+				duration: .8, ease: 'back.out', scale: true
+			});
+		});
 
 		return () => {
-			clearInterval(intervalId);
+			gsap.killTweensOf(targets, images);
 		};
+	};
+
+	const flipToNextImage = () => {
+		animateImages();
+
+
+	};
+
+
+	const flipToPrevImage = () => {
+
+	};
+
+	const resetInterval = () => {
+		clearInterval(intervalId);
+		intervalId = setInterval(flipToNextImage, 5000);
+	};
+
+	const handlePrev = () => {
+		flipToPrevImage();
+		resetInterval();
+	};
+
+	const handleNext = () => {
+		flipToNextImage();
+		resetInterval();
+	};
+
+	onMount(() => {
+		intervalId = setInterval(flipToNextImage, 3000);
+
 	});
 
 	onDestroy(() => {
 		clearInterval(intervalId);
 	});
 </script>
-<div class="flex flex-col gap-6 w-max">
-	<section class="flex gap-4 h-[30.7rem]">
 
+<div class="flex w-max flex-col gap-6">
+	<section class="flex h-[30.7rem] gap-4">
 		<!--Current preview image-->
-		<div class="h-full aspect-square bg-muted rounded-t-full flex items-center justify-center">
-			<img alt="current" class="scale-75" src={displayImages[0]}>
+		<div bind:this={previewImageContainer}
+				 class="flex aspect-square h-full items-center justify-center rounded-t-full bg-muted"
+				 id="preview-container">
+			<img alt="current" class="img-thumbnail scale-90" src={displayImages[0]} />
 		</div>
 
 		<!--Images list-->
 		<div class="flex flex-col justify-between gap-4">
-
 			<!-- First image-->
-			<div bind:this={firstImageContainer} class="w-[5.5rem] aspect-square rounded-full overflow-hidden relative">
-				<div class="absolute w-full h-1/2 bottom-0 left-0 bg-muted -z-10"></div>
-				<img alt="first" class="scale-75" src={displayImages[1]}>
+			<div
+				bind:this={firstImageContainer}
+				class="relative w-[5.5rem] h-[5.5rem] rounded-full"
+				id="first-image-container"
+			>
+				<div class="absolute rounded-b-full bottom-0 left-0 -z-10 h-1/2 w-full bg-muted"></div>
+				<img alt="first" class="img-thumbnail scale-75" src={displayImages[1]} />
 			</div>
 
 			<!--Second image-->
-			<div bind:this={secondImageContainer} class="w-[5.5rem] aspect-square rounded-full overflow-hidden relative">
-				<div class="absolute w-full h-1/2 bottom-0 left-0 bg-muted -z-10"></div>
-				<img alt="second" class="scale-75" src={displayImages[2]}>
-
+			<div
+				bind:this={secondImageContainer}
+				class="relative w-[5.5rem] h-[5.5rem] rounded-full"
+				id="second-image-container"
+			>
+				<div class="absolute rounded-b-full bottom-0 left-0 -z-10 h-1/2 w-full bg-muted"></div>
+				<img alt="second" class="img-thumbnail scale-75" src={displayImages[2]} />
 			</div>
 
 			<!--Third Image-->
-			<div bind:this={thirdImageContainer} class="w-[5.5rem] aspect-square rounded-full overflow-hidden relative">
-				<div class="absolute w-full h-1/2 bottom-0 left-0 bg-muted -z-10"></div>
-				<img alt="third" class="scale-75" src={displayImages[3]}>
+			<div
+				bind:this={thirdImageContainer}
+				class="relative w-[5.5rem] h-[5.5rem] rounded-full"
+				id="third-image-container"
+			>
+				<div class="absolute rounded-b-full bottom-0 left-0 -z-10 h-1/2 w-full bg-muted"></div>
+				<img alt="third" class="img-thumbnail scale-75" src={displayImages[3]} />
 			</div>
 		</div>
 	</section>
 
 	<!--	Carousel buttons-->
-	<div class="flex items-center justify-center gap-4 w-max ml-[30%]">
-		<button aria-label="arrow-left"
-						class="bg-muted cursor-pointer w-11 aspect-square rounded-full flex items-center justify-center"
-						onclick={flipToPrevImage}>
-			<img alt="arrow" src={ArrowLeftIcon}>
+	<div class="ml-[30%] flex w-max items-center justify-center gap-4">
+		<button
+			aria-label="arrow-left"
+			class="flex aspect-square w-11 cursor-pointer items-center justify-center rounded-full bg-muted"
+			onclick={handlePrev}
+		>
+			<img alt="arrow" src={ArrowLeftIcon} />
 		</button>
-		<button aria-label="arrow-left"
-						class="bg-muted cursor-pointer rotate-180 w-11 aspect-square rounded-full flex items-center justify-center"
-						onclick={flipToNextImage}>
-			<img alt="arrow" src={ArrowLeftIcon}>
+		<button
+			aria-label="arrow-left"
+			class="flex aspect-square w-11 rotate-180 cursor-pointer items-center justify-center rounded-full bg-muted"
+			onclick={handleNext}
+		>
+			<img alt="arrow" src={ArrowLeftIcon} />
 		</button>
 	</div>
 </div>
