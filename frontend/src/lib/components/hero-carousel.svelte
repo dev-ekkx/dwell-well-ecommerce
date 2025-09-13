@@ -11,8 +11,7 @@
 	// Register plugin
 	gsap.registerPlugin(Flip);
 
-	const images = [Image1, Image2, Image3, Image4];
-	let displayImages = $state([...images]);
+	let displayImages = $state([Image1, Image2, Image3, Image4]);
 	let intervalId: number;
 
 	let firstImageContainer = $state<HTMLElement>();
@@ -28,6 +27,7 @@
 		previewImageContainer
 	]);
 
+	/*
 	const animateImages = () => {
 		const images = document.querySelectorAll('.img-thumbnail');
 		images.forEach((image, index) => {
@@ -36,7 +36,7 @@
 			const target = targets[index] ?? previewImageContainer;
 			target?.appendChild(image);
 			Flip.from(state, {
-				duration: .8, ease: 'back.out', scale: true
+				duration: 1, ease: 'back.out', scale: true
 			});
 		});
 
@@ -47,32 +47,67 @@
 
 	const flipToNextImage = () => {
 		animateImages();
+	};
+	 **/
 
+	const animateImagesForward = () => {
+		const images = Array.from(document.querySelectorAll('.img-thumbnail')) as HTMLElement[];
+		if (!images.length) return;
 
+		// capture the state of all images before DOM changes
+		const state = Flip.getState(images);
+
+		images.forEach((image, index) => {
+			const target = (targets[index] ?? previewImageContainer) as HTMLElement | undefined;
+			target?.appendChild(image);
+		});
+
+		// animate once for the whole state
+		Flip.from(state, { duration: 1, ease: 'back.out', scale: true });
+
+		return () => gsap.killTweensOf(images);
 	};
 
 
-	const flipToPrevImage = () => {
+	const animateImagesBackward = () => {
+		const images = Array.from(document.querySelectorAll('.img-thumbnail')) as HTMLElement[];
+		if (!images.length) return;
+
+		const state = Flip.getState(images);
+
+		// loop through containers
+		targets.forEach((container, index) => {
+			const image = container?.querySelector('.img-thumbnail');
+			if (!image) return;
+
+			// send this image to the previous container
+			const prevIndex = (index - 1 + targets.length) % targets.length;
+			targets[prevIndex]?.appendChild(image);
+		});
+
+		Flip.from(state, { duration: 1, ease: 'back.out', scale: true });
+		return () => gsap.killTweensOf(targets);
 
 	};
+
 
 	const resetInterval = () => {
 		clearInterval(intervalId);
-		intervalId = setInterval(flipToNextImage, 5000);
+		intervalId = setInterval(animateImagesForward, 5000);
 	};
 
 	const handlePrev = () => {
-		flipToPrevImage();
+		animateImagesBackward();
 		resetInterval();
 	};
 
 	const handleNext = () => {
-		flipToNextImage();
+		animateImagesForward();
 		resetInterval();
 	};
 
 	onMount(() => {
-		intervalId = setInterval(flipToNextImage, 3000);
+		intervalId = setInterval(animateImagesForward, 3000);
 
 	});
 
@@ -82,12 +117,12 @@
 </script>
 
 <div class="flex w-max flex-col gap-6">
-	<section class="flex h-[30.7rem] gap-4">
+	<section class="flex w-[38.2rem] gap-6">
 		<!--Current preview image-->
 		<div bind:this={previewImageContainer}
-				 class="flex aspect-square h-full items-center justify-center rounded-t-full bg-muted"
+				 class="relative flex h-full items-center w-full justify-center rounded-t-full bg-muted"
 				 id="preview-container">
-			<img alt="current" class="img-thumbnail scale-90" src={displayImages[0]} />
+			<img alt="current" class="img-thumbnail scale-75" src={displayImages[0]} />
 		</div>
 
 		<!--Images list-->
