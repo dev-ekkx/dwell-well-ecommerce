@@ -1,0 +1,22 @@
+<script lang="ts">
+	import { whyChooseUs } from '$lib/constants/index.js';
+</script>
+
+<section class="mt-16 flex flex-col gap-10 md:mt-14 lg:mt-20 mb-10">
+	<div class="flex flex-col gap-4">
+		<span class="font-semibold capitalize text-2xl">{whyChooseUs.title.label}</span>
+		<p class="w-full max-w-[35rem]">{whyChooseUs.title.description}</p>
+	</div>
+
+	<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+		{#each whyChooseUs.reasons as wcu (wcu.label)}
+			<div class="flex flex-col gap-4">
+				<div class="flex items-center justify-center bg-primary-foreground h-14 w-14 rounded-lg">
+					<img src={wcu.icon} alt={wcu.label}>
+				</div>
+				<span class="text-xl font-semibold capitalize">{wcu.label}</span>
+				<p>{wcu.description}</p>
+			</div>
+		{/each}
+	</div>
+</section>

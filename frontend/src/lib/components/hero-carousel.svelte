@@ -117,7 +117,8 @@
 </script>
 
 
-<section class="flex gap-3 md:gap-10 md:px-14 md:max-h-[29rem] lg:pt-6 lg:px-0 lg:gap-6 lg:max-h-[35rem]">
+<section
+	class="pb-10 flex gap-3 md:gap-10 md:px-14 md:max-h-[29rem] lg:pt-6 lg:px-0 lg:gap-6 lg:max-h-[35rem]">
 	<!--Current preview image-->
 	<div bind:this={previewImageContainer}
 			 class="relative flex h-full items-center w-full justify-center rounded-t-full bg-muted"
