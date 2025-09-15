@@ -6,7 +6,7 @@
 	import { gsap } from 'gsap';
 	import { Flip } from 'gsap/dist/Flip';
 	import { onDestroy, onMount } from 'svelte';
-	import ArrowButton from './arrow-button.svelte';
+	import ArrowButton from '$lib/components/arrow-button.svelte';
 
 	// Register plugin
 	gsap.registerPlugin(Flip);
@@ -127,7 +127,6 @@
 
 		<!--	Carousel buttons-->
 		<div class="absolute flex -bottom-16 items-center justify-center gap-4">
-
 			<ArrowButton direction="left" onclick={handlePrev} />
 			<ArrowButton direction="right" onclick={handleNext} />
 		</div>

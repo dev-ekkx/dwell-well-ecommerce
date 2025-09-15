@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { whyChooseUs } from '$lib/constants/index.js';
+	import { whyChooseUs } from '$lib/constants';
 </script>
 
 <section class="mt-16 flex flex-col gap-10 md:mt-14 lg:mt-20 mb-10">
