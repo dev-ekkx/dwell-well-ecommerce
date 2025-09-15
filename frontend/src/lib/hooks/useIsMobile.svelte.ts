@@ -2,9 +2,9 @@ export function useIsMobileSvelte() {
 	let isMobile = $state(false);
 
 	$effect(() => {
-		if (typeof window === 'undefined') return;
+		if (typeof window === "undefined") return;
 
-		const mediaQuery = window.matchMedia('(max-width: 63.9rem)');
+		const mediaQuery = window.matchMedia("(max-width: 63.9rem)");
 
 		// set initial value
 		isMobile = mediaQuery.matches;
@@ -13,11 +13,11 @@ export function useIsMobileSvelte() {
 		const handler = (event: MediaQueryListEvent) => {
 			isMobile = event.matches;
 		};
-		mediaQuery.addEventListener('change', handler);
+		mediaQuery.addEventListener("change", handler);
 
 		// cleanup
 		return () => {
-			mediaQuery.removeEventListener('change', handler);
+			mediaQuery.removeEventListener("change", handler);
 		};
 	});
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { useIsMobileSvelte } from '$lib/hooks/useIsMobile.svelte';
+	import { useIsMobileSvelte } from '$lib/hooks/useIsMobile.svelte.js';
 	import { ROUTE_NAVS } from '$lib/constants';
 	import { resolve } from '$app/paths';
 	import { cn } from '$lib/utils';
