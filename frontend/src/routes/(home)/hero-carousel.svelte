@@ -87,7 +87,6 @@
 
 		Flip.from(state, { duration: 0.7, ease: 'back.out', scale: true });
 		return () => gsap.killTweensOf(targets);
-
 	};
 
 
