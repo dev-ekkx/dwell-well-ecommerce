@@ -118,7 +118,7 @@
 <!--Mobile Menu component-->
 {#if isMenuOpen}
 	<section bind:this={menu} class="h-max z-[40] absolute top-20 w-full bg-white g-px pb-4 shadow-md">
-		<div class="flex flex-col gap-8 pt-6 **:w-2/12">
+		<div class="flex flex-col gap-8 pt-6">
 			{@render navigation(true)}
 			<Button
 				class="cursor-pointer px-6 h-full !w-full">Login
