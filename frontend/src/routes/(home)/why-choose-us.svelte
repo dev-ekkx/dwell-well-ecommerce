@@ -5,7 +5,7 @@
 
 	const isMobile = useIsMobileSvelte();
 </script>
-<div class="g-mt-pt flex flex-col gap-12 lg:flex-row">
+<div class="g-mt flex flex-col gap-12 lg:flex-row">
 	<section class=" flex flex-col gap-10">
 		<div class="flex flex-col gap-4">
 			<span class="font-semibold capitalize text-2xl">{whyChooseUs.title.label}</span>
@@ -16,7 +16,7 @@
 			{#each whyChooseUs.reasons as wcu (wcu.label)}
 				<div class="flex flex-col gap-3 lg:gap-4">
 					<div class="flex items-center justify-center bg-primary-foreground h-14 w-14 rounded-lg">
-						<img src={wcu.icon} alt={wcu.label}>
+						<img loading="lazy" src={wcu.icon} alt={wcu.label}>
 					</div>
 					<span class="text-xl font-semibold capitalize">{wcu.label}</span>
 					<p>{wcu.description}</p>

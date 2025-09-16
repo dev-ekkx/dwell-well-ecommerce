@@ -80,7 +80,8 @@
 
 
 <!-- Header component-->
-<header class="g-px flex items-center justify-between gap-4 h-[8vh] fixed top-0 z-50 w-full border-b bg-white">
+<header
+	class="g-px flex items-center justify-between gap-4 h-[8vh] fixed top-0 z-50 left-0 w-full border-b bg-white">
 	<!--	Logo-->
 	<LogoComponent />
 
