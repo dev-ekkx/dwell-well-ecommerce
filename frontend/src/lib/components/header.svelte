@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { useIsMobileSvelte } from '$lib/hooks/useIsMobile.svelte';
+	import { useIsMobileSvelte } from '$lib/hooks/useIsMobile.svelte.js';
 	import { ROUTE_NAVS } from '$lib/constants';
 	import { resolve } from '$app/paths';
 	import { cn } from '$lib/utils';
@@ -13,7 +13,8 @@
 	import { onMount, tick } from 'svelte';
 
 	const isActiveRoute = (path: string) => page.route.id === path;
-	const isMobile = useIsMobileSvelte();
+	const isMobile = useIsMobileSvelte()
+	;
 	let isMenuOpen = $state(false);
 	let showSearchInput = $state(false);
 	let menu = $state<HTMLElement | null>(null);
@@ -24,8 +25,8 @@
 		if (isMenuOpen && menu) {
 			// Start animate out
 			await gsap.to(menu, {
-				y: '-100%',
-				duration: 0.3,
+				y: '-150%',
+				duration: 0.4,
 				ease: 'power1.out',
 				onComplete: () => {
 					isMenuOpen = false;
@@ -79,7 +80,8 @@
 
 
 <!-- Header component-->
-<header class="g-px flex items-center justify-between gap-4 h-[8vh] fixed top-0 z-50 w-full border-b bg-white">
+<header
+	class="g-px flex items-center justify-between gap-4 h-[8vh] fixed top-0 z-50 left-0 w-full border-b bg-white">
 	<!--	Logo-->
 	<LogoComponent />
 
@@ -106,6 +108,8 @@
 			<Button class="cursor-pointer px-6 h-full">Login</Button>
 		{/if}
 	</div>
+
+
 </header>
 
 <!--Search menu-->
@@ -117,8 +121,8 @@
 
 <!--Mobile Menu component-->
 {#if isMenuOpen}
-	<section bind:this={menu} class="h-max z-[40] absolute top-20 w-full bg-white g-px pb-4 shadow-md">
-		<div class="flex flex-col gap-8 pt-6 **:w-2/12">
+	<section bind:this={menu} class="h-max fixed z-10 top-[8vh] left-0 w-full bg-white g-px pb-4 shadow-md">
+		<div class="flex flex-col gap-8 pt-6">
 			{@render navigation(true)}
 			<Button
 				class="cursor-pointer px-6 h-full !w-full">Login

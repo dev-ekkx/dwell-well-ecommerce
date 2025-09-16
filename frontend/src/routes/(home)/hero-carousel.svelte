@@ -6,7 +6,7 @@
 	import { gsap } from 'gsap';
 	import { Flip } from 'gsap/dist/Flip';
 	import { onDestroy, onMount } from 'svelte';
-	import ArrowLeftIcon from '$lib/assets/arrow-left.svg';
+	import ArrowButton from '$lib/components/arrow-button.svelte';
 
 	// Register plugin
 	gsap.registerPlugin(Flip);
@@ -87,7 +87,6 @@
 
 		Flip.from(state, { duration: 0.7, ease: 'back.out', scale: true });
 		return () => gsap.killTweensOf(targets);
-
 	};
 
 
@@ -118,7 +117,7 @@
 
 
 <section
-	class="pb-10 flex gap-3 md:gap-10 md:px-14 md:max-h-[29rem] lg:pt-6 lg:px-0 lg:gap-6 lg:max-h-[35rem]">
+	class="pb-16 flex gap-3 md:gap-10 md:px-14 md:max-h-[29rem] lg:pt-6 lg:px-0 lg:gap-6 lg:max-h-[35rem] overflow-hidden">
 	<!--Current preview image-->
 	<div bind:this={previewImageContainer}
 			 class="relative flex h-full items-center w-full justify-center rounded-t-full bg-muted"
@@ -127,20 +126,8 @@
 
 		<!--	Carousel buttons-->
 		<div class="absolute flex -bottom-16 items-center justify-center gap-4">
-			<button
-				aria-label="arrow-left"
-				class="flex aspect-square w-11 cursor-pointer items-center justify-center rounded-full bg-muted"
-				onclick={handlePrev}
-			>
-				<img alt="arrow" src={ArrowLeftIcon} />
-			</button>
-			<button
-				aria-label="arrow-left"
-				class="flex aspect-square w-11 rotate-180 cursor-pointer items-center justify-center rounded-full bg-muted"
-				onclick={handleNext}
-			>
-				<img alt="arrow" src={ArrowLeftIcon} />
-			</button>
+			<ArrowButton direction="left" onclick={handlePrev} />
+			<ArrowButton direction="right" onclick={handleNext} />
 		</div>
 	</div>
 

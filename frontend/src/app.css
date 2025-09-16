@@ -120,6 +120,18 @@
     @apply px-6 md:px-10 lg:px-16 2xl:px-28 3xl:px-36 4xl:px-48;
 }
 
+@utility g-mt {
+    @apply mt-12 lg:mt-16
+}
+
+@utility g-pt {
+    @apply pt-12 lg:pt-16
+}
+
+@utility g-mt-pt {
+    @apply mt-12 pt-12 lg:mt-16 lg:pt-16
+}
+
 @layer base {
     * {
         @apply border-border outline-ring/50;
