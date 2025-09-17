@@ -3,9 +3,11 @@
 	import WhyChooseUs from './_home/why-choose-us.svelte';
 	import ProductCategories from './_home/product-categories.svelte';
 	import FlashSales from './_home/flash-sales.svelte';
+	import NewArrivals from './_home/new-arrivals.svelte';
 </script>
 
 <Hero />
 <WhyChooseUs />
 <ProductCategories />
 <FlashSales />
+<NewArrivals />
