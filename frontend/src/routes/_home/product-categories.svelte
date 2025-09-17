@@ -99,7 +99,7 @@
 </script>
 
 
-<section bind:this={container} class="flex flex-col gap-6 g-mt overflow-x-clip mb-20">
+<section bind:this={container} class="flex flex-col gap-6 g-mt overflow-x-clip">
 	<!--	Category title and arrow buttons -->
 	<div class="flex items-center justify-between capitalize gap-4">
 		<span class="font-semibold text-2xl leading-8">product categories</span>
@@ -116,7 +116,7 @@
 		{#each displayedProducts as product, idx (idx)}
 			<div class="flex flex-col items-center gap-6">
 				<img loading="eager" alt={`Product-${idx}`}
-						 class="rounded-xl w-[12.7rem] h-[12.7rem] md:h-[17.9rem] md:w-[17.9rem] lg:w-[22.6rem] lg:h-[22.6rem] object-cover"
+						 class="rounded-lg w-[12.7rem] h-[12.7rem] md:h-[17.9rem] md:w-[17.9rem] lg:w-[22.6rem] lg:h-[22.6rem] object-cover"
 						 src={product.img} />
 				<span class="capitalize text-lg font-medium">{product.label}</span>
 			</div>
