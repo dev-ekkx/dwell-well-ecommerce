@@ -102,7 +102,8 @@
 <section bind:this={container} class="flex flex-col gap-6 g-mt overflow-x-clip">
 	<!--	Category title and arrow buttons -->
 	<div class="flex items-center justify-between capitalize gap-4">
-		<span class="font-semibold text-2xl leading-8 md:text-3xl md:leading-10 lg:text-4xl lg:leading-12">product categories</span>
+		<span
+			class="font-semibold text-2xl leading-8 md:text-3xl md:leading-10 lg:text-4xl lg:leading-12">new arrivals</span>
 
 		<!-- Arrow buttons -->
 		<div class="flex items-center gap-2">
@@ -116,7 +117,7 @@
 		{#each displayedProducts as product, idx (idx)}
 			<div class="flex flex-col items-center gap-6">
 				<img loading="eager" alt={`Product-${idx}`}
-						 class="rounded-lg w-[12.7rem] h-[12.7rem] md:h-[17.9rem] md:w-[17.9rem] lg:w-[22.6rem] lg:h-[22.6rem] object-cover"
+						 class="rounded-lg w-[14.75rem] h-[18.75rem] lg:w-[26.3rem] lg:h-[35.125rem] object-cover"
 						 src={product.img} />
 				<span class="capitalize text-lg font-medium">{product.label}</span>
 			</div>
