@@ -9,3 +9,13 @@ export interface WhyChooseUsI {
 export interface ButtonI extends HTMLButtonAttributes {
 	direction: "left" | "right";
 }
+
+interface Link {
+	label: string;
+	link: string;
+}
+
+export interface FooterSection {
+	title: string;
+	links: Link[];
+}
