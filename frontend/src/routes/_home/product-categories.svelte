@@ -1,20 +1,26 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import gsap from 'gsap';
-
+	import Picture from '$lib/components/picture.svelte';
 	import ArrowButton from '$lib/components/arrow-button.svelte';
-	import LivingRoom from '$lib/assets/images/living-room.jpg';
-	import Office from '$lib/assets/images/office.jpg';
-	import Bedroom from '$lib/assets/images/bedroom.jpg';
-	import Hall from '$lib/assets/images/hall.jpg';
-	import Dining from '$lib/assets/images/dining.jpg';
+
+	import LivingRoomJp from '$lib/assets/images/living-room.jpg';
+	import LivingRoomWp from '$lib/assets/images/living-room.webp';
+	import OfficeJp from '$lib/assets/images/office.jpg';
+	import OfficeWp from '$lib/assets/images/office.webp';
+	import BedroomJp from '$lib/assets/images/bedroom.jpg';
+	import BedroomWp from '$lib/assets/images/bedroom.webp';
+	import HallJp from '$lib/assets/images/hall.jpg';
+	import HallWp from '$lib/assets/images/hall.webp';
+	import DiningJp from '$lib/assets/images/dining.jpg';
+	import DiningWp from '$lib/assets/images/dining.webp';
 
 	const products = [
-		{ label: 'living room', img: LivingRoom },
-		{ label: 'office', img: Office },
-		{ label: 'bedroom', img: Bedroom },
-		{ label: 'hall', img: Hall },
-		{ label: 'dining', img: Dining }
+		{ label: 'living room', img: { src: LivingRoomJp, source: LivingRoomWp } },
+		{ label: 'office', img: { src: OfficeJp, source: OfficeWp } },
+		{ label: 'bedroom', img: { src: BedroomJp, source: BedroomWp } },
+		{ label: 'hall', img: { src: HallJp, source: HallWp } },
+		{ label: 'dining', img: { src: DiningJp, source: DiningWp } }
 	];
 
 	// Build a repeated list to loop seamlessly by starting in the middle block
@@ -115,9 +121,9 @@
 	<div bind:this={track} class="flex items-center gap-4 lg:gap-6 w-max">
 		{#each displayedProducts as product, idx (idx)}
 			<div class="flex flex-col items-center gap-6">
-				<img loading="eager" alt={`Product-${idx}`}
-						 class="transition-all ease-linear duration-500 rounded-lg w-[12.7rem] h-[12.7rem] md:h-[17.9rem] md:w-[17.9rem] lg:w-[22.6rem] lg:h-[22.6rem] object-cover"
-						 src={product.img} />
+				<Picture alt={`Product-${idx}`}
+								 class="transition-all ease-linear duration-500 rounded-lg w-[12.7rem] h-[12.7rem] md:h-[17.9rem] md:w-[17.9rem] lg:w-[22.6rem] lg:h-[22.6rem] object-cover"
+								 src={product.img.src} source={product.img.source} />
 				<span class="capitalize text-lg font-medium">{product.label}</span>
 			</div>
 		{/each}

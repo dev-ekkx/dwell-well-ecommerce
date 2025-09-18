@@ -3,6 +3,6 @@
 </script>
 
 <picture>
-	<source srcset={source} type="image/webp">
-	<img {...rest} alt={alt} src={src} srcset={source} />
+	<source srcset={source} type="image/webp" />
+	<img {...rest} alt={alt} src={src} />
 </picture>

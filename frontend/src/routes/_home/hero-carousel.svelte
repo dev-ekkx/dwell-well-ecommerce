@@ -5,15 +5,17 @@
 	import Image4 from '$lib/assets/images/hero-image4.png';
 	import { gsap } from 'gsap';
 	import { Flip } from 'gsap/dist/Flip';
+	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 	import { onDestroy, onMount } from 'svelte';
 	import ArrowButton from '$lib/components/arrow-button.svelte';
 
 	// Register plugin
-	gsap.registerPlugin(Flip);
+	gsap.registerPlugin(Flip, ScrollTrigger);
 
 	let displayImages = $state([Image1, Image2, Image3, Image4]);
 	let intervalId: number;
 
+	let carouselSection = $state<HTMLElement>();
 	let firstImageContainer = $state<HTMLElement>();
 	let secondImageContainer = $state<HTMLElement>();
 	let thirdImageContainer = $state<HTMLElement>();
@@ -26,29 +28,6 @@
 		thirdImageContainer,
 		previewImageContainer
 	]);
-
-	/*
-	const animateImages = () => {
-		const images = document.querySelectorAll('.img-thumbnail');
-		images.forEach((image, index) => {
-			const state = Flip.getState(image);
-
-			const target = targets[index] ?? previewImageContainer;
-			target?.appendChild(image);
-			Flip.from(state, {
-				duration: 1, ease: 'back.out', scale: true
-			});
-		});
-
-		return () => {
-			gsap.killTweensOf(targets, images);
-		};
-	};
-
-	const flipToNextImage = () => {
-		animateImages();
-	};
-	 **/
 
 	const animateImagesForward = () => {
 		const images = Array.from(document.querySelectorAll('.img-thumbnail')) as HTMLElement[];
@@ -105,18 +84,37 @@
 		resetInterval();
 	};
 
-	onMount(() => {
-		intervalId = setInterval(animateImagesForward, 5000);
 
+	const start = () => {
+		intervalId = setInterval(animateImagesForward, 5000);
+	};
+
+	const stop = () => {
+		clearInterval(intervalId);
+	};
+
+
+	onMount(() => {
+		ScrollTrigger.create({
+			trigger: carouselSection,
+			start: 'top 80%',   // when the top of the section hits 80% of viewport
+			end: 'bottom top',  // when the section leaves viewport
+			onEnter: () => start(),
+			onEnterBack: () => start(),
+			onLeave: () => stop(),
+			onLeaveBack: () => stop()
+		});
 	});
 
 	onDestroy(() => {
-		clearInterval(intervalId);
+		stop();
+		ScrollTrigger.killAll();
 	});
 </script>
 
 
 <section
+	bind:this={carouselSection}
 	class="pb-16 flex gap-3 md:gap-10 md:px-14 md:max-h-[29rem] lg:pt-6 lg:px-0 lg:gap-6 lg:max-h-[35rem] overflow-hidden">
 	<!--Current preview image-->
 	<div bind:this={previewImageContainer}

@@ -76,7 +76,7 @@
 	<hr />
 
 	<!--	Copyright and socials section-->
-	<section class="flex flex-col gap-4 items-center justify-center">
+	<section class="flex flex-col gap-4 items-center justify-center lg:flex-row lg:justify-between">
 		<span>&copy; {new Date().getFullYear()} DwellWell. All rights reserved</span>
 		<div class="flex items-center gap-4">
 			{#each socials as social (social)}

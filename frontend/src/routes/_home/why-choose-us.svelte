@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { whyChooseUs } from '$lib/constants';
-	import ProductImage from '$lib/assets/images/category1.jpg';
+	import ProductImageJp from '$lib/assets/images/category1.jpg';
+	import ProductImageWp from '$lib/assets/images/category1.webp';
 	import { useIsMobileSvelte } from '$lib/hooks/useIsMobile.svelte.js';
+	import Picture from '$lib/components/picture.svelte';
 
 	const isMobile = useIsMobileSvelte();
 </script>
@@ -25,6 +27,8 @@
 		</div>
 	</section>
 	{#if !isMobile()}
-		<img alt="product" class="object-cover max-h-[38.75rem] rounded-2xl" src={ProductImage}>
+		<Picture alt="product" class="object-cover max-h-[38rem] max-w-[40vw] rounded-2xl"
+						 src={ProductImageJp}
+						 source={ProductImageWp} />
 	{/if}
 </div>
