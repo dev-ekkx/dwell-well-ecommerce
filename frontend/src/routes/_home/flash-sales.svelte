@@ -3,7 +3,7 @@
 	import { Button } from '$lib/components/ui/button';
 </script>
 
-<section class="grid grid-cols-1 md:grid-cols-2 md:max-h-[28rem] g-mt rounded-lg lg:overflow-hidden">
+<section class="grid grid-cols-1 md:grid-cols-2 md:max-h-[28rem] g-mt rounded-lg overflow-hidden">
 	<img alt="flash sales" class="object-cover w-full max-h-[19rem] lg:max-h-auto" src={FlashSalesImage}>
 	<div class="bg-muted-foreground px-6 py-10 flex flex-col gap-10 lg:items-start lg:justify-center **:text-white">
 		<div class="flex flex-col gap-2">

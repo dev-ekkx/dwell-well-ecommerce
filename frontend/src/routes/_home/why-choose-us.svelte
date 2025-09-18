@@ -25,6 +25,6 @@
 		</div>
 	</section>
 	{#if !isMobile()}
-		<img alt="product" class="w-[35%] rounded-2xl" src={ProductImage}>
+		<img alt="product" class="object-cover max-h-[38.75rem] rounded-2xl" src={ProductImage}>
 	{/if}
 </div>

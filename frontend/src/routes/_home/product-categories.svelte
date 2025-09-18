@@ -116,7 +116,7 @@
 		{#each displayedProducts as product, idx (idx)}
 			<div class="flex flex-col items-center gap-6">
 				<img loading="eager" alt={`Product-${idx}`}
-						 class="rounded-lg w-[12.7rem] h-[12.7rem] md:h-[17.9rem] md:w-[17.9rem] lg:w-[22.6rem] lg:h-[22.6rem] object-cover"
+						 class="transition-all ease-linear duration-500 rounded-lg w-[12.7rem] h-[12.7rem] md:h-[17.9rem] md:w-[17.9rem] lg:w-[22.6rem] lg:h-[22.6rem] object-cover"
 						 src={product.img} />
 				<span class="capitalize text-lg font-medium">{product.label}</span>
 			</div>
