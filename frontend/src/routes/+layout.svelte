@@ -11,7 +11,7 @@
 	<link href={favicon} rel="icon" />
 </svelte:head>
 
-<!--Header component-->
+Header component
 <HeaderComponent />
 
 <!--Main content (pages)-->
