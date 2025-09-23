@@ -9,6 +9,7 @@
 
 <svelte:head>
 	<link href={favicon} rel="icon" />
+	
 </svelte:head>
 
 <!--Header component-->
