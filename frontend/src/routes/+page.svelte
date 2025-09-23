@@ -5,9 +5,10 @@
 	import FlashSales from './_home/flash-sales.svelte';
 	import NewArrivals from './_home/new-arrivals.svelte';
 </script>
-
-<Hero />
-<WhyChooseUs />
-<ProductCategories />
-<FlashSales />
-<NewArrivals />
+<div class="g-px">
+	<Hero />
+	<WhyChooseUs />
+	<ProductCategories />
+	<FlashSales />
+	<NewArrivals />
+</div>
