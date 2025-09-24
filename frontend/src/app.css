@@ -132,6 +132,10 @@
     @apply mt-12 pt-12 lg:mt-16 lg:pt-16
 }
 
+@utility text-section-head {
+    @apply text-2xl font-semibold capitalize leading-8 md:text-3xl md:leading-10 lg:text-4xl lg:leading-12;
+}
+
 @layer base {
     * {
         @apply border-border outline-ring/50;
@@ -146,4 +150,6 @@
     p {
         @apply text-muted-foreground;
     }
+
+
 }

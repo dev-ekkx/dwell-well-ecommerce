@@ -64,7 +64,7 @@
 </script>
 
 <section class="flex flex-col gap-6 g-mt g-px">
-	<h4 class="text-2xl leading-8 capitalize text-center">building dreams since 1990</h4>
+	<h4 class="text-section-head capitalize text-center">building dreams since 1990</h4>
 	<p class="text-center">Founded with a vision to redefine modern living, DwellWell has evolved from a small family
 		business to a global
 		leader in premium home construction. Our journey has been guided by an unwavering commitment to excellence,

@@ -7,7 +7,7 @@
 	import { page } from '$app/state';
 
 	let { children } = $props();
-	const activePage = $state(page.route.id);
+	const activePage = $derived(page.route.id);
 </script>
 
 <svelte:head>
@@ -17,7 +17,6 @@
 
 <!--Header component-->
 <HeaderComponent />
-{page}
 
 <!--Main content (pages)-->
 <div class={cn('flex flex-col ', {
