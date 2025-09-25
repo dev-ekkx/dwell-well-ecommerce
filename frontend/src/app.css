@@ -140,6 +140,15 @@
     @apply px-4 w-full max-w-[45rem] mx-auto;
 }
 
+@utility scrollbar-hidden {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
 @layer base {
     * {
         @apply border-border outline-ring/50;
