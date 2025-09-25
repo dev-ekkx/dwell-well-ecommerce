@@ -32,7 +32,7 @@
 <section class="g-mt-pt flex-col gap-6 g-px grid grid-cols-10 ">
 	<div class="flex flex-col gap-8 col-span-10 lg:col-span-6">
 		<div class="flex flex-col gap-6">
-			<span class="text-section-head">what we're known for</span>
+			<h4 class="text-section-head">what we're known for</h4>
 			<p>For over three decades, DwellWell has been dedicated to building dream homes that surpass expectations in
 				quality,
 				design, and sustainability.</p>

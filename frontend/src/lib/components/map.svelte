@@ -79,8 +79,8 @@
 	};
 
 	onMount(async () => {
-		await initMap();
+		// await initMap();
 	});
 </script>
 
-<div bind:this={mapElement} class="h-[38.4rem] mt-4" id="map"></div>
+<div bind:this={mapElement} class="h-[38.4rem]"></div>
