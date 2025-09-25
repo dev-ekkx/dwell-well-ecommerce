@@ -4,8 +4,23 @@
 	import PhoneIcon from '$lib/assets/phone.svg';
 	import EmailIcon from '$lib/assets/email.svg';
 	import { Button } from '$lib/components/ui/button/index';
+	import type { QuestionType } from '$lib/types';
+	import { Textarea } from '$lib/components/ui/textarea';
 
-	let contactForm = $state([]);
+	let contactForm = $state<QuestionType>({
+		name: '',
+		email: '',
+		message: ''
+	});
+
+	let errors = $state<Record<string, string>>({});
+
+
+	const contactFormFields = $state([
+		{ name: 'name', type: 'text', placeholder: 'Name' },
+		{ name: 'email', type: 'email', placeholder: 'Email' },
+		{ name: 'message', type: 'textarea', placeholder: 'Message' }
+	]);
 </script>
 
 <section class="g-mt-pt relative">
@@ -55,6 +70,26 @@
 
 			<!--Form-->
 			<form class="flex flex-col gap-3" method="POST">
+				<!--Array of form fields-->
+				{#each fields as field}
+					{#if field.type === "textarea"}
+      <Textarea
+				placeholder={field.placeholder}
+				bind:value={contactForm[field.name]}
+			></Textarea>
+					{:else}
+						<input
+							type={field.type}
+							placeholder={field.placeholder}
+							bind:value={formData[field.name]}
+						/>
+					{/if}
+
+					{#if $errors[field.name]}
+						<span class="text-red-500 text-sm">{$errors[field.name]}</span>
+					{/if}
+				{/each}
+
 				<Button class="cursor-pointer">Submit</Button>
 			</form>
 		</div>
