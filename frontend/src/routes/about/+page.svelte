@@ -4,6 +4,7 @@
 	import WhatWeAreKnownFor from './what-we-are-known-for.svelte';
 	import GlobalPresence from './global-presence.svelte';
 	import LeadershipTeam from './leadership-team.svelte';
+	import Showrooms from './showrooms.svelte';
 </script>
 
 <AboutHero />
@@ -11,3 +12,4 @@
 <WhatWeAreKnownFor />
 <GlobalPresence />
 <LeadershipTeam />
+<Showrooms />

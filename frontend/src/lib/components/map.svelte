@@ -83,4 +83,11 @@
 	});
 </script>
 
-<div bind:this={mapElement} class="h-[38.4rem]"></div>
+<div bind:this={mapElement} class="h-[38.4rem]">
+	<!--	TODO: remove map placeholder-->
+	<div
+		class="w-full h-full flex items-center justify-center text-2xl text-muted-foreground border border-muted-foreground">
+		Map
+		placeholder
+	</div>
+</div>
