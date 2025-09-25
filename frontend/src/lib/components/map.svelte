@@ -4,8 +4,8 @@
 
 	const MAPS_API_KEY = import.meta.env.VITE_MAP_KEY as string;
 
-	let mapElement: HTMLElement | null = null;
-	let map: google.maps.Map | null = null;
+	let mapElement = $state<HTMLElement | null>(null);
+	let map = $state<google.maps.Map | null>(null);
 
 	function loadGoogleMaps(): Promise<void> {
 		return new Promise((resolve, reject) => {
@@ -55,8 +55,14 @@
 		const { Map } = await google.maps.importLibrary('maps') as google.maps.MapsLibrary;
 		const { AdvancedMarkerElement } = await google.maps.importLibrary('marker') as google.maps.MarkerLibrary;
 
+		// Ensure the container element is available (narrow type from HTMLElement | null to HTMLElement)
+		if (!mapElement) {
+			console.error('Map container element is not available.');
+			return;
+		}
+
 		map = new Map(
-			document.getElementById('map') as HTMLElement,
+			mapElement,
 			{
 				zoom: 20,
 				center: position,
