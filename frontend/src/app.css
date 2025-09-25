@@ -136,6 +136,10 @@
     @apply text-2xl font-semibold capitalize leading-8 md:text-3xl md:leading-10 lg:text-4xl lg:leading-12;
 }
 
+@utility text-section-p {
+    @apply px-4 w-full max-w-[45rem] mx-auto;
+}
+
 @layer base {
     * {
         @apply border-border outline-ring/50;

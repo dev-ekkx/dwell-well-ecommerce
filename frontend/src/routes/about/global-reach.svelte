@@ -65,7 +65,10 @@
 
 <section class="flex flex-col gap-6 g-mt g-px">
 	<h4 class="text-section-head capitalize text-center">building dreams since 1990</h4>
-	<p class="text-center">Founded with a vision to redefine modern living, DwellWell has evolved from a small family
+	<p class="text-center text-section-p max-w-[65rem]">Founded with a vision to redefine modern living, DwellWell
+		has
+		evolved from a
+		small family
 		business to a global
 		leader in premium home construction. Our journey has been guided by an unwavering commitment to excellence,
 		innovation, and creating spaces that truly feel like home.</p>

@@ -28,7 +28,7 @@
 <section class="g-px g-mt-pt flex flex-col gap-6">
 	<h4 class="text-section-head text-center">our leadership team</h4>
 
-	<p class="px-4 text-center w-full max-w-[40rem] mx-auto">Guided by passion and experience, our leaders shape the
+	<p class="text-section-p text-center">Guided by passion and experience, our leaders shape the
 		vision of AmaliHomes, bringing comfort, style, and quality to homes worldwide.</p>
 
 	<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
