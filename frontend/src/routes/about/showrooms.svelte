@@ -77,8 +77,8 @@
 
 	<!--Showrooms	tabs -->
 	<Root class="w-full mt-4" value={showrooms[0].continent}>
-		<!--		Showroom (tab) lists and triggers-->
-		<List class="flex w-full max-w-2xl overflow-x-auto px-4 gap-4 justify-baseline h-max scrollbar-hidden">
+		<!--Showroom (tab) list and triggers-->
+		<List class="flex w-full max-w-2xl overflow-x-auto gap-4 justify-baseline h-max scrollbar-hidden">
 			{#each showrooms as showroom (showroom.continent)}
 				<Trigger
 					value={showroom.continent}
@@ -89,9 +89,9 @@
 			{/each}
 		</List>
 
-		<!--		Showroom (tab) content-->
+		<!--Showroom (tab) content-->
 		{#each showrooms as showroom (showroom.continent)}
-			<Content value={showroom.continent} class="p-4">
+			<Content value={showroom.continent} class="py-4">
 				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 					{#each showroom.countries as country (country.name)}
 						<div class="rounded-lg h-[21.75rem] relative overflow-clip">

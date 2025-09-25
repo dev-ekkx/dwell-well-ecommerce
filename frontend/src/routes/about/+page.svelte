@@ -5,6 +5,7 @@
 	import GlobalPresence from './global-presence.svelte';
 	import LeadershipTeam from './leadership-team.svelte';
 	import Showrooms from './showrooms.svelte';
+	import ContactUs from './contact-us.svelte';
 </script>
 
 <AboutHero />
@@ -13,3 +14,4 @@
 <GlobalPresence />
 <LeadershipTeam />
 <Showrooms />
+<ContactUs />
