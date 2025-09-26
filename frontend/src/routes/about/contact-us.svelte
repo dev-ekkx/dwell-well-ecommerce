@@ -100,7 +100,7 @@
 							<span class="font-medium capitalize">{field.name}</span>
 							{#if field.type === "textarea"}
       <Textarea
-				class="resize-none h-32"
+				class="resize-none h-42"
 				placeholder={field.placeholder}
 				bind:value={contactForm[field.name]}
 				oninput={() => validateField(field.name)}
@@ -123,7 +123,7 @@
 				</div>
 
 				<Button
-					class="cursor-pointer"
+					class="cursor-pointer mt-6"
 					disabled={!isValidForm()}
 					onclick={(e) => e.preventDefault()}
 					type="submit"
