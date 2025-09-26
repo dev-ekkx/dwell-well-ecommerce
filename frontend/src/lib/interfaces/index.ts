@@ -15,7 +15,7 @@ interface Link {
 	link: string;
 }
 
-export interface FooterSection {
+export interface FooterSectionI {
 	title: string;
 	links: Link[];
 }

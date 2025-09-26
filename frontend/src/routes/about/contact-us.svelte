@@ -4,23 +4,46 @@
 	import PhoneIcon from '$lib/assets/phone.svg';
 	import EmailIcon from '$lib/assets/email.svg';
 	import { Button } from '$lib/components/ui/button/index';
-	import type { QuestionType } from '$lib/types';
+	import type { ContactFormFieldT, InputT, QuestionT } from '$lib/types';
 	import { Textarea } from '$lib/components/ui/textarea';
+	import { QuestionFormSchema } from '$lib/schema';
+	import { Input } from '$lib/components/ui/input';
 
-	let contactForm = $state<QuestionType>({
+	let contactForm = $state<QuestionT>({
 		name: '',
 		email: '',
 		message: ''
 	});
 
-	let errors = $state<Record<string, string>>({});
+	let errors = $state<Record<ContactFormFieldT, string>>({
+		name: '',
+		email: '',
+		message: ''
+	});
+
+	const isValidForm = $derived(() => {
+		return Object.values(errors).every((error) => error === '') &&
+			Object.values(contactForm).every((value) => value !== '');
+	});
 
 
-	const contactFormFields = $state([
-		{ name: 'name', type: 'text', placeholder: 'Name' },
-		{ name: 'email', type: 'email', placeholder: 'Email' },
-		{ name: 'message', type: 'textarea', placeholder: 'Message' }
+	const contactFormFields = $state<{
+		name: ContactFormFieldT,
+		type: InputT,
+		placeholder: string
+	}[]>([
+		{ name: 'name', type: 'text', placeholder: 'Full name' },
+		{ name: 'email', type: 'email', placeholder: 'example@example.com' },
+		{ name: 'message', type: 'textarea', placeholder: 'Kindly type your message here...' }
 	]);
+
+	// validate a single field on blur
+	function validateField(name: ContactFormFieldT) {
+		const schema = QuestionFormSchema.shape[name];
+		const result = schema.safeParse(contactForm[name]);
+
+		errors[name] = result.success ? '' : result.error.issues[0].message;
+	}
 </script>
 
 <section class="g-mt-pt relative">
@@ -29,7 +52,7 @@
 			 src={ContactusBg} />
 
 	<!--User card and contact form-->
-	<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-10 lg:gap-40 g-px pb-10">
+	<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-10 lg:gap-44 g-px pb-10">
 		<!--	Description and user card-->
 		<div class="flex flex-col gap-10">
 			<!--Title and Description-->
@@ -71,26 +94,41 @@
 			<!--Form-->
 			<form class="flex flex-col gap-3" method="POST">
 				<!--Array of form fields-->
-				{#each fields as field}
-					{#if field.type === "textarea"}
+				<div class="flex flex-col gap-4">
+					{#each contactFormFields as field (field.name)}
+						<div class="flex flex-col gap-1">
+							<span class="font-medium capitalize">{field.name}</span>
+							{#if field.type === "textarea"}
       <Textarea
+				class="resize-none h-32"
 				placeholder={field.placeholder}
 				bind:value={contactForm[field.name]}
-			></Textarea>
-					{:else}
-						<input
-							type={field.type}
-							placeholder={field.placeholder}
-							bind:value={formData[field.name]}
-						/>
-					{/if}
+				oninput={() => validateField(field.name)}
+				onblur={() => validateField(field.name)}
+			/>
+							{:else}
+								<Input
+									type={field.type}
+									placeholder={field.placeholder}
+									bind:value={contactForm[field.name]}
+									oninput={() => validateField(field.name)}
+									onblur={() => validateField(field.name)}
+								/>
+							{/if}
+							{#if errors[field.name]}
+								<p class="text-red-500 text-sm">{errors[field.name]}</p>
+							{/if}
+						</div>
+					{/each}
+				</div>
 
-					{#if $errors[field.name]}
-						<span class="text-red-500 text-sm">{$errors[field.name]}</span>
-					{/if}
-				{/each}
-
-				<Button class="cursor-pointer">Submit</Button>
+				<Button
+					class="cursor-pointer"
+					disabled={!isValidForm()}
+					onclick={(e) => e.preventDefault()}
+					type="submit"
+				>Submit
+				</Button>
 			</form>
 		</div>
 	</div>
