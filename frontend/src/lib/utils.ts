@@ -1,8 +1,17 @@
-import { clsx, type ClassValue } from "clsx";
+import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
+}
+
+/**
+ * Formats a number by adding commas as thousands separators.
+ * @param num The number to format.
+ * @returns A string representation of the number with commas.
+ */
+export function formatNumberWithCommas(num: number): string {
+	return num.toLocaleString("en-Gh");
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -1,4 +1,4 @@
-import type { FooterSection, WhyChooseUsI } from "$lib/interfaces";
+import type { FooterSectionI, WhyChooseUsI } from "$lib/interfaces";
 import TrophyIcon from "$lib/assets/trophy.svg";
 import ChairIcon from "$lib/assets/chair.svg";
 import TruckIcon from "$lib/assets/truck.svg";
@@ -67,7 +67,7 @@ export const whyChooseUs: {
 	]
 };
 
-export const footerLinks: FooterSection[] = [
+export const footerLinks: FooterSectionI[] = [
 	{
 		title: "quick links",
 		links: [

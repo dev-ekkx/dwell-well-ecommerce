@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { useIsMobileSvelte } from '$lib/hooks/useIsMobile.svelte.js';
 	import { ROUTE_NAVS } from '$lib/constants';
 	import { resolve } from '$app/paths';
 	import { cn } from '$lib/utils';
@@ -11,10 +10,11 @@
 	import CloseIcon from '$lib/assets/close.svg';
 	import { gsap } from 'gsap';
 	import { onMount, tick } from 'svelte';
+	import { useIsMobile } from '$lib/hooks/useIsMobile.svelte';
 
 	const isActiveRoute = (path: string) => page.route.id === path;
-	const isMobile = useIsMobileSvelte()
-	;
+	const isMobile = useIsMobile();
+
 	let isMenuOpen = $state(false);
 	let showSearchInput = $state(false);
 	let menu = $state<HTMLElement | null>(null);
@@ -85,7 +85,7 @@
 	<!--	Logo-->
 	<LogoComponent />
 
-	<!--	Desktop navigation-->
+	<!--		Desktop navigation-->
 	{#if !isMobile()}
 		{@render desktopNav()}
 	{/if}
@@ -95,9 +95,10 @@
 		<button aria-label="search" bind:this={searchButton} class="cursor-pointer">
 			<img alt="search" src={SearchIcon}>
 		</button>
+
 		{#if isMobile()}
 			<button bind:this={toggleButton} onclick={toggleMenu} aria-label="hamburger toggle"
-							class="w-8 flex justify-center cursor-pointer **:pointer-events-none">
+							class="w-8 justify-center cursor-pointer **:pointer-events-none">
 				{#if isMenuOpen}
 					<img src={CloseIcon} alt="close">
 				{:else}
@@ -105,11 +106,9 @@
 				{/if}
 			</button>
 		{:else}
-			<Button class="cursor-pointer px-6 h-full">Login</Button>
+			<Button class="hidden lg:inline-flex cursor-pointer px-6 h-full">Login</Button>
 		{/if}
 	</div>
-
-
 </header>
 
 <!--Search menu-->
@@ -133,7 +132,7 @@
 
 <!-- Desktop	Navigation-->
 {#snippet desktopNav()}
-	<nav class="h-12 flex items-center">
+	<nav class="h-12 hidden lg:flex items-center">
 		{@render navigation()}
 	</nav>
 {/snippet}

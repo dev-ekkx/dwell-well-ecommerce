@@ -1,1 +1,17 @@
-<h2>about</h2>
+<script lang="ts">
+	import AboutHero from './about-hero.svelte';
+	import GlobalReach from './global-reach.svelte';
+	import WhatWeAreKnownFor from './what-we-are-known-for.svelte';
+	import GlobalPresence from './global-presence.svelte';
+	import LeadershipTeam from './leadership-team.svelte';
+	import Showrooms from './showrooms.svelte';
+	import ContactUs from './contact-us.svelte';
+</script>
+
+<AboutHero />
+<GlobalReach />
+<WhatWeAreKnownFor />
+<GlobalPresence />
+<LeadershipTeam />
+<Showrooms />
+<ContactUs />

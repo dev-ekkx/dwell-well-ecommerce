@@ -2,10 +2,10 @@
 	import { whyChooseUs } from '$lib/constants';
 	import ProductImageJp from '$lib/assets/images/category1.jpg';
 	import ProductImageWp from '$lib/assets/images/category1.webp';
-	import { useIsMobileSvelte } from '$lib/hooks/useIsMobile.svelte.js';
+	import { useIsMobile } from '$lib/hooks/useIsMobile.svelte';
 	import Picture from '$lib/components/picture.svelte';
 
-	const isMobile = useIsMobileSvelte();
+	const isMobile = useIsMobile();
 </script>
 <div class="g-mt flex flex-col gap-12 lg:flex-row">
 	<section class=" flex flex-col gap-10">
