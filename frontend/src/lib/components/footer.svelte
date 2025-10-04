@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Button } from '$lib/components/ui/button';
-	import { footerLinks } from '$lib/constants';
 	import { resolve } from '$app/paths';
 	import type { RouteId } from '$app/types';
 	import type { FooterI } from '$lib/interfaces';
@@ -9,10 +8,14 @@
 	import { browser } from '$app/environment';
 	import DOMPurify from 'dompurify';
 
+	const cmsBaseUrl = import.meta.env.VITE_CMS_URL;
+
 	const { footer } = $props();
 	const footerData = footer as FooterI;
-	console.log(footerData);
 	const socials = footerData.socialLinks;
+	const columnLinks = footerData.linkColumns;
+
+	console.log(footerData);
 
 	const isExternal = (link: string) =>
 		link.startsWith('http') ||
@@ -20,7 +23,6 @@
 		link.startsWith('tel:');
 
 	const routeLink = (link: string) => link as RouteId;
-	const cmsBaseUrl = import.meta.env.VITE_CMS_URL;
 
 	const newsletterDisclaimer = $derived(() => {
 		const rawHtml = marked(footerData.newsletterDisclaimer).toString();
@@ -60,21 +62,21 @@
 
 		<!--		Footer links-->
 		<div class="grid grid-cols-1 **:items-center sm:grid-cols-2 md:grid-cols-4 md:**:items-start mt-8 gap-8">
-			{#each footerLinks as item (item.title)}
+			{#each columnLinks as item (item.title)}
 				<div class="flex flex-col gap-3">
 					<span class="capitalize font-semibold">{item.title}</span>
 					<div class="flex flex-col">
 						{#each item.links as link (link.label)}
-							{#if isExternal(link.link)}
+							{#if isExternal(link.url)}
 								<a
 									target="_blank"
 									rel="noopener noreferrer"
-									href={link.link}
+									href={link.url}
 								>
 									{link.label}
 								</a>
 							{:else}
-								<a class="py-2" href={resolve(routeLink(link.link))}>
+								<a class="py-2" href={resolve(routeLink(link.url))}>
 									{link.label}
 								</a>
 							{/if}

@@ -471,9 +471,6 @@ export interface ApiFooterFooter extends Struct.SingleTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    contactEmail: Schema.Attribute.Email;
-    contactPhoneNumber: Schema.Attribute.String;
-    contactTitle: Schema.Attribute.String;
     copyrightText: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &

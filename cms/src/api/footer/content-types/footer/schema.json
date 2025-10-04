@@ -25,15 +25,6 @@
       "component": "footer-controls.link-column",
       "repeatable": true
     },
-    "contactTitle": {
-      "type": "string"
-    },
-    "contactPhoneNumber": {
-      "type": "string"
-    },
-    "contactEmail": {
-      "type": "email"
-    },
     "copyrightText": {
       "type": "string"
     },
