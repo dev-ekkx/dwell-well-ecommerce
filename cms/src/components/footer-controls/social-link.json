@@ -5,19 +5,20 @@
   },
   "options": {},
   "attributes": {
-    "platform": {
-      "type": "enumeration",
-      "required": true,
-      "enum": [
-        "Facebook",
-        "Instagram",
-        "X",
-        "LinkedIn"
-      ]
-    },
-    "URL": {
+    "url": {
       "type": "string",
       "required": true
+    },
+    "icon": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
     }
   },
   "config": {}

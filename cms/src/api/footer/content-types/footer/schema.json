@@ -11,33 +11,33 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "newsletter_title": {
+    "newsletterTitle": {
       "type": "string"
     },
-    "newsletter_description": {
+    "newsletterDescription": {
       "type": "text"
     },
-    "newsletter_disclaimer": {
+    "newsletterDisclaimer": {
       "type": "richtext"
     },
-    "link_columns": {
+    "linkColumns": {
       "type": "component",
       "component": "footer-controls.link-column",
       "repeatable": true
     },
-    "contact_title": {
+    "contactTitle": {
       "type": "string"
     },
-    "contact_phone_number": {
+    "contactPhoneNumber": {
       "type": "string"
     },
-    "contact_email": {
+    "contactEmail": {
       "type": "email"
     },
-    "copyright_text": {
+    "copyrightText": {
       "type": "string"
     },
-    "social_links": {
+    "socialLinks": {
       "type": "component",
       "component": "footer-controls.social-link",
       "repeatable": true

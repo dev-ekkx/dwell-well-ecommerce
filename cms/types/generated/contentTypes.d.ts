@@ -471,14 +471,14 @@ export interface ApiFooterFooter extends Struct.SingleTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    contact_email: Schema.Attribute.Email;
-    contact_phone_number: Schema.Attribute.String;
-    contact_title: Schema.Attribute.String;
-    copyright_text: Schema.Attribute.String;
+    contactEmail: Schema.Attribute.Email;
+    contactPhoneNumber: Schema.Attribute.String;
+    contactTitle: Schema.Attribute.String;
+    copyrightText: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    link_columns: Schema.Attribute.Component<
+    linkColumns: Schema.Attribute.Component<
       'footer-controls.link-column',
       true
     >;
@@ -488,11 +488,11 @@ export interface ApiFooterFooter extends Struct.SingleTypeSchema {
       'api::footer.footer'
     > &
       Schema.Attribute.Private;
-    newsletter_description: Schema.Attribute.Text;
-    newsletter_disclaimer: Schema.Attribute.RichText;
-    newsletter_title: Schema.Attribute.String;
+    newsletterDescription: Schema.Attribute.Text;
+    newsletterDisclaimer: Schema.Attribute.RichText;
+    newsletterTitle: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
-    social_links: Schema.Attribute.Component<
+    socialLinks: Schema.Attribute.Component<
       'footer-controls.social-link',
       true
     >;

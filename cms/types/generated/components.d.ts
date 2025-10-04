@@ -7,7 +7,7 @@ export interface FooterControlsLink extends Struct.ComponentSchema {
   };
   attributes: {
     label: Schema.Attribute.String & Schema.Attribute.Required;
-    URL: Schema.Attribute.String & Schema.Attribute.Required;
+    url: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 
@@ -28,11 +28,9 @@ export interface FooterControlsSocialLink extends Struct.ComponentSchema {
     displayName: 'SocialLink';
   };
   attributes: {
-    platform: Schema.Attribute.Enumeration<
-      ['Facebook', 'Instagram', 'X', 'LinkedIn']
-    > &
+    icon: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'> &
       Schema.Attribute.Required;
-    URL: Schema.Attribute.String & Schema.Attribute.Required;
+    url: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 
