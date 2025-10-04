@@ -460,6 +460,48 @@ export interface ApiCountryCountry extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiFooterFooter extends Struct.SingleTypeSchema {
+  collectionName: 'footers';
+  info: {
+    displayName: 'Footer';
+    pluralName: 'footers';
+    singularName: 'footer';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    contact_email: Schema.Attribute.Email;
+    contact_phone_number: Schema.Attribute.String;
+    contact_title: Schema.Attribute.String;
+    copyright_text: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    link_columns: Schema.Attribute.Component<
+      'footer-controls.link-column',
+      true
+    >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::footer.footer'
+    > &
+      Schema.Attribute.Private;
+    newsletter_description: Schema.Attribute.Text;
+    newsletter_disclaimer: Schema.Attribute.RichText;
+    newsletter_title: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    social_links: Schema.Attribute.Component<
+      'footer-controls.social-link',
+      true
+    >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiProductProduct extends Struct.CollectionTypeSchema {
   collectionName: 'products';
   info: {
@@ -1083,6 +1125,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::country.country': ApiCountryCountry;
+      'api::footer.footer': ApiFooterFooter;
       'api::product.product': ApiProductProduct;
       'api::region.region': ApiRegionRegion;
       'api::sales-rep.sales-rep': ApiSalesRepSalesRep;
