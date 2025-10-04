@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_regional_control_country_specifics",
+  "info": {
+    "displayName": "CountrySpecifics"
+  },
+  "options": {},
+  "attributes": {
+    "country": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::country.country"
+    },
+    "is_available": {
+      "type": "boolean",
+      "default": false
+    },
+    "sales_reps": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::sales-rep.sales-rep"
+    }
+  },
+  "config": {}
+}
