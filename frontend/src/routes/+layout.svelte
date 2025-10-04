@@ -6,7 +6,7 @@
 	import { cn } from '$lib/utils';
 	import { page } from '$app/state';
 
-	let { children } = $props();
+	let { children, data } = $props();
 	const activePage = $derived(page.route.id);
 </script>
 
@@ -26,4 +26,4 @@
 </div>
 
 <!--Footer component-->
-<FooterComponent />
+<FooterComponent footer={data.footer} />
