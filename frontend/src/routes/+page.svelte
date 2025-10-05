@@ -6,14 +6,18 @@
 	import NewArrivals from './_home/new-arrivals.svelte';
 	import type { PageProps } from './$types';
 	import type { HomepageI } from '$lib/interfaces';
+	import { setContext } from 'svelte';
 
 	const { data }: PageProps = $props();
 	const homePageData = data.homepage as HomepageI;
 	console.log(homePageData);
 	const heroData = homePageData.contentSections.find(item => item.__component === 'page-controls.hero');
-	console.log(heroData);
 	const seoData = homePageData.seo;
-
+	const whyChooseUsData = homePageData.contentSections.find(
+		item => item.__component === 'page-controls.why-choose-us'
+	);
+	// Provide hero images to the HeroCarousel component via context
+	setContext('hero-images', heroData.images);
 </script>
 
 <svelte:head>
@@ -23,7 +27,7 @@
 
 <div class="g-px">
 	<Hero heroData={heroData} />
-	<WhyChooseUs />
+	<WhyChooseUs whyChooseUsData={whyChooseUsData} />
 	<ProductCategories />
 	<FlashSales />
 	<NewArrivals />

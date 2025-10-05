@@ -2,14 +2,11 @@
 	import HeroCarousel from './hero-carousel.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import type { PageProps } from './$types';
-	import { setContext } from 'svelte';
 	import { cn } from '$lib/utils';
 
 	const { heroData }: PageProps = $props();
 	const ctaButtons = heroData.ctaButtons;
-
-	// Provide hero images to the HeroCarousel component via context
-	setContext('hero-images', heroData.images);
+	
 
 </script>
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-20 lg:gap-14">
