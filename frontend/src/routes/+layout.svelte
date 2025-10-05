@@ -4,6 +4,7 @@
 	import HeaderComponent from '$lib/components/header.svelte';
 	import FooterComponent from '$lib/components/footer.svelte';
 	import { page } from '$app/state';
+	import { cn } from '$lib/utils';
 
 	let { children, data } = $props();
 	const activePage = $derived(page.route.id);
@@ -18,11 +19,11 @@
 <HeaderComponent />
 
 <!--Main content (pages)-->
-<!--<div class={cn('flex flex-col ', {-->
-<!--	'pt-[6.5rem] md:pt-[7rem] xl:pt-[8rem]': activePage !== '/about'-->
-<!--} )}>-->
-<!--	{@render children?.()}-->
-<!--</div>-->
+<div class={cn('flex flex-col ', {
+	'pt-[6.5rem] md:pt-[7rem] xl:pt-[8rem]': activePage !== '/about'
+} )}>
+	{@render children?.()}
+</div>
 
 <!--Footer component-->
 <FooterComponent footer={data.footer} />

@@ -1,4 +1,5 @@
 import type { HTMLButtonAttributes } from "svelte/elements";
+import type { ContentSectionT } from "$lib/types";
 
 export interface WhyChooseUsI {
 	icon: string;
@@ -9,6 +10,9 @@ export interface WhyChooseUsI {
 export interface ButtonI extends HTMLButtonAttributes {
 	direction: "left" | "right";
 }
+
+// --- Forter Component Interfaces ---
+
 // Interface for an individual link in a column
 export interface LinkI {
 	id: number;
@@ -47,4 +51,81 @@ export interface FooterI {
 	copyrightText: string;
 	linkColumns: LinkColumnI[];
 	socialLinks: SocialLinkI[];
+}
+
+// --- New Homepage Interfaces ---
+
+// Interface for a standard Strapi media object
+export interface StrapiImageI {
+	url: string;
+	alternativeText: string;
+}
+
+// Interface for a Call-to-Action button
+export interface CtaButtonI {
+	id: number;
+	text: string;
+	url: string;
+}
+
+// --- Homepage Dynamic Zone Component Interfaces ---
+
+// Represents the Hero component
+export interface HeroComponentI {
+	__component: "page-controls.hero";
+	id: number;
+	sectionId?: string;
+	title: string;
+	subTitle: string;
+	images: StrapiImageI[];
+	ctaButtons: CtaButtonI[];
+}
+
+// Represents an item in the Category section (structure inferred)
+export interface CategoryItemI {
+	id: number;
+	title: string;
+	image: StrapiImageI;
+	url: string;
+}
+
+// Represents the Category/New Arrival section component
+export interface CategorySectionComponentI {
+	__component: "page-controls.category-or-new-arrival-section";
+	id: number;
+	sectionId?: string;
+	title: string;
+	items: CategoryItemI[];
+}
+
+// Represents a reason in the "Why Choose Us" section (structure inferred)
+export interface ReasonI {
+	id: number;
+	title: string;
+	description: string;
+}
+
+// Represents the "Why Choose Us" section component
+export interface WhyChooseUsComponentI {
+	__component: "page-controls.why-choose-us";
+	id: number;
+	sectionId?: string;
+	title: string;
+	description: string;
+	reasons: ReasonI[];
+}
+
+// Interface for the SEO component data
+export interface SeoI {
+	id: number;
+	metaTitle: string;
+	metaDescription: string;
+}
+
+// The main interface for the entire Homepage data structure
+export interface HomepageI {
+	slug: string;
+	title: string;
+	seo: SeoI;
+	contentSections: ContentSectionT[];
 }
