@@ -4,8 +4,8 @@
 	import { resolve } from '$app/paths';
 	import type { RouteId } from '$app/types';
 	import type { FooterI } from '$lib/interfaces';
+	import { onMount } from 'svelte';
 	import { marked } from 'marked';
-	import { browser } from '$app/environment';
 	import DOMPurify from 'dompurify';
 
 	const cmsBaseUrl = import.meta.env.VITE_CMS_URL;
@@ -15,8 +15,7 @@
 	const socials = footerData.socialLinks;
 	const columnLinks = footerData.linkColumns;
 
-	console.log(footerData);
-
+	let newsletterDisclaimer = $state('');
 	const isExternal = (link: string) =>
 		link.startsWith('http') ||
 		link.startsWith('mailto:') ||
@@ -24,19 +23,15 @@
 
 	const routeLink = (link: string) => link as RouteId;
 
-	const newsletterDisclaimer = $derived(() => {
+	onMount(() => {
 		const rawHtml = marked(footerData.newsletterDisclaimer).toString();
-		if (browser) {
-			return DOMPurify.sanitize(rawHtml);
-		} else {
-			return rawHtml;
-		}
+		// We no longer need the 'if (browser)' check because onMount guarantees it.
+		newsletterDisclaimer = DOMPurify.sanitize(rawHtml);
 	});
 
 </script>
 
 <footer class="flex flex-col bg-muted-foreground **:text-white pb-6 g-pt g-px g-mt gap-8 font-medium">
-
 	<!--	Newsletter and footer links section-->
 	<section class="flex flex-col">
 		<div class="flex flex-col text-center md:text-left gap-2 lg:flex-row lg:justify-between lg:items-center">
@@ -56,7 +51,7 @@
 				</div>
 				<p class="text-sm">
 					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-					{@html newsletterDisclaimer()}</p>
+					{@html newsletterDisclaimer}</p>
 			</div>
 		</div>
 

@@ -1,0 +1,33 @@
+{
+  "collectionName": "components_page_controls_promotions",
+  "info": {
+    "displayName": "Promotion"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "backgroundImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "cta": {
+      "type": "component",
+      "component": "page-controls.button",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

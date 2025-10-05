@@ -1,4 +1,4 @@
-import type { LayoutLoad } from "../../.svelte-kit/types/src/routes/$types";
+import type { LayoutLoad } from "./$types";
 import type { FooterI } from "$lib/interfaces";
 
 export const load: LayoutLoad = async ({ fetch }) => {

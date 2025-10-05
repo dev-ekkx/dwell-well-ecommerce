@@ -1,4 +1,4 @@
-import type { FooterSectionI, WhyChooseUsI } from "$lib/interfaces";
+import type { WhyChooseUsI } from "$lib/interfaces";
 import TrophyIcon from "$lib/assets/trophy.svg";
 import ChairIcon from "$lib/assets/chair.svg";
 import TruckIcon from "$lib/assets/truck.svg";
@@ -66,78 +66,3 @@ export const whyChooseUs: {
 		}
 	]
 };
-
-export const footerLinks: FooterSectionI[] = [
-	{
-		title: "quick links",
-		links: [
-			{
-				label: "Home",
-				link: "/"
-			},
-			{
-				label: "Shop",
-				link: "/"
-			},
-			{
-				label: "Cart",
-				link: "/"
-			},
-			{
-				label: "FAQ",
-				link: "/"
-			},
-			{
-				label: "Offer & Details",
-				link: "/"
-			}
-		]
-	},
-	{
-		title: "company",
-		links: [
-			{
-				label: "About Us",
-				link: "/"
-			},
-			{
-				label: "Careers",
-				link: "/"
-			},
-			{
-				label: "News",
-				link: "/"
-			}
-		]
-	},
-	{
-		title: "legal services",
-		links: [
-			{
-				label: "Terms & Conditions",
-				link: "/"
-			},
-			{
-				label: "Privacy Policy",
-				link: "/"
-			},
-			{
-				label: "Cookie Policy",
-				link: "/"
-			}
-		]
-	},
-	{
-		title: "contact us",
-		links: [
-			{
-				label: "+233206238380",
-				link: "tel:+233206238380"
-			},
-			{
-				label: "dwell-well@gmail.com",
-				link: "mailto:dwell-well@gmail.com"
-			}
-		]
-	}
-];
