@@ -4,7 +4,6 @@
 	import type { PageProps } from './$types';
 
 	const { whyChooseUsData }: PageProps = $props();
-	console.log(whyChooseUsData);
 	const reasons = whyChooseUsData?.reasons;
 
 	const isMobile = useIsMobile();
@@ -31,8 +30,10 @@
 		</div>
 	</section>
 	{#if !isMobile()}
-		<Picture alt="product" class="object-cover max-h-[38rem] max-w-[40vw] rounded-2xl"
+		<Picture alt="product"
+						 class="object-cover max-h-[38rem] max-w-[40vw] rounded-2xl"
 						 src={`${cmsBaseUrl}${whyChooseUsData.image.url}`}
-						 source={`${cmsBaseUrl}${whyChooseUsData.image.url}`} />
+						 source={`${cmsBaseUrl}${whyChooseUsData.image.url}`}
+		/>
 	{/if}
 </div>

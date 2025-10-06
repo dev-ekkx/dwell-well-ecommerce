@@ -16,6 +16,9 @@
 	const whyChooseUsData = homePageData.contentSections.find(
 		item => item.__component === 'page-controls.why-choose-us'
 	);
+	const productCategoriesData = homePageData.contentSections.find(
+		item => item.__component === 'page-controls.category-or-new-arrival-section'
+	);
 	// Provide hero images to the HeroCarousel component via context
 	setContext('hero-images', heroData.images);
 </script>
@@ -28,7 +31,7 @@
 <div class="g-px">
 	<Hero heroData={heroData} />
 	<WhyChooseUs whyChooseUsData={whyChooseUsData} />
-	<ProductCategories />
+	<ProductCategories productCategoriesData={productCategoriesData} />
 	<FlashSales />
 	<NewArrivals />
 </div>

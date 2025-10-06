@@ -14,6 +14,9 @@
 	import HallWp from '$lib/assets/images/hall.webp';
 	import DiningJp from '$lib/assets/images/dining.jpg';
 	import DiningWp from '$lib/assets/images/dining.webp';
+	import type { PageProps } from './$types';
+
+	const { productCategoriesData }: PageProps = $props();
 
 	const products = [
 		{ label: 'living room', img: { src: LivingRoomJp, source: LivingRoomWp } },
