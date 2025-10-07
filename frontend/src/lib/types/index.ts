@@ -3,6 +3,7 @@ import { QuestionFormSchema } from "$lib/schema";
 import type {
 	CategorySectionComponentI,
 	HeroComponentI,
+	NewArrivalSectionComponentI,
 	WhyChooseUsComponentI
 } from "$lib/interfaces";
 
@@ -12,4 +13,8 @@ export type ContactFormFieldT = keyof QuestionT;
 export type InputT = "text" | "email" | "textarea";
 
 // A Union Type representing any possible component in the Dynamic Zone for a page
-export type ContentSectionT = HeroComponentI | CategorySectionComponentI | WhyChooseUsComponentI;
+export type ContentSectionT =
+	| HeroComponentI
+	| CategorySectionComponentI
+	| WhyChooseUsComponentI
+	| NewArrivalSectionComponentI;

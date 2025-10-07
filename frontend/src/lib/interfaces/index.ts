@@ -11,7 +11,7 @@ export interface ButtonI extends HTMLButtonAttributes {
 	direction: "left" | "right";
 }
 
-// --- Forter Component Interfaces ---
+// --- Footer Component Interfaces ---
 
 // Interface for an individual link in a column
 export interface LinkI {
@@ -51,6 +51,16 @@ export interface FooterI {
 	copyrightText: string;
 	linkColumns: LinkColumnI[];
 	socialLinks: SocialLinkI[];
+}
+
+// Product interface
+export interface ProductI {
+	id: number;
+	name: string;
+	slug: string;
+	price: number;
+	description: string;
+	images: StrapiImageI[];
 }
 
 // --- New Homepage Interfaces ---
@@ -98,6 +108,10 @@ export interface CategorySectionComponentI {
 	items: CategoryItemI[];
 }
 
+export interface NewArrivalSectionComponentI extends CategorySectionComponentI {
+	sectionId: "newArrivals";
+}
+
 // Represents a reason in the "Why Choose Us" section (structure inferred)
 export interface ReasonI {
 	id: number;
@@ -113,6 +127,16 @@ export interface WhyChooseUsComponentI {
 	title: string;
 	description: string;
 	reasons: ReasonI[];
+}
+
+// Represents the Flash Sale section component (structure inferred)
+export interface FlashSaleComponentI {
+	__component: "page-controls.flash-sale";
+	id: number;
+	title: string;
+	description: string;
+	endDate: Date;
+	product: ProductI[];
 }
 
 // Interface for the SEO component data

@@ -11,14 +11,22 @@
 	const { data }: PageProps = $props();
 	const homePageData = data.homepage as HomepageI;
 	console.log(homePageData);
-	const heroData = homePageData.contentSections.find(item => item.__component === 'page-controls.hero');
+	const heroData = homePageData.contentSections.find(item => item.__component === 'page-controls.hero')!;
 	const seoData = homePageData.seo;
 	const whyChooseUsData = homePageData.contentSections.find(
 		item => item.__component === 'page-controls.why-choose-us'
 	);
 	const productCategoriesData = homePageData.contentSections.find(
-		item => item.__component === 'page-controls.category-or-new-arrival-section'
+		item => item.sectionId === 'categories'
 	);
+	// const FlashSalesData = homePageData.contentSections.find(
+	// 	item => item.__component === 'page-controls.promotion'
+	// );
+
+	const newArrivalsData = homePageData.contentSections.find(
+		item => item.sectionId === 'newArrivals'
+	)!;
+
 	// Provide hero images to the HeroCarousel component via context
 	setContext('hero-images', heroData.images);
 </script>
@@ -33,5 +41,5 @@
 	<WhyChooseUs whyChooseUsData={whyChooseUsData} />
 	<ProductCategories productCategoriesData={productCategoriesData} />
 	<FlashSales />
-	<NewArrivals />
+	<NewArrivals newArrivalsData={newArrivalsData} />
 </div>

@@ -51,10 +51,7 @@ export interface PageControlsCategoryNewArrival extends Struct.ComponentSchema {
     displayName: 'Category/ New Arrival';
   };
   attributes: {
-    image: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios',
-      true
-    > &
+    image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'> &
       Schema.Attribute.Required;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     url: Schema.Attribute.String;
@@ -72,6 +69,7 @@ export interface PageControlsCategoryOrNewArrivalSection
       'page-controls.category-new-arrival',
       true
     >;
+    sectionId: Schema.Attribute.String;
     title: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
@@ -95,14 +93,13 @@ export interface PageControlsHero extends Struct.ComponentSchema {
 export interface PageControlsPromotion extends Struct.ComponentSchema {
   collectionName: 'components_page_controls_promotions';
   info: {
-    displayName: 'Promotion';
+    displayName: 'Flash Sale';
   };
   attributes: {
-    backgroundImage: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios'
-    >;
     cta: Schema.Attribute.Component<'page-controls.button', false>;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
+    enDate: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    product: Schema.Attribute.Relation<'oneToOne', 'api::product.product'>;
     title: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
