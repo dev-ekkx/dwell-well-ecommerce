@@ -147,8 +147,8 @@ export interface SeoI {
 	metaDescription: string;
 }
 
-// The main interface for the entire Homepage data structure
-export interface HomepageI {
+// The main interface for the entire page data structure
+export interface PageI {
 	slug: string;
 	title: string;
 	seo: SeoI;

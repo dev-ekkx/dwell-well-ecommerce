@@ -6,9 +6,22 @@
 	import LeadershipTeam from './leadership-team.svelte';
 	import Showrooms from './showrooms.svelte';
 	import ContactUs from './contact-us.svelte';
+	import type { PageProps } from './$types';
+	import type { PageI } from '$lib/interfaces';
+
+	const { data }: PageProps = $props();
+	const aboutPageData = data.about as PageI;
+	console.log(aboutPageData);
+	const seoData = aboutPageData.seo;
+	const heroData = aboutPageData.contentSections.find(item => item.__component === 'page-controls.hero');
 </script>
 
-<AboutHero />
+<svelte:head>
+	<title>{seoData.metaTitle}</title>
+	<meta content={seoData.metaDescription} />
+</svelte:head>
+
+<AboutHero heroData={heroData} />
 <GlobalReach />
 <WhatWeAreKnownFor />
 <GlobalPresence />

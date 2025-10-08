@@ -5,11 +5,11 @@
 	import FlashSales from './_home/flash-sales.svelte';
 	import NewArrivals from './_home/new-arrivals.svelte';
 	import type { PageProps } from './$types';
-	import type { HomepageI } from '$lib/interfaces';
+	import type { PageI } from '$lib/interfaces';
 	import { setContext } from 'svelte';
 
 	const { data }: PageProps = $props();
-	const homePageData = data.homepage as HomepageI;
+	const homePageData = data.homepage as PageI;
 	const heroData = homePageData.contentSections.find(item => item.__component === 'page-controls.hero')!;
 	const seoData = homePageData.seo;
 	const whyChooseUsData = homePageData.contentSections.find(
@@ -21,7 +21,7 @@
 	const flashSalesData = homePageData.contentSections.find(
 		item => item.__component === 'page-controls.promotion'
 	);
-	
+
 	const newArrivalsData = homePageData.contentSections.find(
 		item => item.sectionId === 'newArrivals'
 	)!;

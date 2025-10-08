@@ -6,7 +6,6 @@ export const load: PageLoad = async ({ fetch }) => {
 			import.meta.env.VITE_CMS_URL + "/api/pages?filters[slug][$eq]=about&populate=all"
 		);
 		const data = (await aboutData.json()).data[0];
-		console.log(data);
 		return {
 			about: data
 		};
