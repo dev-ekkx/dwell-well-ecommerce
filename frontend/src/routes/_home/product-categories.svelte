@@ -10,14 +10,6 @@
 	const productsCategories = productCategoriesData as CategorySectionComponentI;
 	const cmsBaseUrl = import.meta.env.VITE_CMS_URL;
 
-	// const products = [
-	// 	{ label: 'living room', img: { src: LivingRoomJp, source: LivingRoomWp } },
-	// 	{ label: 'office', img: { src: OfficeJp, source: OfficeWp } },
-	// 	{ label: 'bedroom', img: { src: BedroomJp, source: BedroomWp } },
-	// 	{ label: 'hall', img: { src: HallJp, source: HallWp } },
-	// 	{ label: 'dining', img: { src: DiningJp, source: DiningWp } }
-	// ];
-
 	// Build a repeated list to loop seamlessly by starting in the middle block
 	const REPEAT = 5;
 	const displayedProducts = Array.from({ length: REPEAT }, (_, r) =>

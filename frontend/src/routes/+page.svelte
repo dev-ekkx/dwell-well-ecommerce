@@ -10,7 +10,6 @@
 
 	const { data }: PageProps = $props();
 	const homePageData = data.homepage as HomepageI;
-	console.log(homePageData);
 	const heroData = homePageData.contentSections.find(item => item.__component === 'page-controls.hero')!;
 	const seoData = homePageData.seo;
 	const whyChooseUsData = homePageData.contentSections.find(
@@ -19,10 +18,10 @@
 	const productCategoriesData = homePageData.contentSections.find(
 		item => item.sectionId === 'categories'
 	);
-	// const FlashSalesData = homePageData.contentSections.find(
-	// 	item => item.__component === 'page-controls.promotion'
-	// );
-
+	const flashSalesData = homePageData.contentSections.find(
+		item => item.__component === 'page-controls.promotion'
+	);
+	
 	const newArrivalsData = homePageData.contentSections.find(
 		item => item.sectionId === 'newArrivals'
 	)!;
@@ -40,6 +39,6 @@
 	<Hero heroData={heroData} />
 	<WhyChooseUs whyChooseUsData={whyChooseUsData} />
 	<ProductCategories productCategoriesData={productCategoriesData} />
-	<FlashSales />
+	<FlashSales flashSalesData={flashSalesData} />
 	<NewArrivals newArrivalsData={newArrivalsData} />
 </div>

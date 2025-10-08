@@ -1,21 +1,26 @@
 <script lang="ts">
-	import FlashSalesImageJp from '$lib/assets/images/category16.jpg';
-	import FlashSalesImageWp from '$lib/assets/images/category16.webp';
 	import { Button } from '$lib/components/ui/button';
 	import Picture from '$lib/components/picture.svelte';
+	import type { PageProps } from './$types';
+	import type { FlashSaleComponentI } from '$lib/interfaces';
+
+	const { flashSalesData }: PageProps = $props();
+	const flashSales = flashSalesData as FlashSaleComponentI;
+	const cmsBaseUrl = import.meta.env.VITE_CMS_URL;
+
+	const imageUrl = cmsBaseUrl + flashSales.product.images[0].url;
+
+
 </script>
 
 <section class="grid grid-cols-1 md:grid-cols-2 md:max-h-[28rem] g-mt rounded-lg overflow-hidden">
-	<Picture alt="flash sales" class="object-cover w-full max-h-[19rem] lg:max-h-auto" source={FlashSalesImageWp}
-					 src={FlashSalesImageJp} />
+	<Picture alt="flash sales" class="object-cover w-full max-h-[19rem] lg:max-h-auto" source={imageUrl}
+					 src={imageUrl} />
 	<div class="bg-muted-foreground px-6 py-10 flex flex-col gap-10 lg:items-start lg:justify-center **:text-white">
 		<div class="flex flex-col gap-2">
-			<span class="font-bold text-2xl">FLASH SALE: 25% OFF All Living Room Furniture</span>
-			<p class="font-medium">Refresh your space for less! Use code <b>NEWSPACE</b> at checkout. Ends March 31st. Free
-				shipping on orders
-				over
-				$500</p>
+			<span class="font-bold text-2xl">{flashSales.title}</span>
+			<p class="font-medium">{flashSales.description}</p>
 		</div>
-		<Button class="font-bold cursor-pointer">Learn More</Button>
+		<Button class="font-bold cursor-pointer">{flashSales.cta.text}</Button>
 	</div>
 </section>

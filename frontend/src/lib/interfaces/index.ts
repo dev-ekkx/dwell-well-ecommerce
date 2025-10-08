@@ -109,7 +109,7 @@ export interface CategorySectionComponentI {
 }
 
 export interface NewArrivalSectionComponentI extends CategorySectionComponentI {
-	sectionId: "newArrivals";
+	sectionId: string;
 }
 
 // Represents a reason in the "Why Choose Us" section (structure inferred)
@@ -136,7 +136,8 @@ export interface FlashSaleComponentI {
 	title: string;
 	description: string;
 	endDate: Date;
-	product: ProductI[];
+	product: ProductI;
+	cta: CtaButtonI;
 }
 
 // Interface for the SEO component data
