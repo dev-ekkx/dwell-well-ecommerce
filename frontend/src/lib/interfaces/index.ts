@@ -172,6 +172,21 @@ export interface GlobalPresenceI {
 	};
 }
 
+// Interface for a team member in the Team Section
+export interface TeamMemberI {
+	id: number;
+	name: string;
+	role: string;
+	profilePicture: StrapiImageI;
+}
+
+export interface LeadershipTeam {
+	id: number;
+	title: string;
+	description: string;
+	team: TeamMemberI[];
+}
+
 // The main interface for the entire page data structure
 export interface PageI {
 	slug: string;

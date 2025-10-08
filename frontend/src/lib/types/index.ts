@@ -5,6 +5,7 @@ import type {
 	GlobalPresenceI,
 	GlobalReachI,
 	HeroComponentI,
+	LeadershipTeam,
 	NewArrivalSectionComponentI,
 	WhyChooseUsComponentI
 } from "$lib/interfaces";
@@ -21,4 +22,5 @@ export type ContentSectionT =
 	| WhyChooseUsComponentI
 	| NewArrivalSectionComponentI
 	| GlobalReachI
-	| GlobalPresenceI;
+	| GlobalPresenceI
+	| LeadershipTeam;

@@ -83,7 +83,7 @@
 
 
 	onMount(async () => {
-		await initMap();
+		// await initMap();
 	});
 </script>
 

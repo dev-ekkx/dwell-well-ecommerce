@@ -44,7 +44,7 @@ export interface ManagementEmployee extends Struct.ComponentSchema {
     profilePicture: Schema.Attribute.Media<
       'images' | 'files' | 'videos' | 'audios'
     >;
-    title: Schema.Attribute.String & Schema.Attribute.Required;
+    role: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 

@@ -21,9 +21,11 @@
 	const whatWeAreKnownForData = aboutPageData.contentSections.find(
 		item => item.__component === 'page-controls.why-choose-us'
 	);
-
 	const globalPresenceData = aboutPageData.contentSections.find(
 		item => item.__component === 'page-controls.global-presence'
+	);
+	const leadershipTeamData = aboutPageData.contentSections.find(
+		item => item.__component === 'management.leadership-team'
 	);
 
 	//Create map context for global presence map
@@ -39,6 +41,6 @@
 <GlobalReach globalReachData={globalReachData} />
 <WhatWeAreKnownFor whatWeAreKnownForData={whatWeAreKnownForData} />
 <GlobalPresence globalPresenceData={globalPresenceData} />
-<LeadershipTeam />
+<LeadershipTeam leadershipTeamData={leadershipTeamData} />
 <Showrooms />
 <ContactUs />
