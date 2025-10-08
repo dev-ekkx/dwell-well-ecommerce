@@ -674,6 +674,7 @@ export interface ApiRegionRegion extends Struct.CollectionTypeSchema {
       'oneToOne',
       'api::sales-rep.sales-rep'
     >;
+    showroom: Schema.Attribute.Relation<'oneToOne', 'api::showroom.showroom'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -707,6 +708,37 @@ export interface ApiSalesRepSalesRep extends Struct.CollectionTypeSchema {
     profile_picture: Schema.Attribute.Media<
       'images' | 'files' | 'videos' | 'audios'
     >;
+    publishedAt: Schema.Attribute.DateTime;
+    region: Schema.Attribute.Relation<'oneToOne', 'api::region.region'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiShowroomShowroom extends Struct.CollectionTypeSchema {
+  collectionName: 'showrooms';
+  info: {
+    displayName: 'Showroom';
+    pluralName: 'showrooms';
+    singularName: 'showroom';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'> &
+      Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::showroom.showroom'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     region: Schema.Attribute.Relation<'oneToOne', 'api::region.region'>;
     updatedAt: Schema.Attribute.DateTime;
@@ -1231,6 +1263,7 @@ declare module '@strapi/strapi' {
       'api::product.product': ApiProductProduct;
       'api::region.region': ApiRegionRegion;
       'api::sales-rep.sales-rep': ApiSalesRepSalesRep;
+      'api::showroom.showroom': ApiShowroomShowroom;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

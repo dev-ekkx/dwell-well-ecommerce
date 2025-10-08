@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_page_controls_showrooms_sections",
+  "info": {
+    "displayName": "Showrooms Section"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "sectionId": {
+      "type": "string",
+      "required": false
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_page_controls_global_presences",
+  "info": {
+    "displayName": "Global Presence"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "locationLatLong": {
+      "type": "json"
+    }
+  },
+  "config": {}
+}

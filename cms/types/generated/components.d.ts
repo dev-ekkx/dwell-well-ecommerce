@@ -34,6 +34,32 @@ export interface FooterControlsSocialLink extends Struct.ComponentSchema {
   };
 }
 
+export interface ManagementEmployee extends Struct.ComponentSchema {
+  collectionName: 'components_management_employees';
+  info: {
+    displayName: 'Employee';
+  };
+  attributes: {
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    profilePicture: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
+export interface ManagementLeadershipTeam extends Struct.ComponentSchema {
+  collectionName: 'components_management_leadership_teams';
+  info: {
+    displayName: 'Leadership Team';
+  };
+  attributes: {
+    description: Schema.Attribute.String & Schema.Attribute.Required;
+    team: Schema.Attribute.Component<'management.employee', true>;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 export interface PageControlsButton extends Struct.ComponentSchema {
   collectionName: 'components_page_controls_buttons';
   info: {
@@ -70,6 +96,18 @@ export interface PageControlsCategoryOrNewArrivalSection
       true
     >;
     sectionId: Schema.Attribute.String;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
+export interface PageControlsGlobalPresence extends Struct.ComponentSchema {
+  collectionName: 'components_page_controls_global_presences';
+  info: {
+    displayName: 'Global Presence';
+  };
+  attributes: {
+    description: Schema.Attribute.Text & Schema.Attribute.Required;
+    locationLatLong: Schema.Attribute.JSON;
     title: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
@@ -125,6 +163,18 @@ export interface PageControlsSeo extends Struct.ComponentSchema {
   };
 }
 
+export interface PageControlsShowroomsSection extends Struct.ComponentSchema {
+  collectionName: 'components_page_controls_showrooms_sections';
+  info: {
+    displayName: 'Showrooms Section';
+  };
+  attributes: {
+    description: Schema.Attribute.Text & Schema.Attribute.Required;
+    sectionId: Schema.Attribute.String;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 export interface PageControlsTrophyItem extends Struct.ComponentSchema {
   collectionName: 'components_page_controls_trophy_items';
   info: {
@@ -135,6 +185,21 @@ export interface PageControlsTrophyItem extends Struct.ComponentSchema {
     icon: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'> &
       Schema.Attribute.Required;
     title: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
+export interface PageControlsWhoWeAre extends Struct.ComponentSchema {
+  collectionName: 'components_page_controls_who_we_ares';
+  info: {
+    displayName: 'Who We Are';
+  };
+  attributes: {
+    clients: Schema.Attribute.JSON;
+    clientSatisfaction: Schema.Attribute.JSON;
+    countries: Schema.Attribute.JSON;
+    description: Schema.Attribute.Text & Schema.Attribute.Required;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    yearsOfExcellence: Schema.Attribute.JSON;
   };
 }
 
@@ -188,14 +253,19 @@ declare module '@strapi/strapi' {
       'footer-controls.link': FooterControlsLink;
       'footer-controls.link-column': FooterControlsLinkColumn;
       'footer-controls.social-link': FooterControlsSocialLink;
+      'management.employee': ManagementEmployee;
+      'management.leadership-team': ManagementLeadershipTeam;
       'page-controls.button': PageControlsButton;
       'page-controls.category-new-arrival': PageControlsCategoryNewArrival;
       'page-controls.category-or-new-arrival-section': PageControlsCategoryOrNewArrivalSection;
+      'page-controls.global-presence': PageControlsGlobalPresence;
       'page-controls.hero': PageControlsHero;
       'page-controls.promotion': PageControlsPromotion;
       'page-controls.rich-text-block': PageControlsRichTextBlock;
       'page-controls.seo': PageControlsSeo;
+      'page-controls.showrooms-section': PageControlsShowroomsSection;
       'page-controls.trophy-item': PageControlsTrophyItem;
+      'page-controls.who-we-are': PageControlsWhoWeAre;
       'page-controls.why-choose-us': PageControlsWhyChooseUs;
       'regional-control.country-specifics': RegionalControlCountrySpecifics;
       'regional-control.regional-availability': RegionalControlRegionalAvailability;

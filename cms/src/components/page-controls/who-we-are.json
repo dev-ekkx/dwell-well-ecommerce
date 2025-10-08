@@ -1,0 +1,30 @@
+{
+  "collectionName": "components_page_controls_who_we_ares",
+  "info": {
+    "displayName": "Who We Are"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "yearsOfExcellence": {
+      "type": "json"
+    },
+    "clients": {
+      "type": "json"
+    },
+    "countries": {
+      "type": "json"
+    },
+    "clientSatisfaction": {
+      "type": "json"
+    }
+  },
+  "config": {}
+}
