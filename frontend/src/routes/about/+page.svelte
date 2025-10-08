@@ -11,11 +11,13 @@
 
 	const { data }: PageProps = $props();
 	const aboutPageData = data.about as PageI;
-	console.log(aboutPageData);
 	const seoData = aboutPageData.seo;
 	const heroData = aboutPageData.contentSections.find(item => item.__component === 'page-controls.hero');
 	const globalReachData = aboutPageData.contentSections.find(
 		item => item.__component === 'page-controls.who-we-are'
+	);
+	const whatWeAreKnownForData = aboutPageData.contentSections.find(
+		item => item.__component === 'page-controls.why-choose-us'
 	);
 </script>
 
@@ -26,7 +28,7 @@
 
 <AboutHero heroData={heroData} />
 <GlobalReach globalReachData={globalReachData} />
-<WhatWeAreKnownFor />
+<WhatWeAreKnownFor whatWeAreKnownForData={whatWeAreKnownForData} />
 <GlobalPresence />
 <LeadershipTeam />
 <Showrooms />
