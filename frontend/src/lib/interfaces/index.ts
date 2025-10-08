@@ -161,6 +161,17 @@ export interface GlobalReachI {
 	reaches: GlobalReachItemI[];
 }
 
+// Interface for the Global Presence data structure
+export interface GlobalPresenceI {
+	id: number;
+	title: string;
+	description: string;
+	locationLatLng: {
+		lat: number;
+		lng: number;
+	};
+}
+
 // The main interface for the entire page data structure
 export interface PageI {
 	slug: string;
