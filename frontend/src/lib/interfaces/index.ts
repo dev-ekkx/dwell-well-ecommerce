@@ -146,6 +146,20 @@ export interface SeoI {
 	metaTitle: string;
 	metaDescription: string;
 }
+// Interface for the Global Reach component data
+export interface GlobalReachItemI {
+	id: number;
+	label: string;
+	value: string;
+}
+
+// Interface for the Global Reach data structure
+export interface GlobalReachI {
+	id: number;
+	title: string;
+	description: string;
+	reaches: GlobalReachItemI[];
+}
 
 // The main interface for the entire page data structure
 export interface PageI {

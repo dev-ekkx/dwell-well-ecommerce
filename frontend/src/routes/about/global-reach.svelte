@@ -1,24 +1,8 @@
 <script lang="ts">
 	import { formatNumberWithCommas } from '$lib/utils';
+	import type { PageProps } from './$types';
 
-	const data = [
-		{
-			label: 'Years of Excellence',
-			value: 30
-		},
-		{
-			label: 'Clients',
-			value: 15000
-		},
-		{
-			label: 'Countries',
-			value: 12
-		},
-		{
-			label: 'Client Satisfaction',
-			value: 98
-		}
-	];
+	const { globalReachData }: PageProps = $props();
 
 	// Svelte action to animate numbers smoothly with GSAP when the element enters the viewport
 	function countTo(node: HTMLElement, params: { value: number; format?: (n: number) => string; duration?: number }) {
@@ -64,16 +48,10 @@
 </script>
 
 <section class="flex flex-col gap-6 g-mt g-px">
-	<h4 class="text-section-head capitalize text-center">building dreams since 1990</h4>
-	<p class="text-center text-section-p max-w-[65rem]">Founded with a vision to redefine modern living, DwellWell
-		has
-		evolved from a
-		small family
-		business to a global
-		leader in premium home construction. Our journey has been guided by an unwavering commitment to excellence,
-		innovation, and creating spaces that truly feel like home.</p>
+	<h4 class="text-section-head capitalize text-center">{globalReachData.title}</h4>
+	<p class="text-center text-section-p max-w-[65rem]">{globalReachData.description}</p>
 	<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-		{#each data as item (item.label)}
+		{#each globalReachData.reaches as item (item.label)}
 			<div class="flex flex-col gap-4 items-center justify-center py-6">
 				<span class="text-5xl leading-14 font-medium text-primary flex items-center">
 					<span

@@ -564,6 +564,10 @@ export interface ApiPagePage extends Struct.CollectionTypeSchema {
         'page-controls.why-choose-us',
         'page-controls.promotion',
         'page-controls.category-or-new-arrival-section',
+        'page-controls.who-we-are',
+        'page-controls.showrooms-section',
+        'page-controls.global-presence',
+        'management.leadership-team',
       ]
     > &
       Schema.Attribute.SetPluginOptions<{

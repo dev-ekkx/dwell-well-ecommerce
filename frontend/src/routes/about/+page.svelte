@@ -14,6 +14,9 @@
 	console.log(aboutPageData);
 	const seoData = aboutPageData.seo;
 	const heroData = aboutPageData.contentSections.find(item => item.__component === 'page-controls.hero');
+	const globalReachData = aboutPageData.contentSections.find(
+		item => item.__component === 'page-controls.who-we-are'
+	);
 </script>
 
 <svelte:head>
@@ -22,7 +25,7 @@
 </svelte:head>
 
 <AboutHero heroData={heroData} />
-<GlobalReach />
+<GlobalReach globalReachData={globalReachData} />
 <WhatWeAreKnownFor />
 <GlobalPresence />
 <LeadershipTeam />

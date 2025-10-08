@@ -142,6 +142,17 @@ export interface PageControlsPromotion extends Struct.ComponentSchema {
   };
 }
 
+export interface PageControlsReach extends Struct.ComponentSchema {
+  collectionName: 'components_page_controls_reaches';
+  info: {
+    displayName: 'Reach';
+  };
+  attributes: {
+    label: Schema.Attribute.String & Schema.Attribute.Required;
+    value: Schema.Attribute.BigInteger & Schema.Attribute.Required;
+  };
+}
+
 export interface PageControlsRichTextBlock extends Struct.ComponentSchema {
   collectionName: 'components_page_controls_rich_text_blocks';
   info: {
@@ -191,15 +202,12 @@ export interface PageControlsTrophyItem extends Struct.ComponentSchema {
 export interface PageControlsWhoWeAre extends Struct.ComponentSchema {
   collectionName: 'components_page_controls_who_we_ares';
   info: {
-    displayName: 'Who We Are';
+    displayName: 'Global Reach';
   };
   attributes: {
-    clients: Schema.Attribute.JSON;
-    clientSatisfaction: Schema.Attribute.JSON;
-    countries: Schema.Attribute.JSON;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
+    reaches: Schema.Attribute.Component<'page-controls.reach', true>;
     title: Schema.Attribute.String & Schema.Attribute.Required;
-    yearsOfExcellence: Schema.Attribute.JSON;
   };
 }
 
@@ -261,6 +269,7 @@ declare module '@strapi/strapi' {
       'page-controls.global-presence': PageControlsGlobalPresence;
       'page-controls.hero': PageControlsHero;
       'page-controls.promotion': PageControlsPromotion;
+      'page-controls.reach': PageControlsReach;
       'page-controls.rich-text-block': PageControlsRichTextBlock;
       'page-controls.seo': PageControlsSeo;
       'page-controls.showrooms-section': PageControlsShowroomsSection;

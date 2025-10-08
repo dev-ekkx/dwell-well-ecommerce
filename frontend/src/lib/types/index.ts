@@ -2,6 +2,7 @@ import * as z from "zod";
 import { QuestionFormSchema } from "$lib/schema";
 import type {
 	CategorySectionComponentI,
+	GlobalReachI,
 	HeroComponentI,
 	NewArrivalSectionComponentI,
 	WhyChooseUsComponentI
@@ -17,4 +18,5 @@ export type ContentSectionT =
 	| HeroComponentI
 	| CategorySectionComponentI
 	| WhyChooseUsComponentI
-	| NewArrivalSectionComponentI;
+	| NewArrivalSectionComponentI
+	| GlobalReachI;
