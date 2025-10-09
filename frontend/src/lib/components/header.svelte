@@ -123,9 +123,10 @@
 	<section bind:this={menu} class="h-max fixed z-10 top-[8vh] left-0 w-full bg-white g-px pb-4 shadow-md">
 		<div class="flex flex-col gap-8 pt-6">
 			{@render navigation(true)}
-			<Button
-				class="cursor-pointer px-6 h-full !w-full">Login
-			</Button>
+			<a
+				onclick="{isMenuOpen ? toggleMenu : null}"
+				href="/login"
+				class="w-full py-2 rounded-lg flex items-center justify-center text-white bg-primary hover:opacity-80 transition-all duration-200 ease-linear">login</a>
 		</div>
 	</section>
 {/if}

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ContactusBg from '$lib/assets/images/question.jpg';
-	import Person1Img from '$lib/assets/images/person1.jpg';
+	// import Person1Img from '$lib/assets/images/person1.jpg';
 	import PhoneIcon from '$lib/assets/phone.svg';
 	import EmailIcon from '$lib/assets/email.svg';
 	import { Button } from '$lib/components/ui/button/index';
@@ -64,7 +64,8 @@
 			<div class="bg-white rounded-lg p-6 flex flex-col gap-4">
 				<!--Avatar and name-->
 				<div class="flex items-center gap-4">
-					<img alt="country rep" class="h-14 w-14 object-cover object-top rounded-full" src={Person1Img} />
+					<!--					<img alt="country rep" class="h-14 w-14 object-cover object-top rounded-full" src={Person1Img} />-->
+					<div class="w-14 h-14 rounded-full bg-blue-400"></div>
 					<div class="flex flex-col">
 						<span class="font-semibold">Dela Rich</span>
 						<span class="text-muted-foreground text-xs">Country rep</span>
