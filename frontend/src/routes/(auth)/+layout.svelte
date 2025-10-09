@@ -5,6 +5,7 @@
 	import { useIsMobile } from '$lib/hooks/useIsMobile.svelte';
 	import { cn } from '$lib/utils';
 	import Logo from '$lib/components/logo.svelte';
+	import { Checkbox } from '$lib/components/ui/checkbox';
 
 	const { children }: LayoutProps = $props();
 	const route = $derived(page.url.href.split('/').pop()) as 'login' | 'signup';
@@ -28,6 +29,10 @@
 			<Logo />
 			<h2 class="auth-heading mt-1">{title}</h2>
 			<p>{description}</p>
+			<div class="flex item-center gap-1">
+				<Checkbox id="terms" />
+				<L
+			</div>
 			{@render children()}
 		</section>
 	</div>
