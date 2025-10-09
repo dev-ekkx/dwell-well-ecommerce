@@ -26,8 +26,8 @@
 <div class={cn('grid h-screen overflow-y-clip', {
 	'grid-cols-1 md:grid-cols-2': !isMobile(),
 })}>
-	<div class="flex items-center justify-center bg-white h-full">
-		<section class="flex flex-col gap-4 w-full items-center justify-center px-6 sm:max-w-xl">
+	<div class="flex items-center justify-center bg-white h-screen">
+		<section class="flex flex-col h-full gap-4 w-full items-center justify-center px-6 sm:max-w-xl">
 			<!--	Form logo, title, and description-->
 			<Logo />
 			<h2 class="auth-heading mt-1">{title}</h2>
@@ -41,7 +41,7 @@
 				<a class="underline text-primary flex self-start" href="forgot-password">Forgot password</a>
 			{:else}
 				<div class="flex item-center gap-1 self-start">
-					<Checkbox id="terms" />
+					<Checkbox class="cursor-pointer" id="terms" />
 					<Label class="cursor-pointer line-clamp-3" for="terms">
 						I have read and agree to the <a class="text-primary underline" href="/terms-and-conditions">Terms &
 						Conditions</a> and <a class="text-primary underline" href="/privacy-policy">Privacy Policy</a>
@@ -50,7 +50,7 @@
 			{/if}
 
 			<!-- Login or create an account -->
-			<Button class="w-full mt-10">{route === "login" ? "Login" : "Create an account"}</Button>
+			<Button class="w-full mt-10 cursor-pointer">{route === "login" ? "Login" : "Create an account"}</Button>
 			{#if route === "login"}
 				<Label>Don’t have an account yet?<a class="underline text-primary" href="/signup">Create an account</a></Label>
 			{:else}
