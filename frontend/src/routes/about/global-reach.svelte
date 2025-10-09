@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { formatNumberWithCommas } from '$lib/utils';
-	import type { PageProps } from './$types';
+	import type { GlobalReachI } from '$lib/interfaces';
 
-	const { globalReachData }: PageProps = $props();
+	const { globalReachData }: { globalReachData: GlobalReachI } = $props();
 
 	// Svelte action to animate numbers smoothly with GSAP when the element enters the viewport
 	function countTo(node: HTMLElement, params: { value: number; format?: (n: number) => string; duration?: number }) {

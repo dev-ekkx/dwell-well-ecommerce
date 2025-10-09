@@ -20,9 +20,9 @@
       "required": true,
       "unique": true
     },
-    "country": {
+    "countries": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "oneToMany",
       "target": "api::country.country",
       "mappedBy": "region"
     },

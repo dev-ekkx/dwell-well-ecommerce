@@ -117,6 +117,7 @@ export interface ReasonI {
 	id: number;
 	title: string;
 	description: string;
+	icon: StrapiImageI;
 }
 
 // Represents the "Why Choose Us" section component
@@ -127,6 +128,7 @@ export interface WhyChooseUsI {
 	title: string;
 	description: string;
 	reasons: ReasonI[];
+	image: StrapiImageI;
 }
 
 // Represents the Flash Sale section component (structure inferred)

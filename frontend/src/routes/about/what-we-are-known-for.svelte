@@ -1,7 +1,8 @@
 <script lang="ts">
-	import type { PageProps } from './$types';
 
-	const { whatWeAreKnownForData }: PageProps = $props();
+	import type { WhyChooseUsI } from '$lib/interfaces';
+
+	const { whatWeAreKnownForData }: { whatWeAreKnownForData: WhyChooseUsI } = $props();
 	const cmsBaseUrl = import.meta.env.VITE_CMS_URL;
 </script>
 
