@@ -1,14 +1,26 @@
 import type { HTMLButtonAttributes } from "svelte/elements";
 import type { ContentSectionT } from "$lib/types";
 
-export interface WhyChooseUsI {
-	icon: string;
-	label: string;
-	description: string;
-}
-
 export interface ButtonI extends HTMLButtonAttributes {
 	direction: "left" | "right";
+}
+
+// Interface for a region (continent)
+export interface RegionI {
+	name: string;
+}
+
+// Interface for a country
+export interface CountryI {
+	name: string;
+	region: RegionI;
+}
+
+// Interface for a showroom
+export interface ShowroomI {
+	name: string;
+	image: StrapiImageI;
+	country: CountryI;
 }
 
 // --- Footer Component Interfaces ---
@@ -63,8 +75,6 @@ export interface ProductI {
 	images: StrapiImageI[];
 }
 
-// --- New Homepage Interfaces ---
-
 // Interface for a standard Strapi media object
 export interface StrapiImageI {
 	url: string;
@@ -81,8 +91,8 @@ export interface CtaButtonI {
 // --- Homepage Dynamic Zone Component Interfaces ---
 
 // Represents the Hero component
-export interface HeroComponentI {
-	__component: "page-controls.hero";
+export interface HeroI {
+	__component: string;
 	id: number;
 	sectionId?: string;
 	title: string;
@@ -100,15 +110,15 @@ export interface CategoryItemI {
 }
 
 // Represents the Category/New Arrival section component
-export interface CategorySectionComponentI {
-	__component: "page-controls.category-or-new-arrival-section";
+export interface CategoryI {
+	__component: string;
 	id: number;
 	sectionId?: string;
 	title: string;
 	items: CategoryItemI[];
 }
 
-export interface NewArrivalSectionComponentI extends CategorySectionComponentI {
+export interface NewArrivalI extends CategoryI {
 	sectionId: string;
 }
 
@@ -117,21 +127,23 @@ export interface ReasonI {
 	id: number;
 	title: string;
 	description: string;
+	icon: StrapiImageI;
 }
 
 // Represents the "Why Choose Us" section component
-export interface WhyChooseUsComponentI {
-	__component: "page-controls.why-choose-us";
+export interface WhyChooseUsI {
+	__component: string;
 	id: number;
 	sectionId?: string;
 	title: string;
 	description: string;
 	reasons: ReasonI[];
+	image: StrapiImageI;
 }
 
 // Represents the Flash Sale section component (structure inferred)
-export interface FlashSaleComponentI {
-	__component: "page-controls.flash-sale";
+export interface FlashSaleI {
+	__component: string;
 	id: number;
 	title: string;
 	description: string;
@@ -155,6 +167,7 @@ export interface GlobalReachItemI {
 
 // Interface for the Global Reach data structure
 export interface GlobalReachI {
+	__component: string;
 	id: number;
 	title: string;
 	description: string;
@@ -163,6 +176,7 @@ export interface GlobalReachI {
 
 // Interface for the Global Presence data structure
 export interface GlobalPresenceI {
+	__component: string;
 	id: number;
 	title: string;
 	description: string;
@@ -180,7 +194,8 @@ export interface TeamMemberI {
 	profilePicture: StrapiImageI;
 }
 
-export interface LeadershipTeam {
+export interface LeadershipTeamI {
+	__component: string;
 	id: number;
 	title: string;
 	description: string;

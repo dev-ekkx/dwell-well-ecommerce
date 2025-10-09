@@ -1,8 +1,8 @@
 <script lang="ts">
 	import MapComponent from '$lib/components/map.svelte';
-	import type { PageProps } from './$types';
+	import type { GlobalPresenceI } from '$lib/interfaces';
 
-	const { globalPresenceData }: PageProps = $props();
+	const { globalPresenceData }: { globalPresenceData: GlobalPresenceI } = $props();
 </script>
 
 <section class="g-mt-pt flex flex-col gap-6">

@@ -1,13 +1,13 @@
 import * as z from "zod";
 import { QuestionFormSchema } from "$lib/schema";
 import type {
-	CategorySectionComponentI,
+	CategoryI,
 	GlobalPresenceI,
 	GlobalReachI,
-	HeroComponentI,
-	LeadershipTeam,
-	NewArrivalSectionComponentI,
-	WhyChooseUsComponentI
+	HeroI,
+	LeadershipTeamI,
+	NewArrivalI,
+	WhyChooseUsI
 } from "$lib/interfaces";
 
 export type QuestionT = z.infer<typeof QuestionFormSchema>;
@@ -17,10 +17,10 @@ export type InputT = "text" | "email" | "textarea";
 
 // A Union Type representing any possible component in the Dynamic Zone for a page
 export type ContentSectionT =
-	| HeroComponentI
-	| CategorySectionComponentI
-	| WhyChooseUsComponentI
-	| NewArrivalSectionComponentI
+	| HeroI
+	| CategoryI
+	| WhyChooseUsI
+	| NewArrivalI
 	| GlobalReachI
 	| GlobalPresenceI
-	| LeadershipTeam;
+	| LeadershipTeamI;

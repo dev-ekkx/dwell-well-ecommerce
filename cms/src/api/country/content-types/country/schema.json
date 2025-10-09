@@ -30,9 +30,9 @@
     },
     "region": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "manyToOne",
       "target": "api::region.region",
-      "inversedBy": "country"
+      "inversedBy": "countries"
     },
     "showroom": {
       "type": "relation",

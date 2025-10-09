@@ -4,10 +4,10 @@
 	import Picture from '$lib/components/picture.svelte';
 	import ArrowButton from '$lib/components/arrow-button.svelte';
 	import type { PageProps } from './$types';
-	import type { CategorySectionComponentI } from '$lib/interfaces';
+	import type { CategoryI } from '$lib/interfaces';
 
 	const { productCategoriesData }: PageProps = $props();
-	const productsCategories = productCategoriesData as CategorySectionComponentI;
+	const productsCategories = productCategoriesData as CategoryI;
 	const cmsBaseUrl = import.meta.env.VITE_CMS_URL;
 
 	// Build a repeated list to loop seamlessly by starting in the middle block

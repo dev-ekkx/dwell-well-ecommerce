@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { PageProps } from './$types';
+	import type { LeadershipTeamI } from '$lib/interfaces';
 
-	const { leadershipTeamData }: PageProps = $props();
+	const { leadershipTeamData }: { leadershipTeamData: LeadershipTeamI } = $props();
 	const cmsBaseUrl = import.meta.env.VITE_CMS_URL;
 </script>
 

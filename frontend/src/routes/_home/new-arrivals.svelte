@@ -3,10 +3,10 @@
 	import gsap from 'gsap';
 	import Picture from '$lib/components/picture.svelte';
 	import ArrowButton from '$lib/components/arrow-button.svelte';
-	import type { NewArrivalSectionComponentI } from '$lib/interfaces';
+	import type { NewArrivalI } from '$lib/interfaces';
 
 	const { newArrivalsData } = $props();
-	const newArrivals = newArrivalsData as NewArrivalSectionComponentI;
+	const newArrivals = newArrivalsData as NewArrivalI;
 	const cmsBaseUrl = import.meta.env.VITE_CMS_URL;
 	// Build a repeated list to loop seamlessly by starting in the middle block
 	const REPEAT = 5;

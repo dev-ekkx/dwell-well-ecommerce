@@ -1,7 +1,8 @@
 <script lang="ts">
-	import type { PageProps } from './$types';
 
-	const { heroData }: PageProps = $props();
+	import type { HeroI } from '$lib/interfaces';
+
+	const { heroData }: { heroData: HeroI } = $props();
 	const cmsBaseUrl = import.meta.env.VITE_CMS_URL;
 </script>
 
