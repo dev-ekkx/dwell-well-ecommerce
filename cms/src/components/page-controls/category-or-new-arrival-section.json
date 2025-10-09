@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_page_controls_category_or_new_arrival_sections",
+  "info": {
+    "displayName": "Category Or New Arrival Section"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "items": {
+      "type": "component",
+      "component": "page-controls.category-new-arrival",
+      "repeatable": true
+    },
+    "sectionId": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

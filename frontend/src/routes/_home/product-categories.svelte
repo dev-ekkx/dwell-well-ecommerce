@@ -3,36 +3,23 @@
 	import gsap from 'gsap';
 	import Picture from '$lib/components/picture.svelte';
 	import ArrowButton from '$lib/components/arrow-button.svelte';
+	import type { PageProps } from './$types';
+	import type { CategorySectionComponentI } from '$lib/interfaces';
 
-	import LivingRoomJp from '$lib/assets/images/living-room.jpg';
-	import LivingRoomWp from '$lib/assets/images/living-room.webp';
-	import OfficeJp from '$lib/assets/images/office.jpg';
-	import OfficeWp from '$lib/assets/images/office.webp';
-	import BedroomJp from '$lib/assets/images/bedroom.jpg';
-	import BedroomWp from '$lib/assets/images/bedroom.webp';
-	import HallJp from '$lib/assets/images/hall.jpg';
-	import HallWp from '$lib/assets/images/hall.webp';
-	import DiningJp from '$lib/assets/images/dining.jpg';
-	import DiningWp from '$lib/assets/images/dining.webp';
-
-	const products = [
-		{ label: 'living room', img: { src: LivingRoomJp, source: LivingRoomWp } },
-		{ label: 'office', img: { src: OfficeJp, source: OfficeWp } },
-		{ label: 'bedroom', img: { src: BedroomJp, source: BedroomWp } },
-		{ label: 'hall', img: { src: HallJp, source: HallWp } },
-		{ label: 'dining', img: { src: DiningJp, source: DiningWp } }
-	];
+	const { productCategoriesData }: PageProps = $props();
+	const productsCategories = productCategoriesData as CategorySectionComponentI;
+	const cmsBaseUrl = import.meta.env.VITE_CMS_URL;
 
 	// Build a repeated list to loop seamlessly by starting in the middle block
 	const REPEAT = 5;
 	const displayedProducts = Array.from({ length: REPEAT }, (_, r) =>
-		products.map((p) => ({ ...p, _r: r }))
+		productsCategories.items.map((p) => ({ ...p, _r: r }))
 	).flat();
 
 	let container = $state<HTMLElement | null>(null);
 	let track = $state<HTMLElement | null>(null);
 	let items = $state<HTMLElement[]>([]);
-	let index = products.length;
+	let index = productsCategories.items.length;
 
 	function computeXForIndex(i: number) {
 		if (!track || items.length === 0 || !items[i]) return 0;
@@ -41,8 +28,8 @@
 	}
 
 	function normalizeIndex() {
-		// Keep the visual the same but move index back into the middle block
-		const n = products.length;
+		// Keep the visual the same but move the index back into the middle block
+		const n = productsCategories.items.length;
 		if (n === 0) return;
 		const middleStart = n;
 		const normalized = ((index - middleStart) % n + n) % n + middleStart;
@@ -121,10 +108,10 @@
 	<div bind:this={track} class="flex items-center gap-4 lg:gap-6 w-max">
 		{#each displayedProducts as product, idx (idx)}
 			<div class="flex flex-col items-center gap-6">
-				<Picture alt={`Product-${idx}`}
+				<Picture alt={product.title}
 								 class="transition-all ease-linear duration-500 rounded-lg w-[12.7rem] h-[12.7rem] md:h-[17.9rem] md:w-[17.9rem] lg:w-[22.6rem] lg:h-[22.6rem] object-cover"
-								 src={product.img.src} source={product.img.source} />
-				<span class="capitalize text-lg font-medium">{product.label}</span>
+								 src={`${cmsBaseUrl}${product.image.url}`} source={`${cmsBaseUrl}${product.image.url}`} />
+				<span class="capitalize text-lg font-medium">{product.title}</span>
 			</div>
 		{/each}
 	</div>

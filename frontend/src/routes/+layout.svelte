@@ -3,10 +3,10 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import HeaderComponent from '$lib/components/header.svelte';
 	import FooterComponent from '$lib/components/footer.svelte';
-	import { cn } from '$lib/utils';
 	import { page } from '$app/state';
+	import { cn } from '$lib/utils';
 
-	let { children } = $props();
+	let { children, data } = $props();
 	const activePage = $derived(page.route.id);
 </script>
 
@@ -26,4 +26,4 @@
 </div>
 
 <!--Footer component-->
-<FooterComponent />
+<FooterComponent footer={data.footer} />

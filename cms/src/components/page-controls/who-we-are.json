@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_page_controls_who_we_ares",
+  "info": {
+    "displayName": "Global Reach"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "reaches": {
+      "type": "component",
+      "component": "page-controls.reach",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

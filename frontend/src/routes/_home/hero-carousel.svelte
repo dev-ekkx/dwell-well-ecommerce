@@ -1,18 +1,14 @@
 <script lang="ts">
-	import Image1 from '$lib/assets/images/hero-image5.png';
-	import Image2 from '$lib/assets/images/hero-image2.png';
-	import Image3 from '$lib/assets/images/hero-image3.png';
-	import Image4 from '$lib/assets/images/hero-image4.png';
 	import { gsap } from 'gsap';
 	import { Flip } from 'gsap/dist/Flip';
 	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
-	import { onDestroy, onMount } from 'svelte';
+	import { getContext, onDestroy, onMount } from 'svelte';
 	import ArrowButton from '$lib/components/arrow-button.svelte';
 
 	// Register plugin
 	gsap.registerPlugin(Flip, ScrollTrigger);
 
-	let displayImages = $state([Image1, Image2, Image3, Image4]);
+	const heroImages = getContext('hero-images');
 	let intervalId: number;
 
 	let carouselSection = $state<HTMLElement>();
@@ -21,6 +17,7 @@
 	let thirdImageContainer = $state<HTMLElement>();
 	let previewImageContainer = $state<HTMLElement>();
 
+	const cmsBaseUrl = import.meta.env.VITE_CMS_URL;
 
 	const targets = $derived([
 		firstImageContainer,
@@ -97,8 +94,8 @@
 	onMount(() => {
 		ScrollTrigger.create({
 			trigger: carouselSection,
-			start: 'top 80%',   // when the top of the section hits 80% of viewport
-			end: 'bottom top',  // when the section leaves viewport
+			start: 'top 80%',
+			end: 'bottom top',
 			onEnter: () => start(),
 			onEnterBack: () => start(),
 			onLeave: () => stop(),
@@ -120,7 +117,7 @@
 	<div bind:this={previewImageContainer}
 			 class="relative flex h-full items-center w-full justify-center rounded-t-full bg-muted"
 			 id="preview-container">
-		<img alt="current" class="img-thumbnail scale-75" src={displayImages[0]} />
+		<img alt="current" class="img-thumbnail scale-75" src={`${cmsBaseUrl}${heroImages[0].url}`} />
 
 		<!--	Carousel buttons-->
 		<div class="absolute flex -bottom-16 items-center justify-center gap-4">
@@ -138,7 +135,7 @@
 			id="first-image-container"
 		>
 			<div class="absolute rounded-b-full bottom-0 left-0 -z-10 h-1/2 w-full bg-muted"></div>
-			<img alt="first" class="img-thumbnail scale-75" src={displayImages[1]} />
+			<img alt="first" class="img-thumbnail scale-75" src={`${cmsBaseUrl}${heroImages[1].url}`} />
 		</div>
 
 		<!--Second image-->
@@ -148,7 +145,7 @@
 			id="second-image-container"
 		>
 			<div class="absolute rounded-b-full bottom-0 left-0 -z-10 h-1/2 w-full bg-muted"></div>
-			<img alt="second" class="img-thumbnail scale-75" src={displayImages[2]} />
+			<img alt="second" class="img-thumbnail scale-75" src={`${cmsBaseUrl}${heroImages[2].url}`} />
 		</div>
 
 		<!--Third Image-->
@@ -158,7 +155,7 @@
 			id="third-image-container"
 		>
 			<div class="absolute rounded-b-full bottom-0 left-0 -z-10 h-1/2 w-full bg-muted"></div>
-			<img alt="third" class="img-thumbnail scale-75" src={displayImages[3]} />
+			<img alt="third" class="img-thumbnail scale-75" src={`${cmsBaseUrl}${heroImages[3].url}`} />
 		</div>
 	</div>
 </section>

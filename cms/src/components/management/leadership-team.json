@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_management_leadership_teams",
+  "info": {
+    "displayName": "Leadership Team"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "string",
+      "required": true
+    },
+    "team": {
+      "type": "component",
+      "component": "management.employee",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

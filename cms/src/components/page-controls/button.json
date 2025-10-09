@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_page_controls_buttons",
+  "info": {
+    "displayName": "Call To Action"
+  },
+  "options": {},
+  "attributes": {
+    "text": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

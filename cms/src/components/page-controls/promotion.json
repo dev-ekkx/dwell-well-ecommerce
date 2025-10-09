@@ -1,0 +1,32 @@
+{
+  "collectionName": "components_page_controls_promotions",
+  "info": {
+    "displayName": "Flash Sale"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "enDate": {
+      "type": "datetime",
+      "required": true
+    },
+    "cta": {
+      "type": "component",
+      "component": "page-controls.button",
+      "repeatable": false
+    },
+    "product": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::product.product"
+    }
+  },
+  "config": {}
+}

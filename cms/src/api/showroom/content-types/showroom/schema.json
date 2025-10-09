@@ -1,0 +1,32 @@
+{
+  "kind": "collectionType",
+  "collectionName": "showrooms",
+  "info": {
+    "singularName": "showroom",
+    "pluralName": "showrooms",
+    "displayName": "Showroom"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "country": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::country.country",
+      "mappedBy": "showroom"
+    }
+  }
+}

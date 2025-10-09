@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_footer_controls_link_columns",
+  "info": {
+    "displayName": "LinkColumn"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "links": {
+      "type": "component",
+      "component": "footer-controls.link",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

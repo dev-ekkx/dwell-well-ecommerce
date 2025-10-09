@@ -1,8 +1,9 @@
 <script lang="ts">
 	/* eslint-disable @typescript-eslint/no-explicit-any, svelte/prefer-svelte-reactivity, no-async-promise-executor */
-	import { onMount } from 'svelte';
+	import { getContext, onMount } from 'svelte';
 
 	const MAPS_API_KEY = import.meta.env.VITE_MAP_KEY as string;
+	const mapCoordinates = getContext('map-coordinates') as { lat: number; lng: number };
 
 	let mapElement = $state<HTMLElement | null>(null);
 	let map = $state<google.maps.Map | null>(null);
@@ -44,10 +45,12 @@
 		});
 	}
 
+
 	const initMap = async () => {
+		// The location of DwellWell
 		const position = {
-			lat: 5.633986286322226,
-			lng: -0.14887283447690855
+			lat: mapCoordinates.lat,
+			lng: mapCoordinates.lng
 		};
 
 		await loadGoogleMaps();
@@ -77,6 +80,7 @@
 			title: 'DwellWell'
 		});
 	};
+
 
 	onMount(async () => {
 		// await initMap();

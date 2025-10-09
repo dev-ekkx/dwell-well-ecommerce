@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_page_controls_reaches",
+  "info": {
+    "displayName": "Reach"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "value": {
+      "type": "biginteger",
+      "required": true
+    }
+  },
+  "config": {}
+}

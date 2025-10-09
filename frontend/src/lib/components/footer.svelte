@@ -1,35 +1,43 @@
 <script lang="ts">
-	import Facebook from '$lib/assets/facebook.svg';
-	import Instagram from '$lib/assets/instagram.svg';
-	import Twitter from '$lib/assets/x.svg';
-	import Linkedin from '$lib/assets/linkedin.svg';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Button } from '$lib/components/ui/button';
-	import { footerLinks } from '$lib/constants';
 	import { resolve } from '$app/paths';
 	import type { RouteId } from '$app/types';
+	import type { FooterI } from '$lib/interfaces';
+	import { onMount } from 'svelte';
+	import { marked } from 'marked';
+	import DOMPurify from 'dompurify';
 
-	const socials = [Facebook, Instagram, Twitter, Linkedin];
+	const cmsBaseUrl = import.meta.env.VITE_CMS_URL;
 
+	const { footer } = $props();
+	const footerData = footer as FooterI;
+	const socials = footerData.socialLinks;
+	const columnLinks = footerData.linkColumns;
+
+	let newsletterDisclaimer = $state('');
 	const isExternal = (link: string) =>
 		link.startsWith('http') ||
 		link.startsWith('mailto:') ||
 		link.startsWith('tel:');
 
 	const routeLink = (link: string) => link as RouteId;
+
+	onMount(() => {
+		const rawHtml = marked(footerData.newsletterDisclaimer).toString();
+		// We no longer need the 'if (browser)' check because onMount guarantees it.
+		newsletterDisclaimer = DOMPurify.sanitize(rawHtml);
+	});
+
 </script>
 
 <footer class="flex flex-col bg-muted-foreground **:text-white pb-6 g-pt g-px g-mt gap-8 font-medium">
-
 	<!--	Newsletter and footer links section-->
 	<section class="flex flex-col">
 		<div class="flex flex-col text-center md:text-left gap-2 lg:flex-row lg:justify-between lg:items-center">
 			<div class="flex flex-col gap-4">
-				<span class="font-semibold text-lg">Join our newsletter</span>
-				<p class="max-w-lg">
-					Sign up for exclusive deals, latest arrivals, and stylish home inspiration. Be the first to know about
-					special
-					offers and new collections
+				<span class="font-semibold text-lg">{footerData.newsletterTitle}</span>
+				<p class="max-w-lg">{footerData.newsletterDescription}
 				</p>
 			</div>
 
@@ -41,27 +49,29 @@
 						Subscribe
 					</Button>
 				</div>
-				<p class="text-sm">By subscribing you agree to with our <span class="underline">Privacy Policy</span></p>
+				<p class="text-sm">
+					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+					{@html newsletterDisclaimer}</p>
 			</div>
 		</div>
 
 		<!--		Footer links-->
 		<div class="grid grid-cols-1 **:items-center sm:grid-cols-2 md:grid-cols-4 md:**:items-start mt-8 gap-8">
-			{#each footerLinks as item (item.title)}
+			{#each columnLinks as item (item.title)}
 				<div class="flex flex-col gap-3">
 					<span class="capitalize font-semibold">{item.title}</span>
 					<div class="flex flex-col">
 						{#each item.links as link (link.label)}
-							{#if isExternal(link.link)}
+							{#if isExternal(link.url)}
 								<a
 									target="_blank"
 									rel="noopener noreferrer"
-									href={link.link}
+									href={link.url}
 								>
 									{link.label}
 								</a>
 							{:else}
-								<a class="py-2" href={resolve(routeLink(link.link))}>
+								<a class="py-2" href={resolve(routeLink(link.url))}>
 									{link.label}
 								</a>
 							{/if}
@@ -77,10 +87,10 @@
 
 	<!--	Copyright and socials section-->
 	<section class="flex flex-col gap-4 items-center justify-center lg:flex-row lg:justify-between">
-		<span>&copy; {new Date().getFullYear()} DwellWell. All rights reserved</span>
+		<span>&copy; {new Date().getFullYear()} {footerData.copyrightText}</span>
 		<div class="flex items-center gap-4">
 			{#each socials as social (social)}
-				<img class="w-5 h-5" src={social} alt={social}>
+				<img class="w-5 h-5" src={`${cmsBaseUrl}${social.icon.url}`} alt={social.icon.alternativeText}>
 			{/each}
 		</div>
 	</section>

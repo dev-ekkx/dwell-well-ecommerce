@@ -1,0 +1,31 @@
+{
+  "collectionName": "components_page_controls_heroes",
+  "info": {
+    "displayName": "Hero"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "subTitle": {
+      "type": "text"
+    },
+    "images": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "ctaButtons": {
+      "type": "component",
+      "component": "page-controls.button",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}
