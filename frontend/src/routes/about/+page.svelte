@@ -7,12 +7,11 @@
 	import ContactUs from './contact-us.svelte';
 	import LeadershipTeam from './leadership-team.svelte';
 	import type { PageProps } from './$types';
-	import type { GlobalPresenceI, GlobalReachI, LeadershipTeamI, PageI, WhyChooseUsI } from '$lib/interfaces';
+	import type { GlobalPresenceI, GlobalReachI, HeroI, LeadershipTeamI, PageI, WhyChooseUsI } from '$lib/interfaces';
 	import { setContext } from 'svelte';
 
 	const { data }: PageProps = $props();
 	const aboutPageData = data.about as PageI;
-	console.log(aboutPageData);
 	const seoData = aboutPageData.seo;
 	const heroData = aboutPageData.contentSections.find(item => item.__component === 'page-controls.hero') as HeroI;
 	const globalReachData = aboutPageData.contentSections.find(
@@ -27,6 +26,16 @@
 	const leadershipTeamData = aboutPageData.contentSections.find(
 		item => item.__component === 'management.leadership-team'
 	) as LeadershipTeamI;
+	const showRoomsSection = aboutPageData.contentSections.find(
+		item => item.__component === 'page-controls.showrooms-section'
+	) as {
+		title: string;
+		description: string
+	};
+	const showroomData = {
+		showrooms: data.showrooms,
+		...showRoomsSection
+	};
 
 	//Create map context for global presence map
 	setContext('map-coordinates', globalPresenceData.locationLatLng);
@@ -42,5 +51,5 @@
 <WhatWeAreKnownFor whatWeAreKnownForData={whatWeAreKnownForData} />
 <GlobalPresence globalPresenceData={globalPresenceData} />
 <LeadershipTeam leadershipTeamData={leadershipTeamData} />
-<Showrooms />
+<Showrooms showroomData={showroomData} />
 <ContactUs />

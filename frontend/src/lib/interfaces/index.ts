@@ -1,14 +1,26 @@
 import type { HTMLButtonAttributes } from "svelte/elements";
 import type { ContentSectionT } from "$lib/types";
 
-// export interface WhyChooseUsI {
-// 	icon: string;
-// 	label: string;
-// 	description: string;
-// }
-
 export interface ButtonI extends HTMLButtonAttributes {
 	direction: "left" | "right";
+}
+
+// Interface for a region (continent)
+export interface RegionI {
+	name: string;
+}
+
+// Interface for a country
+export interface CountryI {
+	name: string;
+	region: RegionI;
+}
+
+// Interface for a showroom
+export interface ShowroomI {
+	name: string;
+	image: StrapiImageI;
+	country: CountryI;
 }
 
 // --- Footer Component Interfaces ---
@@ -62,8 +74,6 @@ export interface ProductI {
 	description: string;
 	images: StrapiImageI[];
 }
-
-// --- New Homepage Interfaces ---
 
 // Interface for a standard Strapi media object
 export interface StrapiImageI {
