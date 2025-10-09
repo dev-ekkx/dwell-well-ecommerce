@@ -464,6 +464,7 @@ export interface ApiCountryCountry extends Struct.CollectionTypeSchema {
       }>;
     publishedAt: Schema.Attribute.DateTime;
     region: Schema.Attribute.Relation<'oneToOne', 'api::region.region'>;
+    showroom: Schema.Attribute.Relation<'oneToOne', 'api::showroom.showroom'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -678,7 +679,6 @@ export interface ApiRegionRegion extends Struct.CollectionTypeSchema {
       'oneToOne',
       'api::sales-rep.sales-rep'
     >;
-    showroom: Schema.Attribute.Relation<'oneToOne', 'api::showroom.showroom'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -731,6 +731,7 @@ export interface ApiShowroomShowroom extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    country: Schema.Attribute.Relation<'oneToOne', 'api::country.country'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -742,9 +743,7 @@ export interface ApiShowroomShowroom extends Struct.CollectionTypeSchema {
       'api::showroom.showroom'
     > &
       Schema.Attribute.Private;
-    name: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
-    region: Schema.Attribute.Relation<'oneToOne', 'api::region.region'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

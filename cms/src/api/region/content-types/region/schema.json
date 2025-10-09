@@ -31,12 +31,6 @@
       "relation": "oneToOne",
       "target": "api::sales-rep.sales-rep",
       "mappedBy": "region"
-    },
-    "showroom": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::showroom.showroom",
-      "inversedBy": "region"
     }
   }
 }

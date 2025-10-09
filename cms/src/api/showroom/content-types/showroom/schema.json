@@ -11,10 +11,6 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "name": {
-      "type": "string",
-      "required": true
-    },
     "image": {
       "type": "media",
       "multiple": false,
@@ -26,10 +22,10 @@
         "audios"
       ]
     },
-    "region": {
+    "country": {
       "type": "relation",
       "relation": "oneToOne",
-      "target": "api::region.region",
+      "target": "api::country.country",
       "mappedBy": "showroom"
     }
   }
