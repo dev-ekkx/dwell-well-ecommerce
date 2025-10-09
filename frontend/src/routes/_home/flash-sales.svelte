@@ -2,10 +2,10 @@
 	import { Button } from '$lib/components/ui/button';
 	import Picture from '$lib/components/picture.svelte';
 	import type { PageProps } from './$types';
-	import type { FlashSaleComponentI } from '$lib/interfaces';
+	import type { FlashSaleI } from '$lib/interfaces';
 
 	const { flashSalesData }: PageProps = $props();
-	const flashSales = flashSalesData as FlashSaleComponentI;
+	const flashSales = flashSalesData as FlashSaleI;
 	const cmsBaseUrl = import.meta.env.VITE_CMS_URL;
 
 	const imageUrl = cmsBaseUrl + flashSales.product.images[0].url;

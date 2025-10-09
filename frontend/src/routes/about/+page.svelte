@@ -3,11 +3,10 @@
 	import GlobalReach from './global-reach.svelte';
 	import WhatWeAreKnownFor from './what-we-are-known-for.svelte';
 	import GlobalPresence from './global-presence.svelte';
-	import LeadershipTeam from './leadership-team.svelte';
 	import Showrooms from './showrooms.svelte';
 	import ContactUs from './contact-us.svelte';
 	import type { PageProps } from './$types';
-	import type { PageI } from '$lib/interfaces';
+	import type { GlobalPresenceI, GlobalReachI, LeadershipTeamI, PageI, WhyChooseUsI } from '$lib/interfaces';
 	import { setContext } from 'svelte';
 
 	const { data }: PageProps = $props();
@@ -17,16 +16,16 @@
 	const heroData = aboutPageData.contentSections.find(item => item.__component === 'page-controls.hero');
 	const globalReachData = aboutPageData.contentSections.find(
 		item => item.__component === 'page-controls.who-we-are'
-	);
+	) as GlobalReachI;
 	const whatWeAreKnownForData = aboutPageData.contentSections.find(
 		item => item.__component === 'page-controls.why-choose-us'
-	);
+	) as WhyChooseUsI;
 	const globalPresenceData = aboutPageData.contentSections.find(
 		item => item.__component === 'page-controls.global-presence'
-	);
+	) as GlobalPresenceI;
 	const leadershipTeamData = aboutPageData.contentSections.find(
 		item => item.__component === 'management.leadership-team'
-	);
+	) as LeadershipTeamI;
 
 	//Create map context for global presence map
 	setContext('map-coordinates', globalPresenceData.locationLatLng);
