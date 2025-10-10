@@ -5,6 +5,47 @@ export interface ButtonI extends HTMLButtonAttributes {
 	direction: "left" | "right";
 }
 
+// Category interface
+export interface CategoryI {
+	id: number;
+	name: string;
+	slug: string;
+}
+
+// Country-specific details
+export interface CountrySpecificsI {
+	id: number;
+	isAvailable: boolean;
+	country: CountryI;
+	// Assuming SalesRepI would be defined elsewhere
+	salesReps: unknown[];
+}
+
+// Regional availability
+export interface RegionalAvailabilityI {
+	id: number;
+	region: RegionI;
+	countrySettings: CountrySpecificsI[];
+}
+
+//Product interface
+export interface ProductI {
+	id: number;
+	sku: string;
+	name: string;
+	slug: string;
+	summary: string;
+	images: StrapiImageI[];
+	categories: CategoryI[];
+	regionalAvailability: RegionalAvailabilityI[];
+	sizes: string[];
+	availability: string;
+	style: string[];
+	price: number;
+	averageRating: number;
+	reviewCount: number;
+}
+
 // Interface for a region (continent)
 export interface RegionI {
 	name: string;

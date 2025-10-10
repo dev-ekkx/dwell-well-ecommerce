@@ -10,7 +10,7 @@
       "relation": "oneToOne",
       "target": "api::region.region"
     },
-    "country_settings": {
+    "countrySettings": {
       "type": "component",
       "component": "regional-control.country-specifics",
       "repeatable": true
