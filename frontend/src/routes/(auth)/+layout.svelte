@@ -69,7 +69,7 @@
 
 			<!-- Forgot password, terms & conditions, and privacy policy -->
 			{#if route === "login"}
-				<a class="underline text-primary flex self-start" href="forgot-password">Forgot password</a>
+				<a class="underline text-primary flex self-start" href="/login">Forgot password</a>
 			{:else}
 				<div class="flex item-center gap-1 self-start">
 					<Checkbox bind:checked={agreeToTermsAndConditions} class="cursor-pointer" id="terms" />
