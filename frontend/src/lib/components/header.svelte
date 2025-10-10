@@ -11,6 +11,7 @@
 	import { gsap } from 'gsap';
 	import { onMount, tick } from 'svelte';
 	import { useIsMobile } from '$lib/hooks/useIsMobile.svelte';
+	import { goto } from '$app/navigation';
 
 	const isActiveRoute = (path: string) => page.route.id === path;
 	const isMobile = useIsMobile();
@@ -76,6 +77,13 @@
 		};
 	});
 
+	const loginAndResetDropdown = () => {
+		if (isMenuOpen) {
+			toggleMenu();
+		}
+		goto(resolve('/login'));
+	};
+
 </script>
 
 
@@ -106,7 +114,7 @@
 				{/if}
 			</button>
 		{:else}
-			<Button class="hidden lg:inline-flex cursor-pointer px-6 h-full">Login</Button>
+			<Button onclick={loginAndResetDropdown} class="hidden lg:inline-flex cursor-pointer px-6 h-full">Login</Button>
 		{/if}
 	</div>
 </header>

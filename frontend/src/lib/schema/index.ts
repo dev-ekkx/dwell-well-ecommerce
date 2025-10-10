@@ -21,7 +21,7 @@ export const loginSchema = z.object({
 
 export const signupSchema = z
 	.object({
-		name: z.string().min(2, "Name is required"),
+		name: z.string().nonempty("Name is required").min(3, "Name is required"),
 		email: z.pipe(z.string().nonempty("Email is required"), z.email("Invalid email address")),
 		password: strongPassword,
 		confirmPassword: z
