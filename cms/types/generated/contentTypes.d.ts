@@ -463,7 +463,7 @@ export interface ApiCountryCountry extends Struct.CollectionTypeSchema {
         };
       }>;
     publishedAt: Schema.Attribute.DateTime;
-    region: Schema.Attribute.Relation<'manyToOne', 'api::region.region'>;
+    region: Schema.Attribute.Relation<'oneToOne', 'api::region.region'>;
     showroom: Schema.Attribute.Relation<'oneToOne', 'api::showroom.showroom'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -660,7 +660,7 @@ export interface ApiRegionRegion extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    countries: Schema.Attribute.Relation<'oneToMany', 'api::country.country'>;
+    country: Schema.Attribute.Relation<'oneToOne', 'api::country.country'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

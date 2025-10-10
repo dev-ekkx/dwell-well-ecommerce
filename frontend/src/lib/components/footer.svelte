@@ -43,7 +43,7 @@
 
 			<div class="flex flex-col gap-2">
 				<div class="flex flex-col lg:flex-row gap-2 lg:items-center">
-					<Input class="bg-transparent placeholder:text-white md:w-xs" placeholder="Enter your email" />
+					<Input class="bg-transparent border-border placeholder:text-white md:w-xs" placeholder="Enter your email" />
 					<Button aria-label="subscribe"
 									class="w-full bg-white text-black! hover:bg-white font-semibold cursor-pointer md:w-xs lg:w-max">
 						Subscribe

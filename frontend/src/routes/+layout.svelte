@@ -8,6 +8,10 @@
 
 	let { children, data } = $props();
 	const activePage = $derived(page.route.id);
+	const isAuthPage = $derived(() => {
+		const path = page.url.href.split('/').pop() ?? '';
+		return ['login', 'signup'].includes(path);
+	});
 </script>
 
 <svelte:head>
@@ -16,14 +20,18 @@
 </svelte:head>
 
 <!--Header component-->
-<HeaderComponent />
+{#if !isAuthPage()}
+	<HeaderComponent />
+{/if}
 
 <!--Main content (pages)-->
 <div class={cn('flex flex-col ', {
-	'pt-[6.5rem] md:pt-[7rem] xl:pt-[8rem]': activePage !== '/about'
+	'pt-[6.5rem] md:pt-[7rem] xl:pt-[8rem]': (activePage !== '/about') && (!isAuthPage())
 } )}>
 	{@render children?.()}
 </div>
 
 <!--Footer component-->
-<FooterComponent footer={data.footer} />
+{#if !isAuthPage()}
+	<FooterComponent footer={data.footer} />
+{/if}

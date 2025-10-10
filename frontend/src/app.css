@@ -23,7 +23,7 @@
     --destructive: oklch(0.5770 0.2450 27.3250);
     --destructive-foreground: oklch(1 0 0);
     --border: oklch(0.9276 0.0058 264.5300);
-    --input: oklch(0.9673 0.0104 219.5884);
+    --input: oklch(oklch(0.4784 0 0));
     --ring: oklch(0.7772 0.0679 187.4765);
     --chart-1: oklch(0.8100 0.1000 252);
     --chart-2: oklch(0.6200 0.1900 260);
@@ -130,6 +130,10 @@
 
 @utility g-mt-pt {
     @apply mt-12 pt-12 lg:mt-16 lg:pt-16
+}
+
+@utility auth-heading {
+    @apply text-3xl font-semibold leading-9 md:text-4xl md:leading-10 lg:text-5xl lg:leading-12;
 }
 
 @utility text-section-head {
