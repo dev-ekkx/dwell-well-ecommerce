@@ -12,14 +12,16 @@
 	import { onMount, tick } from 'svelte';
 	import { useIsMobile } from '$lib/hooks/useIsMobile.svelte';
 	import { goto } from '$app/navigation';
+	import { Input } from '$lib/components/ui/input';
 
 	const isActiveRoute = (path: string) => page.route.id === path;
 	const isMobile = useIsMobile();
 
 	let isMenuOpen = $state(false);
-	let showSearchInput = $state(false);
+	let isSearchOpen = $state(false);
 	let menu = $state<HTMLElement | null>(null);
-	let toggleButton = $state<HTMLElement | null>(null);
+	let searchMenu = $state<HTMLElement | null>(null);
+	let menuButton = $state<HTMLElement | null>(null);
 	let searchButton = $state<HTMLElement | null>(null);
 
 	async function toggleMenu() {
@@ -47,11 +49,38 @@
 		}
 	}
 
+	async function toggleSearch() {
+		if (isSearchOpen && searchMenu) {
+			// Start animate out
+			await gsap.to(searchMenu, {
+				y: '-200%',
+				duration: 0.4,
+				ease: 'power1.out',
+				onComplete: () => {
+					isSearchOpen = false;
+				}
+			});
+		} else {
+			isSearchOpen = true;
+			await tick();
+			if (searchMenu) {
+				// Animate in
+				gsap.fromTo(
+					searchMenu,
+					{ y: '-100%' },
+					{ y: 0, duration: 0.3, ease: 'power1.out' }
+				);
+			}
+		}
+	}
+
+
 	$effect(() => {
 		if (!isMobile()) {
 			isMenuOpen = false;
 		}
 	});
+
 
 	onMount(() => {
 		// Handle click outside to close menu
@@ -59,11 +88,21 @@
 			if (
 				isMenuOpen &&
 				menu &&
-				toggleButton &&
+				menuButton &&
 				!menu.contains(event.target as Node) &&
-				!toggleButton.contains(event.target as Node)
+				!menuButton.contains(event.target as Node)
 			) {
 				toggleMenu();
+			}
+
+			if (
+				isSearchOpen &&
+				searchMenu &&
+				menuButton &&
+				!searchMenu.contains(event.target as Node) &&
+				!searchButton.contains(event.target as Node)
+			) {
+				toggleSearch();
 			}
 		};
 		document.addEventListener('click', handleClickOutside);
@@ -80,6 +119,9 @@
 	const loginAndResetDropdown = () => {
 		if (isMenuOpen) {
 			toggleMenu();
+		}
+		if (isSearchOpen) {
+			toggleSearch();
 		}
 		goto(resolve('/login'));
 	};
@@ -98,14 +140,14 @@
 		{@render desktopNav()}
 	{/if}
 
-	<!--	Search and Login -->
+	<!--	Search and Login buttons -->
 	<div class="flex items-center gap-6">
-		<button aria-label="search" bind:this={searchButton} class="cursor-pointer">
+		<button aria-label="search" bind:this={searchButton} class="cursor-pointer" onclick={toggleSearch}>
 			<img alt="search" src={SearchIcon}>
 		</button>
 
 		{#if isMobile()}
-			<button bind:this={toggleButton} onclick={toggleMenu} aria-label="hamburger toggle"
+			<button bind:this={menuButton} onclick={toggleMenu} aria-label="hamburger toggle"
 							class="w-8 justify-center cursor-pointer **:pointer-events-none">
 				{#if isMenuOpen}
 					<img src={CloseIcon} alt="close">
@@ -120,11 +162,13 @@
 </header>
 
 <!--Search menu-->
-<!--<div class="relative w-full max-w-lg">-->
-<!--	<img alt="search" class="absolute top-1/2 left-1 -translate-y-1/2" src={SearchIcon}>-->
-<!--	<Input class="pl-10 placeholder:text-muted-foreground border-muted-foreground"-->
-<!--				 placeholder="Search..." />-->
-<!--</div>-->
+{#if isSearchOpen}
+	<div bind:this={searchMenu} class="absolute max-w-full g-mx z-10 top-[10vh] bg-red-600">
+		<img alt="search" class="absolute top-1/2 left-1 -translate-y-1/2" src={SearchIcon}>
+		<Input class="pl-10 placeholder:text-muted-foreground" placeholder="Search..."
+					 type="search" />
+	</div>
+{/if}
 
 <!--Mobile Menu component-->
 {#if isMenuOpen}

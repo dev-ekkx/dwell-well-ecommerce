@@ -1,1 +1,1 @@
-<h2>shop</h2>
+<section class="g-px"></section>

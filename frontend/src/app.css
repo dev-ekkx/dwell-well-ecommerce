@@ -116,6 +116,10 @@
 
 }
 
+@utility g-mx {
+    @apply mx-6 md:mx-10 lg:mx-16 2xl:mx-28 3xl:mx-36 4xl:mx-48;
+}
+
 @utility g-px {
     @apply px-6 md:px-10 lg:px-16 2xl:px-28 3xl:px-36 4xl:px-48;
 }
