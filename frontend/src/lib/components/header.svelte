@@ -13,16 +13,26 @@
 	import { useIsMobile } from '$lib/hooks/useIsMobile.svelte';
 	import { goto } from '$app/navigation';
 	import { Input } from '$lib/components/ui/input';
+	import { useSearchAndFilter } from '$lib/store/search-and-filter.svelte';
+
 
 	const isActiveRoute = (path: string) => page.route.id === path;
 	const isMobile = useIsMobile();
-
+	const { setSearchTerm } = useSearchAndFilter();
+	let searchTerm = $state('');
 	let isMenuOpen = $state(false);
 	let isSearchOpen = $state(false);
 	let menu = $state<HTMLElement | null>(null);
 	let searchMenu = $state<HTMLElement | null>(null);
 	let menuButton = $state<HTMLElement | null>(null);
 	let searchButton = $state<HTMLElement | null>(null);
+
+	const getSearchValue = (e: Event) => {
+		const target = e.target as HTMLInputElement;
+		console.log(target.value);
+		searchTerm = target.value;
+		setSearchTerm(searchTerm);
+	};
 
 	async function toggleMenu() {
 		if (isMenuOpen && menu) {
@@ -163,10 +173,14 @@
 
 <!--Search menu-->
 {#if isSearchOpen}
-	<div bind:this={searchMenu} class="absolute max-w-full g-mx z-10 top-[10vh] bg-red-600">
-		<img alt="search" class="absolute top-1/2 left-1 -translate-y-1/2" src={SearchIcon}>
-		<Input class="pl-10 placeholder:text-muted-foreground" placeholder="Search..."
-					 type="search" />
+	<div bind:this={searchMenu} class="fixed w-full g-px py-2 backdrop-blur-xs z-10 top-[8vh] ">
+		<div class="flex">
+			<img alt="search" class="-mr-8 z-20" src={SearchIcon}>
+			<Input oninput={getSearchValue} bind:value={searchTerm}
+						 autofocus
+						 class="pl-10 placeholder:text-muted-foreground max-w-full" placeholder="Search..."
+						 type="search" />
+		</div>
 	</div>
 {/if}
 
