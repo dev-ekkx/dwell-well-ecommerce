@@ -430,6 +430,37 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiAvailabilityAvailability
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'availabilities';
+  info: {
+    displayName: 'Availability';
+    pluralName: 'availabilities';
+    singularName: 'availability';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::availability.availability'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    products: Schema.Attribute.Relation<'oneToMany', 'api::product.product'>;
+    publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
   collectionName: 'categories';
   info: {
@@ -649,8 +680,9 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    availability: Schema.Attribute.Enumeration<
-      ['Pre-Order', 'In Stock', 'Out of Stock']
+    availability: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::availability.availability'
     >;
     categories: Schema.Attribute.Relation<
       'manyToMany',
@@ -1353,6 +1385,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::availability.availability': ApiAvailabilityAvailability;
       'api::category.category': ApiCategoryCategory;
       'api::country.country': ApiCountryCountry;
       'api::footer.footer': ApiFooterFooter;

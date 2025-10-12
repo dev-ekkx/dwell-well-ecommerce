@@ -250,3 +250,17 @@ export interface PageI {
 	seo: SeoI;
 	contentSections: ContentSectionT[];
 }
+
+// Interface for filter options
+export interface FilterI {
+	name: string;
+	slug: string;
+}
+
+// Interface for all filter categories
+export interface FiltersI {
+	categories: FilterI[];
+	styles: FilterI[];
+	sizes: FilterI[];
+	availabilities: FilterI[];
+}

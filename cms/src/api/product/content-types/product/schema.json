@@ -62,12 +62,10 @@
       "inversedBy": "products"
     },
     "availability": {
-      "type": "enumeration",
-      "enum": [
-        "Pre-Order",
-        "In Stock",
-        "Out of Stock"
-      ]
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::availability.availability",
+      "inversedBy": "products"
     }
   }
 }

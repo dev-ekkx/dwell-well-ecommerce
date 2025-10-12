@@ -13,12 +13,10 @@
 	import { useIsMobile } from '$lib/hooks/useIsMobile.svelte';
 	import { goto } from '$app/navigation';
 	import { Input } from '$lib/components/ui/input';
-	import { useSearchAndFilter } from '$lib/store/search-and-filter.svelte';
 
 
 	const isActiveRoute = (path: string) => page.route.id === path;
 	const isMobile = useIsMobile();
-	const { setSearchTerm } = useSearchAndFilter();
 	let searchTerm = $state('');
 	let isMenuOpen = $state(false);
 	let isSearchOpen = $state(false);
@@ -29,9 +27,15 @@
 
 	const getSearchValue = (e: Event) => {
 		const target = e.target as HTMLInputElement;
-		console.log(target.value);
 		searchTerm = target.value;
-		setSearchTerm(searchTerm);
+
+		if (e instanceof KeyboardEvent && e.key === 'Enter' && searchTerm) {
+			e.preventDefault();
+			goto(resolve(`/shop?q=${encodeURIComponent(searchTerm)}`));
+			if (isSearchOpen) {
+				toggleSearch();
+			}
+		}
 	};
 
 	async function toggleMenu() {
@@ -108,7 +112,7 @@
 			if (
 				isSearchOpen &&
 				searchMenu &&
-				menuButton &&
+				searchButton &&
 				!searchMenu.contains(event.target as Node) &&
 				!searchButton.contains(event.target as Node)
 			) {
@@ -176,7 +180,7 @@
 	<div bind:this={searchMenu} class="fixed w-full g-px py-2 backdrop-blur-xs z-10 top-[8vh] ">
 		<div class="flex">
 			<img alt="search" class="-mr-8 z-20" src={SearchIcon}>
-			<Input oninput={getSearchValue} bind:value={searchTerm}
+			<Input onkeydown={getSearchValue} bind:value={searchTerm}
 						 autofocus
 						 class="pl-10 placeholder:text-muted-foreground max-w-full" placeholder="Search..."
 						 type="search" />
