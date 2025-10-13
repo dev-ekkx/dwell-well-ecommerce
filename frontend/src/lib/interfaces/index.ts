@@ -5,6 +5,11 @@ export interface ButtonI extends HTMLButtonAttributes {
 	direction: "left" | "right";
 }
 
+export interface CheckBoxDropdownI {
+	title: string;
+	options: FilterI[];
+}
+
 // Category interface
 export interface CategoryI {
 	id: number;

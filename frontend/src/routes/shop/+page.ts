@@ -5,6 +5,8 @@ import type { FiltersI, PageI } from "$lib/interfaces";
 
 export const load: PageLoad = async ({ fetch }) => {
 	const cmsBaseUrl = import.meta.env.VITE_CMS_URL;
+
+	// Fetch the shop page data from the CMS
 	const shopPagePromise = await fetch(
 		`${cmsBaseUrl}/api/pages?filters[slug][$eq]=shop&populate=all`
 	);
@@ -14,6 +16,8 @@ export const load: PageLoad = async ({ fetch }) => {
 		throw new Error("Shop page not found in the CMS");
 	}
 	const shopPageSeo = shopData.seo;
+
+	// Fetch filters using GraphQL
 	const filtersPromise = await client.query(GET_FILTERS, {}).toPromise();
 
 	if (filtersPromise.error) {
