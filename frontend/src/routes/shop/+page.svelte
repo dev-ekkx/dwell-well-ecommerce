@@ -36,7 +36,6 @@
 				<span class="font-bold text-2xl leading-8">Filtering</span>
 				<img alt="arrow" src={CaretUp}>
 			</button>
-
 			<hr />
 
 			<CheckboxDropdown
