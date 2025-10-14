@@ -7,6 +7,7 @@
 	import { cn } from '$lib/utils';
 	import { Item, Root } from '$lib/components/ui/radio-group';
 	import { Label } from '$lib/components/ui/label';
+	import { Button } from '$lib/components/ui/button';
 
 	const { data }: PageProps = $props();
 	const seoData = data.seo;
@@ -30,57 +31,9 @@
 	let selectedSizes = $state<string[]>([]);
 	let selectedAvailabilities = $state<string[]>([]);
 	let selectedStyles = $state<string[]>([]);
-	let selectedPriceRange = $state<[number, number]>([0, 1000]);
-
-	let selectedSorting = $state('newest');
-
-	// const filtersToggle = async () => {
-	// 	if (!filtersContainer) return;
-	//
-	// 	if (isFiltersOpen) {
-	// 		gsap.to(filtersContainer, {
-	// 			height: '4rem',
-	// 			duration: 0.4,
-	// 			ease: 'power4.out',
-	// 			onComplete: () => {
-	// 				isFiltersOpen = false;
-	// 			}
-	// 		});
-	// 	} else {
-	// 		gsap.set(filtersContainer, { clearProps: 'height,opacity' });
-	// 		isFiltersOpen = true;
-	// 		await tick();
-	// 		gsap.from(filtersContainer, {
-	// 			height: 0,
-	// 			duration: 0.4,
-	// 			ease: 'power4.out'
-	// 		});
-	// 	}
-	// };
-	//
-	// const sortingToggle = async () => {
-	// 	if (!sortingContainer) return;
-	//
-	// 	if (isSortingOpen) {
-	// 		gsap.to(sortingContainer, {
-	// 			height: '4rem',
-	// 			duration: 0.4,
-	// 			ease: 'power4.out',
-	// 			onComplete: () => {
-	// 				isSortingOpen = false;
-	// 			}
-	// 		});
-	// 	} else {
-	// 		gsap.set(sortingContainer, { clearProps: 'height,opacity' });
-	// 		isSortingOpen = true;
-	// 		await tick();
-	// 		gsap.from(sortingContainer, {
-	// 			height: 0,
-	// 			duration: 0.4,
-	// 			ease: 'power4.out'
-	// 		});
-	// 	}
-	// };
+	let maxSlideValue = $state(5000);
+	let selectedPriceRange = $state<[number, number]>([0, 5000]);
+	let selectedSorting = $state('');
 
 
 	const toggleContainer = async (
@@ -114,7 +67,14 @@
 	const sortingToggle = () =>
 		toggleContainer(sortingContainer, isSortingOpen, (v) => (isSortingOpen = v));
 
-
+	const resetFilterAndSorting = () => {
+		selectedCategories = [];
+		selectedSizes = [];
+		selectedAvailabilities = [];
+		selectedStyles = [];
+		selectedPriceRange = [0, 1000];
+		selectedSorting = '';
+	};
 </script>
 
 <svelte:head>
@@ -159,7 +119,7 @@
 
 			<FilterDropdown
 				bind:selectedSlides={selectedPriceRange}
-				maxSlideValue={5000}
+				{maxSlideValue}
 				title="Pricing"
 				type="slider"
 			/>
@@ -187,6 +147,11 @@
 				</div>
 			</Root>
 		</section>
+
+		<!--		Clear filters button-->
+		<Button class="text-primary border-primary cursor-pointer" onclick={resetFilterAndSorting} variant="outline">Clear
+			Filters
+		</Button>
 	</aside>
 
 </section>
