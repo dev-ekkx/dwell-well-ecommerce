@@ -13,7 +13,7 @@
 		options,
 		selectedOptions = $bindable([]),
 		selectedSlides = $bindable([]),
-		maxSlideValue = 2000,
+		maxSlideValue,
 		type = 'checkbox'
 	}: FilterDropdownI = $props();
 	let isDropdownOpen = $state(true);
