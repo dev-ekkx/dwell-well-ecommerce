@@ -1,15 +1,25 @@
 <script lang="ts">
 	import CaretUp from '$lib/assets/caret-up.svg';
-	import { cn } from '$lib/utils';
+	import { cn, formatNumberWithCommas } from '$lib/utils';
 	import { Label } from '$lib/components/ui/label';
 	import { Checkbox } from '$lib/components/ui/checkbox';
-	import type { CheckBoxDropdownI } from '$lib/interfaces';
+	import type { FilterDropdownI } from '$lib/interfaces';
 	import gsap from 'gsap';
 	import { tick } from 'svelte';
+	import { Slider } from '$lib/components/ui/slider';
 
-	let { title, options, selectedOptions = $bindable([]) }: CheckBoxDropdownI = $props();
+	let {
+		title,
+		options,
+		selectedOptions = $bindable([]),
+		selectedSlides = $bindable([]),
+		maxSlideValue = 2000,
+		type = 'checkbox'
+	}: FilterDropdownI = $props();
 	let isDropdownOpen = $state(true);
 	let dropdownContainer = $state<HTMLDivElement | null>(null);
+
+	const avgSlideVal = $derived((selectedSlides[0] + selectedSlides[1]) / 2);
 
 
 	const handleCheckboxChange = (slug: string) => {
@@ -61,20 +71,35 @@
 
 	<!--	Dropdown items -->
 	{#if isDropdownOpen}
-		<div class="flex flex-col gap-4 bg-white">
-			{#each options as option (option.slug)}
-				{@const checked = selectedOptions.includes(option.slug)}
-				<Label class="flex options-center gap-2 **:cursor-pointer">
-					<Checkbox
-						{checked}
-						id={option.slug}
-						value={option.slug}
-						onCheckedChange={() => handleCheckboxChange(option.slug)}
-					/>
-					<span>{option.slug}</span>
-					<span>{option.name}</span>
-				</Label>
-			{/each}
-		</div>
+		<!-- Slider -->
+		{#if type === "slider"}
+			<div class="flex flex-col gap-4">
+				<Slider bind:value={selectedSlides} max={maxSlideValue} step={1} type="multiple" />
+				<div class="flex items-center justify-between gap-4">
+					<span>${formatNumberWithCommas(Math.min(...selectedSlides))}</span>
+					<span>${formatNumberWithCommas(avgSlideVal)}</span>
+					<span>${formatNumberWithCommas(Math.max(...selectedSlides))}</span>
+				</div>
+			</div>
+		{:else}
+			<!--Checkbox-->
+			<div class="flex flex-col gap-4 bg-white">
+				{#if !!options}
+					{#each options as option (option.slug)}
+						{@const checked = selectedOptions.includes(option.slug)}
+						<Label class="flex options-center gap-2 **:cursor-pointer">
+							<Checkbox
+								{checked}
+								id={option.slug}
+								value={option.slug}
+								onCheckedChange={() => handleCheckboxChange(option.slug)}
+							/>
+							<span>{option.slug}</span>
+							<span>{option.name}</span>
+						</Label>
+					{/each}
+				{/if}
+			</div>
+		{/if}
 	{/if}
 </div>

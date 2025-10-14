@@ -1,5 +1,5 @@
 <script lang="ts">
-	import CheckboxDropdown from '$lib/components/check-box-dropdown.svelte';
+	import FilterDropdown from '$lib/components/filter-dropdown.svelte';
 	import CaretUp from '$lib/assets/caret-up.svg';
 	import type { PageProps } from './$types';
 
@@ -12,13 +12,15 @@
 	let selectedSizes = $state<string[]>([]);
 	let selectedAvailabilities = $state<string[]>([]);
 	let selectedStyles = $state<string[]>([]);
+	let selectedPriceRange = $state<[number, number]>([0, 1000]);
 
-	$inspect(
-		selectedCategories,
-		selectedSizes,
-		selectedAvailabilities,
-		selectedStyles
-	);
+	// $inspect(
+	// 	selectedCategories,
+	// 	selectedSizes,
+	// 	selectedAvailabilities,
+	// 	selectedStyles,
+	// 	selectedPriceRange
+	// );
 </script>
 
 <svelte:head>
@@ -38,27 +40,33 @@
 			</button>
 			<hr />
 
-			<CheckboxDropdown
+			<FilterDropdown
 				bind:selectedOptions={selectedCategories}
 				options={filters.categories}
 				title="categories"
 			/>
-			<CheckboxDropdown
+			<FilterDropdown
 				bind:selectedOptions={selectedSizes}
 				options={filters.sizes}
 				title="size & dimensions"
 			/>
-			<CheckboxDropdown
+			<FilterDropdown
 				bind:selectedOptions={selectedAvailabilities}
 				options={filters.availabilities}
 				title="availability"
 			/>
-			<CheckboxDropdown
+			<FilterDropdown
 				bind:selectedOptions={selectedStyles}
 				options={filters.styles}
 				title="style & design"
 			/>
 
+			<FilterDropdown
+				bind:selectedSlides={selectedPriceRange}
+				maxSlideValue={5000}
+				title="Pricing"
+				type="slider"
+			/>
 		</section>
 	</aside>
 
