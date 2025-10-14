@@ -2,10 +2,18 @@
 	import FilterDropdown from '$lib/components/filter-dropdown.svelte';
 	import CaretUp from '$lib/assets/caret-up.svg';
 	import type { PageProps } from './$types';
+	import gsap from 'gsap';
+	import { tick } from 'svelte';
+	import { cn } from '$lib/utils';
 
 	const { data }: PageProps = $props();
 	const seoData = data.seo;
 	const filters = data.filters;
+
+	let isFiltersOpen = $state(true);
+	let isSortingOpen = $state(true);
+	let filtersContainer = $state<HTMLElement | null>(null);
+	let sortingContainer = $state<HTMLElement | null>(null);
 
 	// Initial filter states
 	let selectedCategories = $state<string[]>([]);
@@ -13,6 +21,54 @@
 	let selectedAvailabilities = $state<string[]>([]);
 	let selectedStyles = $state<string[]>([]);
 	let selectedPriceRange = $state<[number, number]>([0, 1000]);
+
+	const filtersToggle = async () => {
+		if (!filtersContainer) return;
+
+		if (isFiltersOpen) {
+			gsap.to(filtersContainer, {
+				height: '4rem',
+				duration: 0.4,
+				ease: 'power4.out',
+				onComplete: () => {
+					isFiltersOpen = false;
+				}
+			});
+		} else {
+			gsap.set(filtersContainer, { clearProps: 'height,opacity' });
+			isFiltersOpen = true;
+			await tick();
+			gsap.from(filtersContainer, {
+				height: 0,
+				duration: 0.4,
+				ease: 'power4.out'
+			});
+		}
+	};
+
+	const sortingToggle = async () => {
+		if (!sortingContainer) return;
+
+		if (isSortingOpen) {
+			gsap.to(sortingContainer, {
+				height: '4rem',
+				duration: 0.4,
+				ease: 'power4.out',
+				onComplete: () => {
+					isSortingOpen = false;
+				}
+			});
+		} else {
+			gsap.set(sortingContainer, { clearProps: 'height,opacity' });
+			isSortingOpen = true;
+			await tick();
+			gsap.from(sortingContainer, {
+				height: 0,
+				duration: 0.4,
+				ease: 'power4.out'
+			});
+		}
+	};
 
 	// $inspect(
 	// 	selectedCategories,
@@ -31,12 +87,14 @@
 <section class="g-px flex gap-6">
 
 	<!--	Filter and Sort -->
-	<aside class="flex flex-col gap-6 w-[14rem]">
-		<!-- Filters -->
-		<section class="flex flex-col gap-6">
-			<button class="flex items-center justify-between gap-4">
+	<aside class="flex flex-col gap-8 w-[14rem]">
+		<!-- Filters section-->
+		<section bind:this={filtersContainer} class="flex flex-col gap-6 overflow-y-clip">
+			<button class="flex items-center justify-between gap-4 cursor-pointer" onclick={filtersToggle}>
 				<span class="font-bold text-2xl leading-8">Filtering</span>
-				<img alt="arrow" src={CaretUp}>
+				<img alt="arrow" class={cn('transition-all duration-200 ease-linear rotate-180', {
+			'rotate-0': isFiltersOpen,
+		})} src={CaretUp}>
 			</button>
 			<hr />
 
@@ -67,6 +125,20 @@
 				title="Pricing"
 				type="slider"
 			/>
+		</section>
+
+		<!-- Sorting section -->
+		<section bind:this={sortingContainer} class="flex flex-col gap-6 overflow-y-clip">
+			<button class="flex items-center justify-between gap-4 cursor-pointer" onclick={sortingToggle}>
+				<span class="font-bold text-2xl leading-8">Sorting</span>
+				<img alt="arrow" class={cn('transition-all duration-200 ease-linear rotate-180', {
+			'rotate-0': isSortingOpen,
+		})} src={CaretUp}>
+			</button>
+
+			<hr />
+
+			<div class="flex flex-col gap-4"></div>
 		</section>
 	</aside>
 
