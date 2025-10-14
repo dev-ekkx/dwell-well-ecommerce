@@ -5,6 +5,8 @@
 	import gsap from 'gsap';
 	import { tick } from 'svelte';
 	import { cn } from '$lib/utils';
+	import { Item, Root } from '$lib/components/ui/radio-group';
+	import { Label } from '$lib/components/ui/label';
 
 	const { data }: PageProps = $props();
 	const seoData = data.seo;
@@ -15,6 +17,14 @@
 	let filtersContainer = $state<HTMLElement | null>(null);
 	let sortingContainer = $state<HTMLElement | null>(null);
 
+	const sortingItems = [
+		{ label: 'Newest Arrivals', value: 'newest' },
+		{ label: 'Price: Low to High', value: 'price-asc' },
+		{ label: 'Price: High to Low', value: 'price-desc' },
+		{ label: 'Name: A to Z', value: 'name-asc' },
+		{ label: 'Name: Z to A', value: 'name-desc' }
+	];
+
 	// Initial filter states
 	let selectedCategories = $state<string[]>([]);
 	let selectedSizes = $state<string[]>([]);
@@ -22,61 +32,89 @@
 	let selectedStyles = $state<string[]>([]);
 	let selectedPriceRange = $state<[number, number]>([0, 1000]);
 
-	const filtersToggle = async () => {
-		if (!filtersContainer) return;
+	let selectedSorting = $state('newest');
 
-		if (isFiltersOpen) {
-			gsap.to(filtersContainer, {
+	// const filtersToggle = async () => {
+	// 	if (!filtersContainer) return;
+	//
+	// 	if (isFiltersOpen) {
+	// 		gsap.to(filtersContainer, {
+	// 			height: '4rem',
+	// 			duration: 0.4,
+	// 			ease: 'power4.out',
+	// 			onComplete: () => {
+	// 				isFiltersOpen = false;
+	// 			}
+	// 		});
+	// 	} else {
+	// 		gsap.set(filtersContainer, { clearProps: 'height,opacity' });
+	// 		isFiltersOpen = true;
+	// 		await tick();
+	// 		gsap.from(filtersContainer, {
+	// 			height: 0,
+	// 			duration: 0.4,
+	// 			ease: 'power4.out'
+	// 		});
+	// 	}
+	// };
+	//
+	// const sortingToggle = async () => {
+	// 	if (!sortingContainer) return;
+	//
+	// 	if (isSortingOpen) {
+	// 		gsap.to(sortingContainer, {
+	// 			height: '4rem',
+	// 			duration: 0.4,
+	// 			ease: 'power4.out',
+	// 			onComplete: () => {
+	// 				isSortingOpen = false;
+	// 			}
+	// 		});
+	// 	} else {
+	// 		gsap.set(sortingContainer, { clearProps: 'height,opacity' });
+	// 		isSortingOpen = true;
+	// 		await tick();
+	// 		gsap.from(sortingContainer, {
+	// 			height: 0,
+	// 			duration: 0.4,
+	// 			ease: 'power4.out'
+	// 		});
+	// 	}
+	// };
+
+
+	const toggleContainer = async (
+		container: HTMLElement | null,
+		isOpen: boolean,
+		setOpen: (value: boolean) => void
+	) => {
+		if (!container) return;
+
+		const duration = 0.4;
+		const ease = 'power4.out';
+
+		if (isOpen) {
+			gsap.to(container, {
 				height: '4rem',
-				duration: 0.4,
-				ease: 'power4.out',
-				onComplete: () => {
-					isFiltersOpen = false;
-				}
+				duration,
+				ease,
+				onComplete: () => setOpen(false)
 			});
 		} else {
-			gsap.set(filtersContainer, { clearProps: 'height,opacity' });
-			isFiltersOpen = true;
+			gsap.set(container, { clearProps: 'height,opacity' });
+			setOpen(true);
 			await tick();
-			gsap.from(filtersContainer, {
-				height: 0,
-				duration: 0.4,
-				ease: 'power4.out'
-			});
+			gsap.from(container, { height: 0, duration, ease });
 		}
 	};
 
-	const sortingToggle = async () => {
-		if (!sortingContainer) return;
+	const filtersToggle = () =>
+		toggleContainer(filtersContainer, isFiltersOpen, (v) => (isFiltersOpen = v));
 
-		if (isSortingOpen) {
-			gsap.to(sortingContainer, {
-				height: '4rem',
-				duration: 0.4,
-				ease: 'power4.out',
-				onComplete: () => {
-					isSortingOpen = false;
-				}
-			});
-		} else {
-			gsap.set(sortingContainer, { clearProps: 'height,opacity' });
-			isSortingOpen = true;
-			await tick();
-			gsap.from(sortingContainer, {
-				height: 0,
-				duration: 0.4,
-				ease: 'power4.out'
-			});
-		}
-	};
+	const sortingToggle = () =>
+		toggleContainer(sortingContainer, isSortingOpen, (v) => (isSortingOpen = v));
 
-	// $inspect(
-	// 	selectedCategories,
-	// 	selectedSizes,
-	// 	selectedAvailabilities,
-	// 	selectedStyles,
-	// 	selectedPriceRange
-	// );
+
 </script>
 
 <svelte:head>
@@ -138,7 +176,16 @@
 
 			<hr />
 
-			<div class="flex flex-col gap-4"></div>
+			<Root bind:value={selectedSorting}>
+				<div class="flex flex-col gap-4">
+					{#each sortingItems as item (item.value)}
+						<div class="flex items-center space-x-2 **:cursor-pointer">
+							<Item value={item.value} id={item.value} />
+							<Label for={item.value}>{item.label}</Label>
+						</div>
+					{/each}
+				</div>
+			</Root>
 		</section>
 	</aside>
 
