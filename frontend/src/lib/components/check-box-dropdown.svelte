@@ -7,34 +7,21 @@
 	import gsap from 'gsap';
 	import { tick } from 'svelte';
 
-	const { title, options }: CheckBoxDropdownI = $props();
-	let isDropdownOpen = $state(false);
+	let { title, options, selectedOptions = $bindable([]) }: CheckBoxDropdownI = $props();
+	let isDropdownOpen = $state(true);
 	let dropdownContainer = $state<HTMLDivElement | null>(null);
 
-	// const dropdownToggle = () => {
-	//
-	// 	isDropdownOpen = !isDropdownOpen;
-	//
-	// 	// Animate based on the new state
-	// 	if (dropdownContainer) {
-	// 		if (isDropdownOpen) {
-	// 			// Animate open
-	// 			gsap.to(dropdownContainer, {
-	// 				height: 'auto',
-	// 				duration: 0.6,
-	// 				ease: 'power4.out'
-	// 			});
-	// 		} else {
-	// 			// Animate closed
-	// 			gsap.to(dropdownContainer, {
-	// 				height: 10,
-	// 				duration: 0.6,
-	// 				ease: 'power4.out'
-	// 			});
-	// 		}
-	// 	}
-	// };
 
+	const handleCheckboxChange = (slug: string) => {
+		let newSelected: string[];
+		const isChecked = selectedOptions.includes(slug);
+		if (isChecked) {
+			newSelected = selectedOptions.filter((s) => s !== slug);
+		} else {
+			newSelected = [...selectedOptions, slug];
+		}
+		selectedOptions = newSelected;
+	};
 
 	const dropdownToggle = async () => {
 		if (!dropdownContainer) return;
@@ -46,7 +33,6 @@
 				ease: 'power4.out',
 				onComplete: () => {
 					isDropdownOpen = false;
-
 				}
 			});
 		} else {
@@ -77,8 +63,15 @@
 	{#if isDropdownOpen}
 		<div class="flex flex-col gap-4 bg-white">
 			{#each options as option (option.slug)}
+				{@const checked = selectedOptions.includes(option.slug)}
 				<Label class="flex options-center gap-2 **:cursor-pointer">
-					<Checkbox id={option.slug} />
+					<Checkbox
+						{checked}
+						id={option.slug}
+						value={option.slug}
+						onCheckedChange={() => handleCheckboxChange(option.slug)}
+					/>
+					<span>{option.slug}</span>
 					<span>{option.name}</span>
 				</Label>
 			{/each}

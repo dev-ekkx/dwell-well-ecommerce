@@ -8,6 +8,7 @@ export interface ButtonI extends HTMLButtonAttributes {
 export interface CheckBoxDropdownI {
 	title: string;
 	options: FilterI[];
+	selectedOptions: string[];
 }
 
 // Category interface
