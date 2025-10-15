@@ -3,7 +3,7 @@
 	// import Person1Img from '$lib/assets/images/person1.jpg';
 	import PhoneIcon from '$lib/assets/phone.svg';
 	import EmailIcon from '$lib/assets/email.svg';
-	import { Button } from '$lib/components/ui/button/index';
+	import { Button } from '$lib/components/ui/button';
 	import type { ContactFormFieldT, InputT, QuestionT } from '$lib/types';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { QuestionFormSchema } from '$lib/schema';

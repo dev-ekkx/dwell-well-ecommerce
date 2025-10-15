@@ -4,7 +4,7 @@
 	import WhatWeAreKnownFor from './what-we-are-known-for.svelte';
 	import GlobalPresence from './global-presence.svelte';
 	import Showrooms from './showrooms.svelte';
-	import ContactUs from './contact-us.svelte';
+	import ContactUs from '$lib/components/contact-us.svelte';
 	import LeadershipTeam from './leadership-team.svelte';
 	import type { PageProps } from './$types';
 	import type { GlobalPresenceI, GlobalReachI, HeroI, LeadershipTeamI, PageI, WhyChooseUsI } from '$lib/interfaces';

@@ -128,6 +128,10 @@
     @apply mt-12 lg:mt-16
 }
 
+@utility g-mb {
+    @apply mb-12 lg:mb-16
+}
+
 @utility g-pt {
     @apply pt-12 lg:pt-16
 }

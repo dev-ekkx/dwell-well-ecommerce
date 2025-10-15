@@ -31,7 +31,7 @@
 
 </script>
 
-<footer class="flex flex-col bg-muted-foreground **:text-white pb-6 g-pt g-px g-mt gap-8 font-medium">
+<footer class="flex flex-col bg-muted-foreground **:text-white pb-6 g-pt g-px gap-8 font-medium">
 	<!--	Newsletter and footer links section-->
 	<section class="flex flex-col">
 		<div class="flex flex-col text-center md:text-left gap-2 lg:flex-row lg:justify-between lg:items-center">
