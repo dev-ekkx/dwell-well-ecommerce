@@ -177,7 +177,7 @@
 
 <!--Search menu-->
 {#if isSearchOpen}
-	<div bind:this={searchMenu} class="fixed w-full g-px py-2 backdrop-blur-xs z-10 top-[8vh] ">
+	<div bind:this={searchMenu} class="fixed w-full g-px py-2 backdrop-blur-xs z-20 top-[8vh] ">
 		<div class="flex">
 			<img alt="search" class="-mr-8 z-20" src={SearchIcon}>
 			<Input onkeydown={getSearchValue} bind:value={searchTerm}
@@ -190,7 +190,7 @@
 
 <!--Mobile Menu component-->
 {#if isMenuOpen}
-	<section bind:this={menu} class="h-max fixed z-10 top-[8vh] left-0 w-full bg-white g-px pb-4 shadow-md">
+	<section bind:this={menu} class="h-max fixed z-20 top-[8vh] left-0 w-full bg-white g-px pb-4 shadow-md">
 		<div class="flex flex-col gap-8 pt-6">
 			{@render navigation(true)}
 			<a

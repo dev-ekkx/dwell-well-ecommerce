@@ -220,6 +220,7 @@ export interface GlobalReachI {
 	__component: string;
 	id: number;
 	title: string;
+	sectionId?: string;
 	description: string;
 	reaches: GlobalReachItemI[];
 }
@@ -229,6 +230,7 @@ export interface GlobalPresenceI {
 	__component: string;
 	id: number;
 	title: string;
+	sectionId?: string;
 	description: string;
 	locationLatLng: {
 		lat: number;
@@ -248,6 +250,7 @@ export interface LeadershipTeamI {
 	__component: string;
 	id: number;
 	title: string;
+	sectionId?: string;
 	description: string;
 	team: TeamMemberI[];
 }

@@ -2,6 +2,7 @@
 	import ProductImage from '$lib/assets/images/auth-bg.webp';
 	import { formatNumberWithCommas } from '$lib/utils';
 	import { type ConfigI, StarRating } from '@dev-ekkx/svelte-star-rating';
+	import CartIcon from '$lib/assets/cart.svg';
 
 	const config = $state<ConfigI>({
 		readonly: true,
@@ -27,7 +28,9 @@
 
 <div class="flex flex-col gap-4 relative group">
 	<!--	add to cart button-->
-	<button class="absolute z-10 top-4 right-2 rounded-full bg-primary h-8 w-8 flex items-center justify-center">ATC
+	<button
+		class="absolute cursor-pointer z-10 top-4 right-2 rounded-full bg-primary h-8 w-8 flex items-center justify-center">
+		<img alt="cart" class="scale-75" src={CartIcon} />
 	</button>
 
 	<div class="h-[11rem] md:h-[12rem] rounded-lg overflow-clip">
