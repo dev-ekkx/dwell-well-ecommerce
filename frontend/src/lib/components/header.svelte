@@ -13,6 +13,7 @@
 	import { goto } from '$app/navigation';
 	import { Input } from '$lib/components/ui/input';
 	import { MediaQuery } from 'svelte/reactivity';
+	import type { RouteId } from '$app/types';
 
 	const mediaQuery = new MediaQuery('max-width: 63.9rem');
 	const isMobile = $derived(mediaQuery.current);
@@ -31,7 +32,8 @@
 
 		if (e instanceof KeyboardEvent && e.key === 'Enter' && searchTerm) {
 			e.preventDefault();
-			goto(resolve(`/shop?q=${encodeURIComponent(searchTerm)}`));
+			page.url.searchParams.set('q', searchTerm);
+			goto(resolve(`/shop?${page.url.searchParams.toString()}` as RouteId));
 			if (isSearchOpen) {
 				toggleSearch();
 			}
