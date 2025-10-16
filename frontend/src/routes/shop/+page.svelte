@@ -27,11 +27,11 @@
 	import FilterIcon from '$lib/assets/filter.svg';
 	import { MediaQuery } from 'svelte/reactivity';
 
+	const mediaQuery = new MediaQuery('max-width: 63.9rem');
 	const { data }: PageProps = $props();
 	const seoData = data.seo;
 	const filters = data.filters;
-
-	const mediaQuery = new MediaQuery('max-width: 63.9rem');
+	const searchTerm = $derived(data.searchTerm);
 	const isMobile = $derived(mediaQuery.current);
 
 	// Page state
@@ -84,11 +84,13 @@
 			</SheetRoot>
 
 			<!-- Page heading -->
-			<div class="flex items-center gap-2">
-				<h4 class="font-bold md:text-2xl leading-8">Search results for beds</h4>
-				<span class="text-muted-foreground text-xs sm:text-sm md:text-base">{formatNumberWithCommas(1500)}
-					+ items found</span>
-			</div>
+			{#if searchTerm}
+				<div class="flex items-center gap-2">
+					<h4 class="font-bold md:text-2xl leading-8">Search results for {searchTerm}</h4>
+					<span class="text-muted-foreground text-xs sm:text-sm md:text-base">{formatNumberWithCommas(1500)}
+						+ items found</span>
+				</div>
+			{/if}
 
 			<!--	Product items -->
 			<section class="flex flex-col gap-5 md:gap-7 xl:gap-10">

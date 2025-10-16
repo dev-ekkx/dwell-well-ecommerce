@@ -3,8 +3,10 @@ import { client } from "../../graphql.config";
 import { GET_FILTERS } from "../../graphql.queries";
 import type { FiltersI, PageI } from "$lib/interfaces";
 
-export const load: PageLoad = async ({ fetch }) => {
+export const load: PageLoad = async ({ fetch, data }) => {
 	const cmsBaseUrl = import.meta.env.VITE_CMS_URL;
+
+	console.log(data);
 
 	// Fetch the shop page data from the CMS
 	const shopPagePromise = await fetch(
@@ -26,6 +28,7 @@ export const load: PageLoad = async ({ fetch }) => {
 	const filters = filtersPromise.data as FiltersI;
 	return {
 		filters,
+		searchTerm: data.searchTerm,
 		seo: shopPageSeo
 	};
 };

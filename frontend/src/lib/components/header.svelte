@@ -12,35 +12,46 @@
 	import { onMount, tick } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { Input } from '$lib/components/ui/input';
-	import { MediaQuery } from 'svelte/reactivity';
+	import { MediaQuery, SvelteURLSearchParams } from 'svelte/reactivity';
 	import type { RouteId } from '$app/types';
 
 	const mediaQuery = new MediaQuery('max-width: 63.9rem');
 	const isMobile = $derived(mediaQuery.current);
 	const isActiveRoute = (path: string) => page.route.id === path;
-	let searchTerm = $state('');
 	let isMenuOpen = $state(false);
+	let showMenuOverlay = $state(false);
 	let isSearchOpen = $state(false);
 	let menu = $state<HTMLElement | null>(null);
 	let searchMenu = $state<HTMLElement | null>(null);
 	let menuButton = $state<HTMLElement | null>(null);
 	let searchButton = $state<HTMLElement | null>(null);
-
+	let searchTerm = $state('');
+	
 	const getSearchValue = (e: Event) => {
 		const target = e.target as HTMLInputElement;
-		searchTerm = target.value;
+		const newSearchTerm = target.value;
 
-		if (e instanceof KeyboardEvent && e.key === 'Enter' && searchTerm) {
+		if (e instanceof KeyboardEvent && e.key === 'Enter') {
 			e.preventDefault();
-			page.url.searchParams.set('q', searchTerm);
-			goto(resolve(`/shop?${page.url.searchParams.toString()}` as RouteId));
+
+			if (!newSearchTerm) {
+				return;
+			}
+
+			const localizedPath = resolve('/shop');
+			const params = new SvelteURLSearchParams(page.url.searchParams);
+			params.set('q', newSearchTerm);
+			goto(resolve(`${localizedPath}?${params.toString()}` as RouteId));
+
 			if (isSearchOpen) {
 				toggleSearch();
 			}
 		}
 	};
 
+
 	async function toggleMenu() {
+		showMenuOverlay = !showMenuOverlay;
 		if (isMenuOpen && menu) {
 			// Start animate out
 			await gsap.to(menu, {
@@ -90,6 +101,13 @@
 		}
 	}
 
+	const handleInput = () => {
+		if (page.url.pathname === '/shop' && !searchTerm.length) {
+			const params = new SvelteURLSearchParams(page.url.searchParams);
+			params.set('q', '');
+			goto(resolve('/shop'));
+		}
+	};
 
 	$effect(() => {
 		if (!isMobile) {
@@ -99,6 +117,9 @@
 
 
 	onMount(() => {
+		// Set search term on page mount
+		searchTerm = (page.url.searchParams.get('q') ?? '');
+
 		// Handle click outside to close menu
 		const handleClickOutside = (event: MouseEvent) => {
 			if (
@@ -183,6 +204,7 @@
 		<div class="flex">
 			<img alt="search" class="-mr-8 z-20" src={SearchIcon}>
 			<Input onkeydown={getSearchValue} bind:value={searchTerm}
+						 oninput={handleInput}
 						 autofocus
 						 id="searchTerm"
 						 class="pl-10 placeholder:text-muted-foreground max-w-full" placeholder="Search..."
@@ -192,18 +214,20 @@
 {/if}
 
 <!--Mobile Menu component-->
-{#if isMenuOpen}
+{#if showMenuOverlay}
 	<div class="bg-black/60 backdrop-blur-xs fixed z-20 top-0 h-screen w-screen">
-		<section bind:this={menu} class="h-max fixed z-20 top-[8vh] left-0 w-full bg-white g-px pb-4 shadow-md">
-			<div class="flex flex-col gap-8 pt-6">
-				{@render navigation(true)}
-				<a
-					onclick="{isMenuOpen ? toggleMenu : null}"
-					href="/login"
-					class="w-full py-2 rounded-lg flex items-center justify-center text-white bg-primary hover:opacity-80 transition-all duration-200 ease-linear">login</a>
-			</div>
-		</section>
 	</div>
+{/if}
+{#if isMenuOpen}
+	<section bind:this={menu} class="h-max fixed z-20 top-[8vh] left-0 w-full bg-white g-px pb-4 shadow-md">
+		<div class="flex flex-col gap-8 pt-6">
+			{@render navigation(true)}
+			<a
+				onclick="{isMenuOpen ? toggleMenu : null}"
+				href="/login"
+				class="w-full py-2 rounded-lg flex items-center justify-center text-white bg-primary hover:opacity-80 transition-all duration-200 ease-linear">login</a>
+		</div>
+	</section>
 {/if}
 
 <!-- Desktop	Navigation-->

@@ -7,5 +7,6 @@ export const client = new Client({
 		headers: {
 			"Content-Type": "application/json"
 		}
-	})
+	}),
+	requestPolicy: "cache-first",
 });
