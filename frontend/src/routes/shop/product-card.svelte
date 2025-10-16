@@ -3,9 +3,10 @@
 	import { formatNumberWithCommas } from '$lib/utils';
 	import { type ConfigI, StarRating } from '@dev-ekkx/svelte-star-rating';
 	import CartIcon from '$lib/assets/cart.svg';
-	import { useIsMobile } from '$lib/hooks/useIsMobile.svelte';
+	import { MediaQuery } from 'svelte/reactivity';
 
-	const isMobile = useIsMobile();
+	const mediaQuery = new MediaQuery('max-width: 63.9rem');
+	const isMobile = $derived(mediaQuery.current);
 
 
 	const config = $derived<ConfigI>({
@@ -15,7 +16,7 @@
 		step: 0.1,
 		numOfStars: 5,
 		starConfig: {
-			size: isMobile() ? 11 : 14,
+			size: isMobile ? 11 : 14,
 			filledColor: '#F98416',
 			unfilledColor: '#5D5D5D'
 		},

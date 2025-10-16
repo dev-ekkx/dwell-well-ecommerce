@@ -10,13 +10,13 @@
 	import CloseIcon from '$lib/assets/close.svg';
 	import { gsap } from 'gsap';
 	import { onMount, tick } from 'svelte';
-	import { useIsMobile } from '$lib/hooks/useIsMobile.svelte';
 	import { goto } from '$app/navigation';
 	import { Input } from '$lib/components/ui/input';
+	import { MediaQuery } from 'svelte/reactivity';
 
-
+	const mediaQuery = new MediaQuery('max-width: 63.9rem');
+	const isMobile = $derived(mediaQuery.current);
 	const isActiveRoute = (path: string) => page.route.id === path;
-	const isMobile = useIsMobile();
 	let searchTerm = $state('');
 	let isMenuOpen = $state(false);
 	let isSearchOpen = $state(false);
@@ -90,7 +90,7 @@
 
 
 	$effect(() => {
-		if (!isMobile()) {
+		if (!isMobile) {
 			isMenuOpen = false;
 		}
 	});
@@ -150,7 +150,7 @@
 	<LogoComponent />
 
 	<!--		Desktop navigation-->
-	{#if !isMobile()}
+	{#if !isMobile}
 		{@render desktopNav()}
 	{/if}
 
@@ -160,7 +160,7 @@
 			<img alt="search" src={SearchIcon}>
 		</button>
 
-		{#if isMobile()}
+		{#if isMobile}
 			<button bind:this={menuButton} onclick={toggleMenu} aria-label="hamburger toggle"
 							class="w-8 justify-center cursor-pointer **:pointer-events-none">
 				{#if isMenuOpen}
