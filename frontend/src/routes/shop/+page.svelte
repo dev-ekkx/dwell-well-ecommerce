@@ -15,11 +15,16 @@
 		PrevButton as PaginationPrevButton,
 		Root as PaginationRoot
 	} from '$lib/components/ui/pagination/index.js';
-	import Caret from '$lib/assets/caret-up.svg';
+	import CaretIcon from '$lib/assets/caret-up.svg';
+	import FilterIcon from '$lib/assets/filter.svg';
+	import { MediaQuery } from 'svelte/reactivity';
 
 	const { data }: PageProps = $props();
 	const seoData = data.seo;
 	const filters = data.filters;
+
+	const mediaQuery = new MediaQuery('max-width: 63.9rem');
+	const isMobile = $derived(mediaQuery.current);
 
 	// Page state
 	const itemsPerPageOptions = $state([...ITEMS_PER_PAGE_OPTIONS]);
@@ -36,7 +41,6 @@
 	const endIndex = $derived(startIndex + +itemsPerPage);
 	const currentProducts = $derived(products.slice(startIndex, endIndex));
 
-	$inspect(currentPage);
 
 </script>
 
@@ -48,12 +52,21 @@
 <div class="flex flex-col gap-10">
 	<section class="g-px flex gap-6">
 		<!--	Filter and Sort -->
-		<div class="hidden xl:block">
+		<div class="hidden lg:block">
 			<FiltersAndSort {filters} />
 		</div>
 
 		<!--	main content -->
 		<div class="flex flex-col gap-6 flex-1">
+
+			<!--	Filter toggle button -->
+			{#if isMobile}
+				<button class="flex items-center gap-1 text-primary cursor-pointer font-semibold">
+					<img alt="filter" src={FilterIcon}>
+					<span>Toggle filters</span>
+				</button>
+			{/if}
+
 			<!-- Page heading -->
 			<div class="flex items-center gap-2">
 				<h4 class="font-bold md:text-2xl leading-8">Search results for beds</h4>
@@ -87,7 +100,7 @@
 							<PaginationContent>
 								<PaginationItem>
 									<PaginationPrevButton class="cursor-pointer">
-										<img src={Caret} class="-rotate-90" alt="caret-left" />
+										<img src={CaretIcon} class="-rotate-90" alt="caret-left" />
 									</PaginationPrevButton>
 								</PaginationItem>
 
@@ -106,7 +119,7 @@
 								{/each}
 								<PaginationItem>
 									<PaginationNextButton class="cursor-pointer">
-										<img src={Caret} class="rotate-90" alt="caret-left" />
+										<img src={CaretIcon} class="rotate-90" alt="caret-left" />
 									</PaginationNextButton>
 								</PaginationItem>
 							</PaginationContent>
