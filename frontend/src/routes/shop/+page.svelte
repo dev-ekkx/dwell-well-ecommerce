@@ -35,7 +35,7 @@
 	const isMobile = $derived(mediaQuery.current);
 
 	// Page state
-	let isDrawerOpen = $state(false);
+	let openFilters = $state(false);
 	const itemsPerPageOptions = $state([...ITEMS_PER_PAGE_OPTIONS]);
 	let itemsPerPage = $state('10');
 	let currentPage = $state(1);
@@ -67,18 +67,19 @@
 
 		<!--	main content -->
 		<div class="flex flex-col gap-6 flex-1">
-			<!--	Mobile Filter and Sort Drawer -->
-			<SheetRoot bind:open={isDrawerOpen}>
-				<SheetTrigger class="flex items-center gap-1 text-primary cursor-pointer font-semibold">
-					<img alt="filter" src={FilterIcon}>
-					<span>Toggle filters</span>
-				</SheetTrigger>
+			<!--	Mobile Filter and Sort sheet -->
+			<SheetRoot bind:open={openFilters}>
+				{#if isMobile}
+					<SheetTrigger class="flex -mb-4 items-center gap-1 text-primary cursor-pointer font-semibold">
+						<img alt="filter" src={FilterIcon}>
+						<span>Toggle filters</span>
+					</SheetTrigger>
+				{/if}
 				<SheetContent class="w-max p-4 overflow-y-scroll" side="left">
 					<section class="mt-10">
 						<FiltersAndSort {filters} />
 					</section>
 				</SheetContent>
-
 				<SheetOverlay class="backdrop-blur-xs" />
 			</SheetRoot>
 

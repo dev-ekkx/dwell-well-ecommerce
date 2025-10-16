@@ -184,6 +184,7 @@
 			<img alt="search" class="-mr-8 z-20" src={SearchIcon}>
 			<Input onkeydown={getSearchValue} bind:value={searchTerm}
 						 autofocus
+						 id="searchTerm"
 						 class="pl-10 placeholder:text-muted-foreground max-w-full" placeholder="Search..."
 						 type="search" />
 		</div>

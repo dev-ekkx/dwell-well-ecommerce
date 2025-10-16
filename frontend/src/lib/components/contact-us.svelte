@@ -102,6 +102,8 @@
 							{#if field.type === "textarea"}
       <Textarea
 				class="resize-none h-42"
+				id={field.name}
+				name={field.name}
 				placeholder={field.placeholder}
 				bind:value={contactForm[field.name]}
 				oninput={() => validateField(field.name)}
@@ -109,6 +111,9 @@
 			/>
 							{:else}
 								<Input
+									autocomplete="off"
+									id={field.name}
+									name={field.name}
 									type={field.type}
 									placeholder={field.placeholder}
 									bind:value={contactForm[field.name]}
