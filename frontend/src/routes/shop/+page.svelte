@@ -25,7 +25,16 @@
 	const itemsPerPageOptions = $state([...ITEMS_PER_PAGE_OPTIONS]);
 	let itemsPerPage = $state('10');
 	let currentPage = $state(1);
-	let totalItems = $state(150);
+	let products = $state(Array.from({ length: 32 }, (_, i) => ({
+		id: i + 1,
+		name: `Product ${i + 1}`
+	})));
+	let totalItems = $derived(products.length);
+
+	// Slice products for current page
+	const startIndex = $derived((currentPage - 1) * +itemsPerPage);
+	const endIndex = $derived(startIndex + +itemsPerPage);
+	const currentProducts = $derived(products.slice(startIndex, endIndex));
 
 	$inspect(currentPage);
 
@@ -47,38 +56,21 @@
 		<div class="flex flex-col gap-6 flex-1">
 			<!-- Page heading -->
 			<div class="flex items-center gap-2">
-				<h4 class="font-bold text-2xl leading-8">Search results for beds</h4>
-				<span class="text-muted-foreground">{formatNumberWithCommas(1500)}+ items found</span>
+				<h4 class="font-bold md:text-2xl leading-8">Search results for beds</h4>
+				<span class="text-muted-foreground text-xs sm:text-sm md:text-base">{formatNumberWithCommas(1500)}
+					+ items found</span>
 			</div>
 
 			<!--	Product items -->
 			<section class="flex flex-col gap-5 md:gap-7 xl:gap-10">
 				<div class="grid grid-cols-2 gap-4 gap-y-8 md:gap-y-12 sm:gap-6 md:grid-cols-3 xl:grid-cols-4">
-					<ProductCard />
-					<ProductCard />
-					<ProductCard />
-					<ProductCard />
-					<ProductCard />
-					<ProductCard />
-					<ProductCard />
-					<ProductCard />
-					<ProductCard />
-					<ProductCard />
-					<ProductCard />
-					<ProductCard />
-					<ProductCard />
-					<ProductCard />
-					<ProductCard />
-					<ProductCard />
-					<ProductCard />
-					<ProductCard />
-					<ProductCard />
-					<ProductCard />
-					<ProductCard />
+					{#each currentProducts as product (product.id)}
+						<ProductCard />
+					{/each}
 				</div>
 
 				<!-- Items per page and pagination -->
-				<div class="flex items-center justify-between gap-4">
+				<div class="flex items-center justify-between gap-4 mt-6 md:mt-8 xl:mt-10">
 					<!--	Items per page select -->
 					<Root bind:value={itemsPerPage} type="single">
 						<Trigger class="w-16">{itemsPerPage}</Trigger>
@@ -90,7 +82,7 @@
 					</Root>
 
 					<!-- Pagination -->
-					<PaginationRoot count={totalItems} perPage={+itemsPerPage}>
+					<PaginationRoot bind:page={currentPage} count={totalItems} perPage={+itemsPerPage}>
 						{#snippet children({ pages, currentPage })}
 							<PaginationContent>
 								<PaginationItem>
@@ -120,9 +112,7 @@
 							</PaginationContent>
 						{/snippet}
 					</PaginationRoot>
-
 				</div>
-
 			</section>
 		</div>
 	</section>

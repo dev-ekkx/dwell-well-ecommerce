@@ -50,6 +50,7 @@ export interface ProductI {
 	sizes: string[];
 	availability: string;
 	style: string[];
+	oldPrice?: number;
 	price: number;
 	averageRating: number;
 	reviewCount: number;
@@ -275,4 +276,13 @@ export interface FiltersI {
 	styles: FilterI[];
 	sizes: FilterI[];
 	availabilities: FilterI[];
+}
+
+// Product card interface
+export interface ProductCardI
+	extends Pick<
+		ProductI,
+		"id" | "sku" | "slug" | "oldPrice" | "price" | "averageRating" | "reviewCount"
+	> {
+	name: string;
 }
