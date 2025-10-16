@@ -54,7 +54,7 @@
 	const startIndex = $derived((currentPage - 1) * +itemsPerPage);
 	const endIndex = $derived(startIndex + +itemsPerPage);
 	const currentProducts = $derived(products.slice(startIndex, endIndex));
-	
+
 	const setRouteParams = () => {
 		const params = new SvelteURLSearchParams(page.url.searchParams);
 		params.set('page', String(currentPage));
@@ -63,7 +63,7 @@
 		goto(resolve(`${page.url.pathname}?${params.toString()}` as RouteId), {
 			replaceState: true,
 			keepFocus: true,
-			noScroll: true
+			noScroll: false
 		});
 	};
 
