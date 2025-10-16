@@ -3,15 +3,19 @@
 	import { formatNumberWithCommas } from '$lib/utils';
 	import { type ConfigI, StarRating } from '@dev-ekkx/svelte-star-rating';
 	import CartIcon from '$lib/assets/cart.svg';
+	import { useIsMobile } from '$lib/hooks/useIsMobile.svelte';
 
-	const config = $state<ConfigI>({
+	const isMobile = useIsMobile();
+
+
+	const config = $derived<ConfigI>({
 		readonly: true,
 		maxVal: 5,
 		minVal: 0,
 		step: 0.1,
 		numOfStars: 5,
 		starConfig: {
-			size: 12,
+			size: isMobile() ? 11 : 14,
 			filledColor: '#F98416',
 			unfilledColor: '#5D5D5D'
 		},
@@ -39,11 +43,11 @@
 				 src={ProductImage}>
 	</div>
 
-	<div class="flex flex-col gap-2">
+	<div class="flex flex-col gap-1">
 		<span class="font-semibold text-xl leading-7">Product name</span>
 		<span class="flex items-center gap-1">
 			<StarRating bind:value {config} />
-	<span class="text-muted-foreground">4.8 (120 Reviews)</span>
+	<span class="text-muted-foreground text-sm">4.8 (120 Reviews)</span>
 		</span>
 		<span class="flex items-center gap-1 font-bold text-xl leading-7">
 			<span class="text-muted-foreground line-through">${formatNumberWithCommas(400)}</span>
