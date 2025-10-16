@@ -192,15 +192,17 @@
 
 <!--Mobile Menu component-->
 {#if isMenuOpen}
-	<section bind:this={menu} class="h-max fixed z-20 top-[8vh] left-0 w-full bg-white g-px pb-4 shadow-md">
-		<div class="flex flex-col gap-8 pt-6">
-			{@render navigation(true)}
-			<a
-				onclick="{isMenuOpen ? toggleMenu : null}"
-				href="/login"
-				class="w-full py-2 rounded-lg flex items-center justify-center text-white bg-primary hover:opacity-80 transition-all duration-200 ease-linear">login</a>
-		</div>
-	</section>
+	<div class="bg-black/60 backdrop-blur-xs fixed z-20 top-0 h-screen w-screen">
+		<section bind:this={menu} class="h-max fixed z-20 top-[8vh] left-0 w-full bg-white g-px pb-4 shadow-md">
+			<div class="flex flex-col gap-8 pt-6">
+				{@render navigation(true)}
+				<a
+					onclick="{isMenuOpen ? toggleMenu : null}"
+					href="/login"
+					class="w-full py-2 rounded-lg flex items-center justify-center text-white bg-primary hover:opacity-80 transition-all duration-200 ease-linear">login</a>
+			</div>
+		</section>
+	</div>
 {/if}
 
 <!-- Desktop	Navigation-->

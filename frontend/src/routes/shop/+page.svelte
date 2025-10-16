@@ -17,11 +17,11 @@
 	} from '$lib/components/ui/pagination/index.js';
 
 	import {
-		Content as DrawerContent,
-		Overlay as DrawerOverlay,
-		Root as DrawerRoot,
-		Trigger as DrawerTrigger
-	} from '$lib/components/ui/drawer/index.js';
+		Content as SheetContent,
+		Overlay as SheetOverlay,
+		Root as SheetRoot,
+		Trigger as SheetTrigger
+	} from '$lib/components/ui/sheet/index.js';
 
 	import CaretIcon from '$lib/assets/caret-up.svg';
 	import FilterIcon from '$lib/assets/filter.svg';
@@ -68,19 +68,19 @@
 		<!--	main content -->
 		<div class="flex flex-col gap-6 flex-1">
 			<!--	Mobile Filter and Sort Drawer -->
-			<DrawerRoot bind:open={isDrawerOpen}>
-				<DrawerTrigger class="flex items-center gap-1 text-primary cursor-pointer font-semibold">
+			<SheetRoot bind:open={isDrawerOpen}>
+				<SheetTrigger class="flex items-center gap-1 text-primary cursor-pointer font-semibold">
 					<img alt="filter" src={FilterIcon}>
 					<span>Toggle filters</span>
-				</DrawerTrigger>
-				<DrawerContent class="w-max h-max bg-red-600 p-4 overflow-y-scroll">
-					<section class="py-4 bg-blue-600">
+				</SheetTrigger>
+				<SheetContent class="w-max p-4 overflow-y-scroll" side="left">
+					<section class="mt-10">
 						<FiltersAndSort {filters} />
 					</section>
-				</DrawerContent>
+				</SheetContent>
 
-				<DrawerOverlay class="backdrop-blur-xs" />
-			</DrawerRoot>
+				<SheetOverlay class="backdrop-blur-xs" />
+			</SheetRoot>
 
 			<!-- Page heading -->
 			<div class="flex items-center gap-2">
