@@ -10,11 +10,11 @@
       "relation": "oneToOne",
       "target": "api::country.country"
     },
-    "is_available": {
+    "isAvailable": {
       "type": "boolean",
       "default": false
     },
-    "sales_reps": {
+    "salesReps": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::sales-rep.sales-rep"

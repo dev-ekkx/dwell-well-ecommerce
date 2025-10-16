@@ -2,19 +2,21 @@
 	import type { LayoutProps } from './$types';
 	import AuthBackground from '$lib/assets/images/auth-bg.webp';
 	import { page } from '$app/state';
-	import { useIsMobile } from '$lib/hooks/useIsMobile.svelte';
 	import { cn } from '$lib/utils';
 	import Logo from '$lib/components/logo.svelte';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Label } from '$lib/components/ui/label';
 	import { Button } from '$lib/components/ui/button';
 	import { setContext } from 'svelte';
+	import { MediaQuery } from 'svelte/reactivity';
 
 	const { children, data }: LayoutProps = $props();
 	const route = $derived(page.url.href.split('/').pop()) as 'login' | 'signup';
 	const title = $derived(route === 'login' ? 'Login' : 'Create an Account');
 	const description = $derived(route === 'login' ? 'Welcome back! Please enter your details to continue.' : 'Join us to enjoy personalized features.');
-	const isMobile = useIsMobile();
+
+	const mediaQuery = new MediaQuery('max-width: 63.9rem');
+	const isMobile = $derived(mediaQuery.current);
 
 	let agreeToTermsAndConditions = $state(false);
 
@@ -54,7 +56,7 @@
 
 
 <div class={cn('grid h-screen overflow-y-clip', {
-	'grid-cols-1 md:grid-cols-2': !isMobile(),
+	'grid-cols-1 md:grid-cols-2': !isMobile,
 })}>
 	<div class="flex items-center justify-center bg-white h-screen">
 		<form class="flex flex-col h-full gap-4 w-full items-center justify-center px-6 sm:max-w-xl"
@@ -96,8 +98,8 @@
 	<div class="h-full">
 		<img alt="authentication"
 				 class={cn("object-cover object-bottom", {
-		"w-full h-screen": !isMobile(),
-		"w-0 h-0": isMobile(),
+		"w-full h-screen": !isMobile,
+		"w-0 h-0": isMobile,
 	})}
 				 src={AuthBackground} />
 	</div>

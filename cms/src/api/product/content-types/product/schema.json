@@ -38,10 +38,34 @@
         "audios"
       ]
     },
-    "availability": {
+    "regionalAvailability": {
       "type": "component",
       "component": "regional-control.regional-availability",
       "repeatable": true
+    },
+    "categories": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::category.category",
+      "mappedBy": "products"
+    },
+    "sizes": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::size.size",
+      "inversedBy": "products"
+    },
+    "styles": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::style.style",
+      "inversedBy": "products"
+    },
+    "availability": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::availability.availability",
+      "inversedBy": "products"
     }
   }
 }

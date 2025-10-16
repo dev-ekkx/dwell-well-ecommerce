@@ -20,7 +20,7 @@
       "required": true,
       "unique": true
     },
-    "profile_picture": {
+    "profilePicture": {
       "type": "media",
       "multiple": false,
       "allowedTypes": [

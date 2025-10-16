@@ -1,12 +1,13 @@
 <script lang="ts">
-	import { useIsMobile } from '$lib/hooks/useIsMobile.svelte';
 	import Picture from '$lib/components/picture.svelte';
-	import type { PageProps } from './$types';
+	import { MediaQuery } from 'svelte/reactivity';
+	import type { WhyChooseUsI } from '$lib/interfaces';
 
-	const { whyChooseUsData }: PageProps = $props();
+	const { whyChooseUsData }: { whyChooseUsData: WhyChooseUsI } = $props();
 	const reasons = whyChooseUsData?.reasons;
 
-	const isMobile = useIsMobile();
+	const mediaQuery = new MediaQuery('max-width: 63.9rem');
+	const isMobile = $derived(mediaQuery.current);
 	const cmsBaseUrl = import.meta.env.VITE_CMS_URL;
 
 </script>
@@ -29,7 +30,7 @@
 			{/each}
 		</div>
 	</section>
-	{#if !isMobile()}
+	{#if !isMobile}
 		<Picture alt="product"
 						 class="object-cover max-h-[38rem] max-w-[40vw] rounded-2xl"
 						 src={`${cmsBaseUrl}${whyChooseUsData.image.url}`}

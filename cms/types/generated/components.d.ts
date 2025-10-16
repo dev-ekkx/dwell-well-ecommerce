@@ -232,8 +232,8 @@ export interface RegionalControlCountrySpecifics
   };
   attributes: {
     country: Schema.Attribute.Relation<'oneToOne', 'api::country.country'>;
-    is_available: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
-    sales_reps: Schema.Attribute.Relation<
+    isAvailable: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    salesReps: Schema.Attribute.Relation<
       'oneToMany',
       'api::sales-rep.sales-rep'
     >;
@@ -247,7 +247,7 @@ export interface RegionalControlRegionalAvailability
     displayName: 'RegionalAvailability';
   };
   attributes: {
-    country_settings: Schema.Attribute.Component<
+    countrySettings: Schema.Attribute.Component<
       'regional-control.country-specifics',
       true
     >;

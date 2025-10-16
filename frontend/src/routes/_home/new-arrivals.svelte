@@ -94,7 +94,7 @@
 </script>
 
 
-<section bind:this={container} class="flex flex-col gap-6 g-mt overflow-x-clip">
+<section bind:this={container} class="flex flex-col gap-6 g-mt overflow-x-clip g-mb">
 	<!--	Category title and arrow buttons -->
 	<div class="flex items-center justify-between capitalize gap-4">
 		<span

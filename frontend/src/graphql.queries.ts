@@ -15,3 +15,24 @@ export const GET_SHOWROOMS_QUERY = gql`
 		}
 	}
 `;
+
+export const GET_FILTERS = gql`
+	query Filters {
+		categories {
+			name
+			slug
+		}
+		styles {
+			name
+			slug
+		}
+		sizes {
+			name
+			slug
+		}
+		availabilities {
+			name
+			slug
+		}
+	}
+`;

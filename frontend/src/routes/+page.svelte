@@ -5,12 +5,12 @@
 	import FlashSales from './_home/flash-sales.svelte';
 	import NewArrivals from './_home/new-arrivals.svelte';
 	import type { PageProps } from './$types';
-	import type { PageI } from '$lib/interfaces';
+	import type { HeroI, PageI } from '$lib/interfaces';
 	import { setContext } from 'svelte';
 
 	const { data }: PageProps = $props();
 	const homePageData = data.homepage as PageI;
-	const heroData = homePageData.contentSections.find(item => item.__component === 'page-controls.hero')!;
+	const heroData = homePageData.contentSections.find(item => item.__component === 'page-controls.hero') as HeroI;
 	const seoData = homePageData.seo;
 	const whyChooseUsData = homePageData.contentSections.find(
 		item => item.__component === 'page-controls.why-choose-us'

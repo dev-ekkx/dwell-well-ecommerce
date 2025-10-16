@@ -5,6 +5,57 @@ export interface ButtonI extends HTMLButtonAttributes {
 	direction: "left" | "right";
 }
 
+export interface FilterDropdownI {
+	title: string;
+	options?: FilterI[];
+	selectedOptions?: string[];
+	selectedSlides?: number[];
+	maxSlideValue?: number;
+	type?: "checkbox" | "slider";
+}
+
+// Category interface
+export interface CategoryI {
+	id: number;
+	name: string;
+	slug: string;
+}
+
+// Country-specific details
+export interface CountrySpecificsI {
+	id: number;
+	isAvailable: boolean;
+	country: CountryI;
+	// Assuming SalesRepI would be defined elsewhere
+	salesReps: unknown[];
+}
+
+// Regional availability
+export interface RegionalAvailabilityI {
+	id: number;
+	region: RegionI;
+	countrySettings: CountrySpecificsI[];
+}
+
+//Product interface
+export interface ProductI {
+	id: number;
+	sku: string;
+	name: string;
+	slug: string;
+	summary: string;
+	images: StrapiImageI[];
+	categories: CategoryI[];
+	regionalAvailability: RegionalAvailabilityI[];
+	sizes: string[];
+	availability: string;
+	style: string[];
+	oldPrice?: number;
+	price: number;
+	averageRating: number;
+	reviewCount: number;
+}
+
 // Interface for a region (continent)
 export interface RegionI {
 	name: string;
@@ -170,6 +221,7 @@ export interface GlobalReachI {
 	__component: string;
 	id: number;
 	title: string;
+	sectionId?: string;
 	description: string;
 	reaches: GlobalReachItemI[];
 }
@@ -179,6 +231,7 @@ export interface GlobalPresenceI {
 	__component: string;
 	id: number;
 	title: string;
+	sectionId?: string;
 	description: string;
 	locationLatLng: {
 		lat: number;
@@ -198,6 +251,7 @@ export interface LeadershipTeamI {
 	__component: string;
 	id: number;
 	title: string;
+	sectionId?: string;
 	description: string;
 	team: TeamMemberI[];
 }
@@ -208,4 +262,27 @@ export interface PageI {
 	title: string;
 	seo: SeoI;
 	contentSections: ContentSectionT[];
+}
+
+// Interface for filter options
+export interface FilterI {
+	name: string;
+	slug: string;
+}
+
+// Interface for all filter categories
+export interface FiltersI {
+	categories: FilterI[];
+	styles: FilterI[];
+	sizes: FilterI[];
+	availabilities: FilterI[];
+}
+
+// Product card interface
+export interface ProductCardI
+	extends Pick<
+		ProductI,
+		"id" | "sku" | "slug" | "oldPrice" | "price" | "averageRating" | "reviewCount"
+	> {
+	name: string;
 }

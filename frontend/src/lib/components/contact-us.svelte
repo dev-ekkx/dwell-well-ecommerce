@@ -3,7 +3,7 @@
 	// import Person1Img from '$lib/assets/images/person1.jpg';
 	import PhoneIcon from '$lib/assets/phone.svg';
 	import EmailIcon from '$lib/assets/email.svg';
-	import { Button } from '$lib/components/ui/button/index';
+	import { Button } from '$lib/components/ui/button';
 	import type { ContactFormFieldT, InputT, QuestionT } from '$lib/types';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { QuestionFormSchema } from '$lib/schema';
@@ -102,6 +102,8 @@
 							{#if field.type === "textarea"}
       <Textarea
 				class="resize-none h-42"
+				id={field.name}
+				name={field.name}
 				placeholder={field.placeholder}
 				bind:value={contactForm[field.name]}
 				oninput={() => validateField(field.name)}
@@ -109,6 +111,9 @@
 			/>
 							{:else}
 								<Input
+									autocomplete="off"
+									id={field.name}
+									name={field.name}
 									type={field.type}
 									placeholder={field.placeholder}
 									bind:value={contactForm[field.name]}

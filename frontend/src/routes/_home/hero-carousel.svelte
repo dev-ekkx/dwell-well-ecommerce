@@ -4,11 +4,12 @@
 	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 	import { getContext, onDestroy, onMount } from 'svelte';
 	import ArrowButton from '$lib/components/arrow-button.svelte';
+	import type { StrapiImageI } from '$lib/interfaces';
 
 	// Register plugin
 	gsap.registerPlugin(Flip, ScrollTrigger);
 
-	const heroImages = getContext('hero-images');
+	const heroImages = getContext('hero-images') as StrapiImageI[];
 	let intervalId: number;
 
 	let carouselSection = $state<HTMLElement>();

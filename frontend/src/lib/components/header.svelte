@@ -10,19 +10,48 @@
 	import CloseIcon from '$lib/assets/close.svg';
 	import { gsap } from 'gsap';
 	import { onMount, tick } from 'svelte';
-	import { useIsMobile } from '$lib/hooks/useIsMobile.svelte';
 	import { goto } from '$app/navigation';
+	import { Input } from '$lib/components/ui/input';
+	import { MediaQuery, SvelteURLSearchParams } from 'svelte/reactivity';
+	import type { RouteId } from '$app/types';
 
+	const mediaQuery = new MediaQuery('max-width: 63.9rem');
+	const isMobile = $derived(mediaQuery.current);
 	const isActiveRoute = (path: string) => page.route.id === path;
-	const isMobile = useIsMobile();
-
 	let isMenuOpen = $state(false);
-	let showSearchInput = $state(false);
+	let showMenuOverlay = $state(false);
+	let isSearchOpen = $state(false);
 	let menu = $state<HTMLElement | null>(null);
-	let toggleButton = $state<HTMLElement | null>(null);
+	let searchMenu = $state<HTMLElement | null>(null);
+	let menuButton = $state<HTMLElement | null>(null);
 	let searchButton = $state<HTMLElement | null>(null);
+	let searchTerm = $state('');
+	
+	const getSearchValue = (e: Event) => {
+		const target = e.target as HTMLInputElement;
+		const newSearchTerm = target.value;
+
+		if (e instanceof KeyboardEvent && e.key === 'Enter') {
+			e.preventDefault();
+
+			if (!newSearchTerm) {
+				return;
+			}
+
+			const localizedPath = resolve('/shop');
+			const params = new SvelteURLSearchParams(page.url.searchParams);
+			params.set('q', newSearchTerm);
+			goto(resolve(`${localizedPath}?${params.toString()}` as RouteId));
+
+			if (isSearchOpen) {
+				toggleSearch();
+			}
+		}
+	};
+
 
 	async function toggleMenu() {
+		showMenuOverlay = !showMenuOverlay;
 		if (isMenuOpen && menu) {
 			// Start animate out
 			await gsap.to(menu, {
@@ -47,23 +76,70 @@
 		}
 	}
 
+	async function toggleSearch() {
+		if (isSearchOpen && searchMenu) {
+			// Start animate out
+			await gsap.to(searchMenu, {
+				y: '-200%',
+				duration: 0.4,
+				ease: 'power1.out',
+				onComplete: () => {
+					isSearchOpen = false;
+				}
+			});
+		} else {
+			isSearchOpen = true;
+			await tick();
+			if (searchMenu) {
+				// Animate in
+				gsap.fromTo(
+					searchMenu,
+					{ y: '-100%' },
+					{ y: 0, duration: 0.3, ease: 'power1.out' }
+				);
+			}
+		}
+	}
+
+	const handleInput = () => {
+		if (page.url.pathname === '/shop' && !searchTerm.length) {
+			const params = new SvelteURLSearchParams(page.url.searchParams);
+			params.set('q', '');
+			goto(resolve('/shop'));
+		}
+	};
+
 	$effect(() => {
-		if (!isMobile()) {
+		if (!isMobile) {
 			isMenuOpen = false;
 		}
 	});
 
+
 	onMount(() => {
+		// Set search term on page mount
+		searchTerm = (page.url.searchParams.get('q') ?? '');
+
 		// Handle click outside to close menu
 		const handleClickOutside = (event: MouseEvent) => {
 			if (
 				isMenuOpen &&
 				menu &&
-				toggleButton &&
+				menuButton &&
 				!menu.contains(event.target as Node) &&
-				!toggleButton.contains(event.target as Node)
+				!menuButton.contains(event.target as Node)
 			) {
 				toggleMenu();
+			}
+
+			if (
+				isSearchOpen &&
+				searchMenu &&
+				searchButton &&
+				!searchMenu.contains(event.target as Node) &&
+				!searchButton.contains(event.target as Node)
+			) {
+				toggleSearch();
 			}
 		};
 		document.addEventListener('click', handleClickOutside);
@@ -81,6 +157,9 @@
 		if (isMenuOpen) {
 			toggleMenu();
 		}
+		if (isSearchOpen) {
+			toggleSearch();
+		}
 		goto(resolve('/login'));
 	};
 
@@ -94,18 +173,18 @@
 	<LogoComponent />
 
 	<!--		Desktop navigation-->
-	{#if !isMobile()}
+	{#if !isMobile}
 		{@render desktopNav()}
 	{/if}
 
-	<!--	Search and Login -->
+	<!--	Search and Login buttons -->
 	<div class="flex items-center gap-6">
-		<button aria-label="search" bind:this={searchButton} class="cursor-pointer">
+		<button aria-label="search" bind:this={searchButton} class="cursor-pointer" onclick={toggleSearch}>
 			<img alt="search" src={SearchIcon}>
 		</button>
 
-		{#if isMobile()}
-			<button bind:this={toggleButton} onclick={toggleMenu} aria-label="hamburger toggle"
+		{#if isMobile}
+			<button bind:this={menuButton} onclick={toggleMenu} aria-label="hamburger toggle"
 							class="w-8 justify-center cursor-pointer **:pointer-events-none">
 				{#if isMenuOpen}
 					<img src={CloseIcon} alt="close">
@@ -120,15 +199,27 @@
 </header>
 
 <!--Search menu-->
-<!--<div class="relative w-full max-w-lg">-->
-<!--	<img alt="search" class="absolute top-1/2 left-1 -translate-y-1/2" src={SearchIcon}>-->
-<!--	<Input class="pl-10 placeholder:text-muted-foreground border-muted-foreground"-->
-<!--				 placeholder="Search..." />-->
-<!--</div>-->
+{#if isSearchOpen}
+	<div bind:this={searchMenu} class="fixed w-full g-px py-2 backdrop-blur-xs z-20 top-[8vh] ">
+		<div class="flex">
+			<img alt="search" class="-mr-8 z-20" src={SearchIcon}>
+			<Input onkeydown={getSearchValue} bind:value={searchTerm}
+						 oninput={handleInput}
+						 autofocus
+						 id="searchTerm"
+						 class="pl-10 placeholder:text-muted-foreground max-w-full" placeholder="Search..."
+						 type="search" />
+		</div>
+	</div>
+{/if}
 
 <!--Mobile Menu component-->
+{#if showMenuOverlay}
+	<div class="bg-black/60 backdrop-blur-xs fixed z-20 top-0 h-screen w-screen">
+	</div>
+{/if}
 {#if isMenuOpen}
-	<section bind:this={menu} class="h-max fixed z-10 top-[8vh] left-0 w-full bg-white g-px pb-4 shadow-md">
+	<section bind:this={menu} class="h-max fixed z-20 top-[8vh] left-0 w-full bg-white g-px pb-4 shadow-md">
 		<div class="flex flex-col gap-8 pt-6">
 			{@render navigation(true)}
 			<a
