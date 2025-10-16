@@ -4,6 +4,7 @@
 	import FiltersAndSort from './filter-and-sort.svelte';
 	import ProductCard from './product-card.svelte';
 	import ContactUs from '$lib/components/contact-us.svelte';
+	import { page } from '$app/state';
 	import { ITEMS_PER_PAGE_OPTIONS } from '$lib/constants';
 	import { Content, Item, Root, Trigger } from '$lib/components/ui/select';
 	import {
@@ -25,7 +26,11 @@
 
 	import CaretIcon from '$lib/assets/caret-up.svg';
 	import FilterIcon from '$lib/assets/filter.svg';
-	import { MediaQuery } from 'svelte/reactivity';
+	import { MediaQuery, SvelteURLSearchParams } from 'svelte/reactivity';
+	import { onMount } from 'svelte';
+	import { resolve } from '$app/paths';
+	import { goto } from '$app/navigation';
+	import type { RouteId } from '$app/types';
 
 	const mediaQuery = new MediaQuery('max-width: 63.9rem');
 	const { data }: PageProps = $props();
@@ -37,8 +42,8 @@
 	// Page state
 	let openFilters = $state(false);
 	const itemsPerPageOptions = $state([...ITEMS_PER_PAGE_OPTIONS]);
-	let itemsPerPage = $state('10');
-	let currentPage = $state(1);
+	let currentPage = $state(parseInt(page.url.searchParams.get('page') || '1'));
+	let itemsPerPage = $state((page.url.searchParams.get('perPage') || '10'));
 	let products = $state(Array.from({ length: 32 }, (_, i) => ({
 		id: i + 1,
 		name: `Product ${i + 1}`
@@ -49,8 +54,31 @@
 	const startIndex = $derived((currentPage - 1) * +itemsPerPage);
 	const endIndex = $derived(startIndex + +itemsPerPage);
 	const currentProducts = $derived(products.slice(startIndex, endIndex));
+	
+	const setRouteParams = () => {
+		const params = new SvelteURLSearchParams(page.url.searchParams);
+		params.set('page', String(currentPage));
+		params.set('perPage', String(itemsPerPage));
 
+		goto(resolve(`${page.url.pathname}?${params.toString()}` as RouteId), {
+			replaceState: true,
+			keepFocus: true,
+			noScroll: true
+		});
+	};
 
+	const handleItemsPerPage = () => {
+		currentPage = 1;
+		setRouteParams();
+	};
+
+	const handlePageChange = () => {
+		setRouteParams();
+	};
+
+	onMount(() => {
+		setRouteParams();
+	});
 </script>
 
 <svelte:head>
@@ -103,7 +131,7 @@
 				<!-- Items per page and pagination -->
 				<div class="flex items-center justify-between gap-4 mt-6 md:mt-8 xl:mt-10">
 					<!--	Items per page select -->
-					<Root bind:value={itemsPerPage} type="single">
+					<Root bind:value={itemsPerPage} onValueChange={handleItemsPerPage} type="single">
 						<Trigger class="w-16">{itemsPerPage}</Trigger>
 						<Content>
 							{#each itemsPerPageOptions as option(option)}
@@ -113,7 +141,8 @@
 					</Root>
 
 					<!-- Pagination -->
-					<PaginationRoot bind:page={currentPage} count={totalItems} perPage={+itemsPerPage}>
+					<PaginationRoot bind:page={currentPage} count={totalItems} onPageChange={handlePageChange}
+													perPage={+itemsPerPage}>
 						{#snippet children({ pages, currentPage })}
 							<PaginationContent>
 								<PaginationItem>
