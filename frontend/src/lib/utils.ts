@@ -1,5 +1,10 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import type { RouteId } from "$app/types";
+import { SvelteURLSearchParams } from "svelte/reactivity";
+import { page } from "$app/state";
+import { goto } from "$app/navigation";
+import { resolve } from "$app/paths";
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -13,6 +18,27 @@ export function cn(...inputs: ClassValue[]) {
 export function formatNumberWithCommas(num: number): string {
 	return num.toLocaleString("en-Gh");
 }
+
+export const setRouteParams = async (paramsToSet: Record<string, string | number>) => {
+	const currentUrl = page.url.searchParams;
+	// Create a new URLSearchParams object based on the current URL's params
+	const newParams = new SvelteURLSearchParams(currentUrl);
+
+	// Iterate over the new parameters and set them
+	for (const [key, value] of Object.entries(paramsToSet)) {
+		newParams.set(key, String(value));
+	}
+
+	// Construct the new URL path with the updated parameters
+	const newPath = `${page.url.pathname}?${newParams.toString()}` as RouteId;
+
+	// Navigate to the new URL
+	await goto(resolve(newPath), {
+		replaceState: true,
+		keepFocus: true,
+		noScroll: false
+	});
+};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type WithoutChild<T> = T extends { child?: any } ? Omit<T, "child"> : T;

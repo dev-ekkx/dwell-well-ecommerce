@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
-	import { formatNumberWithCommas } from '$lib/utils';
+	import { formatNumberWithCommas, setRouteParams } from '$lib/utils';
 	import FiltersAndSort from './filter-and-sort.svelte';
 	import ProductCard from './product-card.svelte';
 	import ContactUs from '$lib/components/contact-us.svelte';
@@ -26,11 +26,8 @@
 
 	import CaretIcon from '$lib/assets/caret-up.svg';
 	import FilterIcon from '$lib/assets/filter.svg';
-	import { MediaQuery, SvelteURLSearchParams } from 'svelte/reactivity';
+	import { MediaQuery } from 'svelte/reactivity';
 	import { onMount } from 'svelte';
-	import { resolve } from '$app/paths';
-	import { goto } from '$app/navigation';
-	import type { RouteId } from '$app/types';
 
 	const mediaQuery = new MediaQuery('max-width: 63.9rem');
 	const { data }: PageProps = $props();
@@ -55,29 +52,25 @@
 	const endIndex = $derived(startIndex + +itemsPerPage);
 	const currentProducts = $derived(products.slice(startIndex, endIndex));
 
-	const setRouteParams = () => {
-		const params = new SvelteURLSearchParams(page.url.searchParams);
-		params.set('page', String(currentPage));
-		params.set('perPage', String(itemsPerPage));
-
-		goto(resolve(`${page.url.pathname}?${params.toString()}` as RouteId), {
-			replaceState: true,
-			keepFocus: true,
-			noScroll: false
+	const setParams = () => {
+		setRouteParams({
+			page: currentPage,
+			perPage: itemsPerPage
 		});
 	};
 
 	const handleItemsPerPage = () => {
 		currentPage = 1;
-		setRouteParams();
+		setParams();
+
 	};
 
 	const handlePageChange = () => {
-		setRouteParams();
+		setParams();
 	};
 
 	onMount(() => {
-		setRouteParams();
+		setParams();
 	});
 </script>
 
