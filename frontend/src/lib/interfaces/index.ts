@@ -12,6 +12,7 @@ export interface FilterDropdownI {
 	selectedSlides?: number[];
 	maxSlideValue?: number;
 	type?: "checkbox" | "slider";
+	onValueChange?: () => void;
 }
 
 // Category interface

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { ROUTE_NAVS } from '$lib/constants';
 	import { resolve } from '$app/paths';
-	import { cn } from '$lib/utils';
+	import { cn, setRouteParams } from '$lib/utils';
 	import { page } from '$app/state';
 	import SearchIcon from '$lib/assets/search.svg';
 	import { Button } from '$lib/components/ui/button';
@@ -26,7 +26,7 @@
 	let menuButton = $state<HTMLElement | null>(null);
 	let searchButton = $state<HTMLElement | null>(null);
 	let searchTerm = $state('');
-	
+
 	const getSearchValue = (e: Event) => {
 		const target = e.target as HTMLInputElement;
 		const newSearchTerm = target.value;
@@ -103,9 +103,10 @@
 
 	const handleInput = () => {
 		if (page.url.pathname === '/shop' && !searchTerm.length) {
-			const params = new SvelteURLSearchParams(page.url.searchParams);
-			params.set('q', '');
-			goto(resolve('/shop'));
+			// const params = new SvelteURLSearchParams(page.url.searchParams);
+			// params.set('q', '');
+			// goto(resolve('/shop'));
+			setRouteParams({ q: '' });
 		}
 	};
 

@@ -5,6 +5,7 @@ export const load: LayoutLoad = async ({ fetch }) => {
 	try {
 		const footerData = await fetch(import.meta.env.VITE_CMS_URL + "/api/footer?populate=all");
 		const data = (await footerData.json()).data as FooterI;
+
 		return {
 			footer: data
 		};

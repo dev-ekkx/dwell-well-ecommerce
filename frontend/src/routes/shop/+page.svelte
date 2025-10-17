@@ -33,7 +33,7 @@
 	const { data }: PageProps = $props();
 	const seoData = data.seo;
 	const filters = data.filters;
-	const searchTerm = $derived(data.searchTerm);
+	const searchTerm = $derived(page.url.searchParams.get('q') || '');
 	const isMobile = $derived(mediaQuery.current);
 
 	// Page state

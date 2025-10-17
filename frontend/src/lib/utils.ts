@@ -19,7 +19,10 @@ export function formatNumberWithCommas(num: number): string {
 	return num.toLocaleString("en-Gh");
 }
 
-export const setRouteParams = async (paramsToSet: Record<string, string | number>) => {
+export const setRouteParams = async (
+	paramsToSet: Record<string, string | number>,
+	noScroll = false
+) => {
 	const currentUrl = page.url.searchParams;
 	// Create a new URLSearchParams object based on the current URL's params
 	const newParams = new SvelteURLSearchParams(currentUrl);
@@ -36,7 +39,7 @@ export const setRouteParams = async (paramsToSet: Record<string, string | number
 	await goto(resolve(newPath), {
 		replaceState: true,
 		keepFocus: true,
-		noScroll: false
+		noScroll
 	});
 };
 

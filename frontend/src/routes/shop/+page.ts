@@ -6,9 +6,6 @@ import { error } from "@sveltejs/kit";
 
 export const load: PageLoad = async ({ fetch, data }) => {
 	const cmsBaseUrl = import.meta.env.VITE_CMS_URL;
-	const searchTerm = String(data?.searchTerm);
-	console.log(data);
-
 	// Fetch the shop page data from the CMS
 	const shopPagePromise = await fetch(
 		`${cmsBaseUrl}/api/pages?filters[slug][$eq]=shop&populate=all`
@@ -33,7 +30,6 @@ export const load: PageLoad = async ({ fetch, data }) => {
 	const filters = filtersPromise.data as FiltersI;
 	return {
 		filters,
-		searchTerm,
 		seo: shopPageSeo
 	};
 };

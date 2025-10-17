@@ -1,14 +1,15 @@
 <script lang="ts">
-	import { cn } from '$lib/utils.js';
+	import { cn, setRouteParams } from '$lib/utils.js';
 	import CaretUp from '$lib/assets/caret-up.svg';
 	import { Item, Root } from '$lib/components/ui/radio-group/index.js';
 	import FilterDropdown from '$lib/components/filter-dropdown.svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import gsap from 'gsap';
-	import { tick } from 'svelte';
+	import { onMount, tick } from 'svelte';
+	import { page } from '$app/state';
 
-	const { filters } = $props();
+	const { filters: filterOptions } = $props();
 
 	let isFiltersOpen = $state(true);
 	let isSortingOpen = $state(true);
@@ -30,8 +31,14 @@
 	let selectedStyles = $state<string[]>([]);
 	let maxSlideValue = $state(5000);
 	let selectedPriceRange = $state<[number, number]>([0, 5000]);
-	let selectedSorting = $state('');
-
+	let sort = $state('');
+	let filters = $state({
+		categories: [''],
+		sizes: [''],
+		styles: [''],
+		availabilities: [''],
+		priceRanges: [0, 5000]
+	});
 
 	const toggleContainer = async (
 		container: HTMLElement | null,
@@ -58,20 +65,64 @@
 		}
 	};
 
+	const buildFilterParams = () => {
+		const params: Record<string, string> = {};
+		for (const [key, value] of Object.entries(filters)) {
+			if (Array.isArray(value) && value.length > 0) {
+				params[key] = value.join(',');
+			}
+		}
+		return params;
+	};
+
+	const handleFilterChange = async (noScroll = false) => {
+		const params = buildFilterParams();
+		await setRouteParams(params, noScroll);
+	};
+
 	const filtersToggle = () =>
 		toggleContainer(filtersContainer, isFiltersOpen, (v) => (isFiltersOpen = v));
 
 	const sortingToggle = () =>
 		toggleContainer(sortingContainer, isSortingOpen, (v) => (isSortingOpen = v));
 
-	const resetFilterAndSorting = () => {
-		selectedCategories = [];
-		selectedSizes = [];
-		selectedAvailabilities = [];
-		selectedStyles = [];
-		selectedPriceRange = [0, 5000];
-		selectedSorting = '';
+
+	const handleSorting = async () => {
+		await setRouteParams({
+			sort
+		}, true);
 	};
+
+	const resetFilterAndSorting = async () => {
+		filters = {
+			categories: [''],
+			sizes: [''],
+			styles: [''],
+			availabilities: [''],
+			priceRanges: [0, 5000]
+		};
+		sort = '';
+
+		await Promise.all([
+			setRouteParams({ sort, q: '' }),
+			handleFilterChange()
+		]);
+	};
+
+	onMount(() => {
+		const params = page.url.searchParams;
+		filters = {
+			categories: params.get('categories')?.split(',') ?? [''],
+			sizes: params.get('sizes')?.split(',') ?? [''],
+			styles: params.get('styles')?.split(',') ?? [''],
+			availabilities: params.get('availabilities')?.split(',') ?? [''],
+			priceRanges: params.get('priceRanges')
+				?.split(',')
+				.map((v) => Number(v)) ?? [0, 5000]
+		};
+
+	});
+
 </script>
 
 <aside class="flex flex-col gap-8 w-[14rem]">
@@ -86,29 +137,34 @@
 		<hr />
 
 		<FilterDropdown
-			bind:selectedOptions={selectedCategories}
-			options={filters.categories}
+			bind:selectedOptions={filters.categories}
+			onValueChange={handleFilterChange}
+			options={filterOptions.categories}
 			title="categories"
 		/>
 		<FilterDropdown
-			bind:selectedOptions={selectedSizes}
-			options={filters.sizes}
+			bind:selectedOptions={filters.sizes}
+			onValueChange={handleFilterChange}
+			options={filterOptions.sizes}
 			title="size & dimensions"
 		/>
 		<FilterDropdown
-			bind:selectedOptions={selectedAvailabilities}
-			options={filters.availabilities}
+			bind:selectedOptions={filters.availabilities}
+			onValueChange={handleFilterChange}
+			options={filterOptions.availabilities}
 			title="availability"
 		/>
 		<FilterDropdown
-			bind:selectedOptions={selectedStyles}
-			options={filters.styles}
+			bind:selectedOptions={filters.styles}
+			onValueChange={handleFilterChange}
+			options={filterOptions.styles}
 			title="style & design"
 		/>
 
 		<FilterDropdown
-			bind:selectedSlides={selectedPriceRange}
+			bind:selectedSlides={filters.priceRanges}
 			{maxSlideValue}
+			onValueChange={()=>handleFilterChange(true)}
 			title="Pricing"
 			type="slider"
 		/>
@@ -125,7 +181,7 @@
 
 		<hr />
 
-		<Root bind:value={selectedSorting}>
+		<Root bind:value={sort} onValueChange={handleSorting}>
 			<div class="flex flex-col gap-4">
 				{#each sortingItems as item (item.value)}
 					<div class="flex items-center space-x-2 **:cursor-pointer">
