@@ -24,13 +24,8 @@
 		{ label: 'Name: Z to A', value: 'name-desc' }
 	];
 
-	// Initial filter states
-	let selectedCategories = $state<string[]>([]);
-	let selectedSizes = $state<string[]>([]);
-	let selectedAvailabilities = $state<string[]>([]);
-	let selectedStyles = $state<string[]>([]);
+	// Initial filter and sort states
 	let maxSlideValue = $state(5000);
-	let selectedPriceRange = $state<[number, number]>([0, 5000]);
 	let sort = $state('');
 	let filters = $state({
 		categories: [''],
@@ -65,6 +60,12 @@
 		}
 	};
 
+	const filtersToggle = () =>
+		toggleContainer(filtersContainer, isFiltersOpen, (v) => (isFiltersOpen = v));
+
+	const sortingToggle = () =>
+		toggleContainer(sortingContainer, isSortingOpen, (v) => (isSortingOpen = v));
+
 	const buildFilterParams = () => {
 		const params: Record<string, string> = {};
 		for (const [key, value] of Object.entries(filters)) {
@@ -75,25 +76,13 @@
 		return params;
 	};
 
-	const handleFilterChange = async (noScroll = false) => {
+	const appyFilterAndSort = async () => {
 		const params = buildFilterParams();
-		await setRouteParams(params, noScroll);
-	};
-
-	const filtersToggle = () =>
-		toggleContainer(filtersContainer, isFiltersOpen, (v) => (isFiltersOpen = v));
-
-	const sortingToggle = () =>
-		toggleContainer(sortingContainer, isSortingOpen, (v) => (isSortingOpen = v));
-
-
-	const handleSorting = async () => {
-		await setRouteParams({
-			sort
-		}, true);
+		await setRouteParams({ ...params, sort }, true);
 	};
 
 	const resetFilterAndSorting = async () => {
+		sort = '';
 		filters = {
 			categories: [''],
 			sizes: [''],
@@ -101,12 +90,8 @@
 			availabilities: [''],
 			priceRanges: [0, 5000]
 		};
-		sort = '';
-
-		await Promise.all([
-			setRouteParams({ sort, q: '' }),
-			handleFilterChange()
-		]);
+		const params = buildFilterParams();
+		await setRouteParams({ ...params, sort, q: '' }, true);
 	};
 
 	onMount(() => {
@@ -138,25 +123,21 @@
 
 		<FilterDropdown
 			bind:selectedOptions={filters.categories}
-			onValueChange={handleFilterChange}
 			options={filterOptions.categories}
 			title="categories"
 		/>
 		<FilterDropdown
 			bind:selectedOptions={filters.sizes}
-			onValueChange={handleFilterChange}
 			options={filterOptions.sizes}
 			title="size & dimensions"
 		/>
 		<FilterDropdown
 			bind:selectedOptions={filters.availabilities}
-			onValueChange={handleFilterChange}
 			options={filterOptions.availabilities}
 			title="availability"
 		/>
 		<FilterDropdown
 			bind:selectedOptions={filters.styles}
-			onValueChange={handleFilterChange}
 			options={filterOptions.styles}
 			title="style & design"
 		/>
@@ -164,7 +145,6 @@
 		<FilterDropdown
 			bind:selectedSlides={filters.priceRanges}
 			{maxSlideValue}
-			onValueChange={()=>handleFilterChange(true)}
 			title="Pricing"
 			type="slider"
 		/>
@@ -181,7 +161,7 @@
 
 		<hr />
 
-		<Root bind:value={sort} onValueChange={handleSorting}>
+		<Root bind:value={sort}>
 			<div class="flex flex-col gap-4">
 				{#each sortingItems as item (item.value)}
 					<div class="flex items-center space-x-2 **:cursor-pointer">
@@ -193,8 +173,11 @@
 		</Root>
 	</section>
 
-	<!--		Clear filters button-->
-	<Button class="text-primary border-primary cursor-pointer" onclick={resetFilterAndSorting} variant="outline">Clear
-		Filters
-	</Button>
+	<!--		Apply and  filters button-->
+	<div class="flex flex-col gap-4">
+		<Button class="cursor-pointer" onclick={appyFilterAndSort}>Apply</Button>
+		<Button class="text-primary border-primary cursor-pointer" onclick={resetFilterAndSorting} variant="outline">Clear
+			Filters
+		</Button>
+	</div>
 </aside>

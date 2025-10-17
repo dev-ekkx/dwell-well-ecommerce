@@ -12,8 +12,7 @@
 	import { onMount, tick } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { Input } from '$lib/components/ui/input';
-	import { MediaQuery, SvelteURLSearchParams } from 'svelte/reactivity';
-	import type { RouteId } from '$app/types';
+	import { MediaQuery } from 'svelte/reactivity';
 
 	const mediaQuery = new MediaQuery('max-width: 63.9rem');
 	const isMobile = $derived(mediaQuery.current);
@@ -26,28 +25,6 @@
 	let menuButton = $state<HTMLElement | null>(null);
 	let searchButton = $state<HTMLElement | null>(null);
 	let searchTerm = $state('');
-
-	const getSearchValue = (e: Event) => {
-		const target = e.target as HTMLInputElement;
-		const newSearchTerm = target.value;
-
-		if (e instanceof KeyboardEvent && e.key === 'Enter') {
-			e.preventDefault();
-
-			if (!newSearchTerm) {
-				return;
-			}
-
-			const localizedPath = resolve('/shop');
-			const params = new SvelteURLSearchParams(page.url.searchParams);
-			params.set('q', newSearchTerm);
-			goto(resolve(`${localizedPath}?${params.toString()}` as RouteId));
-
-			if (isSearchOpen) {
-				toggleSearch();
-			}
-		}
-	};
 
 
 	async function toggleMenu() {
@@ -101,12 +78,26 @@
 		}
 	}
 
-	const handleInput = () => {
+	const getSearchValue = async (e: Event) => {
+		const target = e.target as HTMLInputElement;
+		const newSearchTerm = target.value;
+
+		if (e instanceof KeyboardEvent && e.key === 'Enter') {
+			e.preventDefault();
+
+			if (!newSearchTerm) {
+				return;
+			}
+			await setRouteParams({ q: newSearchTerm });
+			if (isSearchOpen) {
+				await toggleSearch();
+			}
+		}
+	};
+
+	const handleInput = async () => {
 		if (page.url.pathname === '/shop' && !searchTerm.length) {
-			// const params = new SvelteURLSearchParams(page.url.searchParams);
-			// params.set('q', '');
-			// goto(resolve('/shop'));
-			setRouteParams({ q: '' });
+			await setRouteParams({ q: '' });
 		}
 	};
 
