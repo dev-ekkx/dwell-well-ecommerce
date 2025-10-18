@@ -29,11 +29,18 @@ export const setRouteParams = async (
 
 	// Iterate over the new parameters and set them
 	for (const [key, value] of Object.entries(paramsToSet)) {
-		newParams.set(key, String(value));
+		if (value === null || value === undefined || value === "" || value === "[]") {
+			newParams.delete(key);
+		} else {
+			newParams.set(key, String(value));
+		}
 	}
 
 	// Construct the new URL path with the updated parameters
-	const newPath = `${page.url.pathname}?${newParams.toString()}` as RouteId;
+	const queryString = newParams.toString();
+	const newPath = (
+		queryString ? `${page.url.pathname}?${queryString}` : page.url.pathname
+	) as RouteId;
 
 	// Navigate to the new URL
 	await goto(resolve(newPath), {
