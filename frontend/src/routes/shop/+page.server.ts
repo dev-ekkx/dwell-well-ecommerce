@@ -7,7 +7,8 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	const sort = url.searchParams.get("sort");
 	const categoriesFilter = url.searchParams.get("categories")?.split(",");
 	const sizesFilter = url.searchParams.get("sizes")?.split(",");
-	const stylesFilter = url.searchParams.get("style")?.split(",");
+	const stylesFilter = url.searchParams.get("styles")?.split(",");
+	const availabilitiesFilter = url.searchParams.get("availabilities");
 
 	const variables: {
 		pagination: { page: number; pageSize: number };
@@ -30,11 +31,15 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 		variables.filters.categories = { slug: { in: categoriesFilter } };
 	}
 	if (sizesFilter && sizesFilter.length > 0) {
-		variables.filters.size = { in: sizesFilter };
+		variables.filters.sizes = { slug: { in: sizesFilter } };
 	}
 	if (stylesFilter && stylesFilter.length > 0) {
-		variables.filters.style = { in: stylesFilter };
+		variables.filters.styles = { slug: { in: stylesFilter } };
 	}
 
-	console.log(variables);
+	if (availabilitiesFilter && availabilitiesFilter.length > 0) {
+		variables.filters.availability = { slug: { in: availabilitiesFilter } };
+	}
+
+	console.log(JSON.stringify(variables));
 };

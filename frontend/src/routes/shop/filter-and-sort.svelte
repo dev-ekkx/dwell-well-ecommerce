@@ -32,7 +32,7 @@
 		sizes: [''],
 		styles: [''],
 		availabilities: [''],
-		priceRanges: [0, 5000]
+		priceRanges: []
 	});
 
 	const toggleContainer = async (
@@ -88,10 +88,15 @@
 			sizes: [''],
 			styles: [''],
 			availabilities: [''],
-			priceRanges: [0, 5000]
+			priceRanges: []
 		};
 		const params = buildFilterParams();
 		await setRouteParams({ ...params, sort, q: '' }, true);
+	};
+
+	const getNumberArrayParam = (params: URLSearchParams, key: string): number[] => {
+		const value = params.get(key);
+		return value ? value.split(',').map(Number) : [];
 	};
 
 	onMount(() => {
@@ -101,9 +106,7 @@
 			sizes: params.get('sizes')?.split(',') ?? [''],
 			styles: params.get('styles')?.split(',') ?? [''],
 			availabilities: params.get('availabilities')?.split(',') ?? [''],
-			priceRanges: params.get('priceRanges')
-				?.split(',')
-				.map((v) => Number(v)) ?? [0, 5000]
+			priceRanges: getNumberArrayParam(params, 'priceRanges')
 		};
 
 	});
