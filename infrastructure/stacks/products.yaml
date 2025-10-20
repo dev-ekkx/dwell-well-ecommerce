@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Product-related resources, including the operational database and public API endpoints.
+Description: Product-related resources, including the on-demand database and public API endpoints with tracing and environment variables.
 
 Parameters:
   ApiGatewayId:
@@ -12,7 +12,7 @@ Resources:
     Properties:
       TableName: ProductsOperational
       PrimaryKey: { Name: sku, Type: String }
-      ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
+      BillingMode: PAY_PER_REQUEST
 
   GetProductsOperationalFunction:
     Type: AWS::Serverless::Function
@@ -20,6 +20,10 @@ Resources:
       CodeUri: ../../backend/src/handlers/get-products-operational/
       Handler: bootstrap
       Runtime: provided.al2
+      Tracing: Active
+      Environment:
+        Variables:
+          PRODUCTS_TABLE_NAME: !Ref ProductsOperationalTable
       Events:
         ApiEvent: { Type: Api, Properties: { RestApiId: !Ref ApiGatewayId, Path: /products-operational, Method: post, Auth: { Authorizer: NONE } } }
       Policies:
@@ -31,6 +35,10 @@ Resources:
       CodeUri: ../../backend/src/handlers/get-skus-by-price/
       Handler: bootstrap
       Runtime: provided.al2
+      Tracing: Active
+      Environment:
+        Variables:
+          PRODUCTS_TABLE_NAME: !Ref ProductsOperationalTable
       Events:
         ApiEvent: { Type: Api, Properties: { RestApiId: !Ref ApiGatewayId, Path: /products/skus-by-price, Method: get, Auth: { Authorizer: NONE } } }
       Policies:
