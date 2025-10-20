@@ -9,42 +9,55 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 )
 
-// WebhookService encapsulates logic for handling incoming webhooks.
-type WebhookService struct {
-	dynamoDB db.DynamoDBClient
+// ProductService encapsulates all business logic related to products.
+type ProductService struct {
+	dynamoDB db.DynamoDBClient // Dependency on the DynamoDB client
 }
 
-// NewWebhookService creates a new webhook service.
-func NewWebhookService() (*WebhookService, error) {
+// NewProductService creates a new product service with its dependencies.
+func NewProductService() (*ProductService, error) {
 	d, err := db.NewClient()
 	if err != nil {
 		return nil, err
 	}
-	return &WebhookService{dynamoDB: *d}, nil
+	return &ProductService{dynamoDB: *d}, nil
 }
 
-func (s *WebhookService) HandleStrapiProductPublish(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	var payload models.WebhookPayload
-	err := json.Unmarshal([]byte(request.Body), &payload)
+// GetProducts is the handler method for fetching operational data for a list of SKUs.
+func (s *ProductService) GetProducts(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	var body models.GetProductsRequest
+	err := json.Unmarshal([]byte(request.Body), &body)
 	if err != nil {
-		log.Printf("ERROR: Failed to unmarshal Strapi webhook payload: %v", err)
-		return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Invalid payload"}, nil
+		log.Printf("ERROR: unmarshalling request body: %v", err)
+		return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Invalid request body"}, nil
 	}
 
-	// We only care about publish events for the product model that have a SKU.
-	if payload.Event != "entry.publish" || payload.Model != "product" || payload.Entry.SKU == "" {
-		log.Printf("INFO: Ignoring webhook event: %s for model: %s", payload.Event, payload.Model)
-		return events.APIGatewayProxyResponse{StatusCode: 200, Body: "Event ignored"}, nil
+	if len(body.SKUs) == 0 {
+		return events.APIGatewayProxyResponse{StatusCode: 200, Body: "{}"}, nil
 	}
 
-	log.Printf("INFO: Processing publish event for SKU: %s", payload.Entry.SKU)
-
-	// Call the database function to create the product with default values.
-	err = s.dynamoDB.CreateOrUpdateProductDefaults(payload.Entry.SKU)
+	// The database logic is abstracted away in the db package.
+	products, err := s.dynamoDB.GetProductsBySKUs(body.SKUs)
 	if err != nil {
-		log.Printf("ERROR: Failed to create/update product in DynamoDB for SKU %s: %v", payload.Entry.SKU, err)
-		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Failed to process event"}, nil
+		log.Printf("ERROR: getting items from DynamoDB: %v", err)
+		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error fetching data"}, nil
 	}
 
-	return events.APIGatewayProxyResponse{StatusCode: 200, Body: "Product processed successfully"}, nil
+	// Convert the slice of products into a map for easy lookup by the frontend
+	responseMap := make(map[string]models.Product)
+	for _, p := range products {
+		responseMap[p.SKU] = p
+	}
+
+	responseBody, err := json.Marshal(responseMap)
+	if err != nil {
+		log.Printf("ERROR: marshalling response: %v", err)
+		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error creating response"}, nil
+	}
+
+	return events.APIGatewayProxyResponse{
+		StatusCode: 200,
+		Headers:    map[string]string{"Content-Type": "application/json"},
+		Body:       string(responseBody),
+	}, nil
 }
