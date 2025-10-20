@@ -1,14 +1,35 @@
 import type { PageServerLoad } from "./$types";
+import { GET_PRODUCTS } from "../../graphql.queries";
+import { client } from "../../graphql.config";
+import { error } from "@sveltejs/kit";
+import type { ProductCardI } from "$lib/interfaces";
 
 export const load: PageServerLoad = async ({ fetch, url }) => {
 	const searchTerm = url.searchParams.get("q");
 	const page = Number(url.searchParams.get("page") ?? "1");
 	const pageSize = Number(url.searchParams.get("perPage") ?? "5");
 	const sort = url.searchParams.get("sort");
-	const categoriesFilter = url.searchParams.get("categories")?.split(",");
-	const sizesFilter = url.searchParams.get("sizes")?.split(",");
-	const stylesFilter = url.searchParams.get("styles")?.split(",");
-	const availabilitiesFilter = url.searchParams.get("availabilities");
+	const categoriesFilter = url.searchParams.get("categories")?.split(",").filter(Boolean);
+	const sizesFilter = url.searchParams.get("sizes")?.split(",").filter(Boolean);
+	const stylesFilter = url.searchParams.get("style")?.split(",").filter(Boolean);
+	const availabilitiesFilter = url.searchParams.get("availabilities")?.split(",").filter(Boolean);
+
+	// --- NEW: Translate sort values for Strapi ---
+	let strapiSort: string | undefined;
+	switch (sort) {
+		case "name-asc":
+			strapiSort = "name:asc";
+			break;
+		case "name-desc":
+			strapiSort = "name:desc";
+			break;
+		case "newest":
+			strapiSort = "publishedAt:desc";
+			break;
+		// Price sorting will be handled later in JavaScript
+		default:
+			strapiSort = undefined;
+	}
 
 	const variables: {
 		pagination: { page: number; pageSize: number };
@@ -20,26 +41,22 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	};
 
 	// Build query variables
-	if (sort) {
-		variables.sort = [sort];
+	if (strapiSort) variables.sort = [strapiSort];
+	if (searchTerm) variables.filters.name = { containsi: searchTerm };
+	if (categoriesFilter?.length) variables.filters.categories = { slug: { in: categoriesFilter } };
+	if (sizesFilter?.length) variables.filters.sizes = { slug: { in: sizesFilter } };
+	if (stylesFilter?.length) variables.filters.styles = { slug: { in: stylesFilter } };
+	if (availabilitiesFilter?.length) {
+		variables.filters.availability = { in: availabilitiesFilter };
 	}
-
-	if (searchTerm) {
-		variables.filters.name = { containsi: searchTerm };
-	}
-	if (categoriesFilter && categoriesFilter.length > 0) {
-		variables.filters.categories = { slug: { in: categoriesFilter } };
-	}
-	if (sizesFilter && sizesFilter.length > 0) {
-		variables.filters.sizes = { slug: { in: sizesFilter } };
-	}
-	if (stylesFilter && stylesFilter.length > 0) {
-		variables.filters.styles = { slug: { in: stylesFilter } };
-	}
-
-	if (availabilitiesFilter && availabilitiesFilter.length > 0) {
-		variables.filters.availability = { slug: { in: availabilitiesFilter } };
-	}
-
 	console.log(variables);
+
+	const strapiResult = await client.query(GET_PRODUCTS, variables).toPromise();
+	console.log(JSON.stringify(strapiResult.error?.graphQLErrors));
+	if (strapiResult.error) {
+		error(500, `GraphQL Error: ${strapiResult.error.message}`);
+	}
+	return {
+		products: strapiResult.data.products as ProductCardI[]
+	};
 };

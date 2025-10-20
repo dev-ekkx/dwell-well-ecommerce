@@ -99,7 +99,6 @@
 								value={option.slug}
 								onCheckedChange={() => handleCheckboxChange(option.slug)}
 							/>
-							<span>{option.slug}</span>
 							<span>{option.name}</span>
 						</Label>
 					{/each}

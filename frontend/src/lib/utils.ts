@@ -1,10 +1,10 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import type { RouteId } from "$app/types";
 import { SvelteURLSearchParams } from "svelte/reactivity";
 import { page } from "$app/state";
 import { goto } from "$app/navigation";
 import { resolve } from "$app/paths";
+import type { RouteId } from "$app/types";
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -38,14 +38,10 @@ export const setRouteParams = async (
 
 	// Construct the new URL path with the updated parameters
 	const queryString = newParams.toString();
-	const newPath = (
-		queryString ? `${page.url.pathname}?${queryString}` : page.url.pathname
-	) as RouteId;
-
-	console.log(newPath);
+	const newPath = queryString ? `${page.url.pathname}?${queryString}` : page.url.pathname;
 
 	// Navigate to the new URL
-	await goto(resolve(newPath), {
+	await goto(resolve(newPath as RouteId), {
 		replaceState: true,
 		keepFocus: true,
 		noScroll

@@ -35,6 +35,7 @@
 		priceRanges: [0, 5000]
 	});
 
+
 	const toggleContainer = async (
 		container: HTMLElement | null,
 		isOpen: boolean,
@@ -96,7 +97,7 @@
 
 	const getNumberArrayParam = (params: URLSearchParams, key: string): number[] => {
 		const value = params.get(key);
-		return value ? value.split(',').map(Number) : [];
+		return value ? value.split(',').map(Number) : [0, 5000];
 	};
 
 	onMount(() => {
