@@ -34,6 +34,7 @@
 	const seoData = data.seo;
 	const filters = data.filters;
 	const searchTerm = $derived(page.url.searchParams.get('q') || '');
+	const products = $derived(data.products);
 	const isMobile = $derived(mediaQuery.current);
 
 	// Page state
@@ -41,16 +42,8 @@
 	const itemsPerPageOptions = $state([...ITEMS_PER_PAGE_OPTIONS]);
 	let currentPage = $state(parseInt(page.url.searchParams.get('page') || '1'));
 	let itemsPerPage = $state((page.url.searchParams.get('perPage') || '10'));
-	let products = $state(Array.from({ length: 32 }, (_, i) => ({
-		id: i + 1,
-		name: `Product ${i + 1}`
-	})));
-	let totalItems = $derived(products.length);
-
-	// Slice products for current page
-	const startIndex = $derived((currentPage - 1) * +itemsPerPage);
-	const endIndex = $derived(startIndex + +itemsPerPage);
-	const currentProducts = $derived(products.slice(startIndex, endIndex));
+	let totalProducts = $derived(data.totalProducts);
+	const moreThanAPage = $derived((totalProducts / +itemsPerPage) > 1);
 
 	const setParams = () => {
 		setRouteParams({
@@ -116,8 +109,8 @@
 			<!--	Product items -->
 			<section class="flex flex-col gap-5 md:gap-7 xl:gap-10">
 				<div class="grid grid-cols-2 gap-4 gap-y-8 md:gap-y-12 sm:gap-6 md:grid-cols-3 xl:grid-cols-4">
-					{#each currentProducts as product (product.id)}
-						<ProductCard />
+					{#each products as product (product.SKU)}
+						<ProductCard {...product} />
 					{/each}
 				</div>
 
@@ -134,37 +127,39 @@
 					</Root>
 
 					<!-- Pagination -->
-					<PaginationRoot bind:page={currentPage} count={totalItems} onPageChange={handlePageChange}
-													perPage={+itemsPerPage}>
-						{#snippet children({ pages, currentPage })}
-							<PaginationContent>
-								<PaginationItem>
-									<PaginationPrevButton class="cursor-pointer">
-										<img src={CaretIcon} class="-rotate-90" alt="caret-left" />
-									</PaginationPrevButton>
-								</PaginationItem>
+					{#if moreThanAPage}
+						<PaginationRoot bind:page={currentPage} count={totalProducts} onPageChange={handlePageChange}
+														perPage={+itemsPerPage}>
+							{#snippet children({ pages, currentPage })}
+								<PaginationContent>
+									<PaginationItem>
+										<PaginationPrevButton class="cursor-pointer">
+											<img src={CaretIcon} class="-rotate-90" alt="caret-left" />
+										</PaginationPrevButton>
+									</PaginationItem>
 
-								{#each pages as page (page.key)}
-									{#if page.type === "ellipsis"}
-										<PaginationItem>
-											<PaginationEllipsis />
-										</PaginationItem>
-									{:else}
-										<PaginationItem>
-											<PaginationLink {page} isActive={currentPage === page.value}>
-												{page.value}
-											</PaginationLink>
-										</PaginationItem>
-									{/if}
-								{/each}
-								<PaginationItem>
-									<PaginationNextButton class="cursor-pointer">
-										<img src={CaretIcon} class="rotate-90" alt="caret-left" />
-									</PaginationNextButton>
-								</PaginationItem>
-							</PaginationContent>
-						{/snippet}
-					</PaginationRoot>
+									{#each pages as page (page.key)}
+										{#if page.type === "ellipsis"}
+											<PaginationItem>
+												<PaginationEllipsis />
+											</PaginationItem>
+										{:else}
+											<PaginationItem>
+												<PaginationLink {page} isActive={currentPage === page.value}>
+													{page.value}
+												</PaginationLink>
+											</PaginationItem>
+										{/if}
+									{/each}
+									<PaginationItem>
+										<PaginationNextButton class="cursor-pointer">
+											<img src={CaretIcon} class="rotate-90" alt="caret-left" />
+										</PaginationNextButton>
+									</PaginationItem>
+								</PaginationContent>
+							{/snippet}
+						</PaginationRoot>
+					{/if}
 				</div>
 			</section>
 		</div>

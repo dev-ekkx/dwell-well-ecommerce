@@ -43,9 +43,13 @@ export const GET_PRODUCTS = gql`
 		$sort: [String]
 		$filters: ProductFiltersInput
 	) {
+		products_connection {
+			pageInfo {
+				total
+			}
+		}
 		products(pagination: $pagination, sort: $sort, filters: $filters) {
 			SKU
-			description
 			name
 			images(pagination: { limit: 1 }) {
 				alternativeText

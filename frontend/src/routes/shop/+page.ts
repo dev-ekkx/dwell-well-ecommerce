@@ -30,6 +30,8 @@ export const load: PageLoad = async ({ fetch, data }) => {
 	const filters = filtersPromise.data as FiltersI;
 	return {
 		filters,
-		seo: shopPageSeo
+		seo: shopPageSeo,
+		products: data.products,
+		totalProducts: data.totalProducts
 	};
 };

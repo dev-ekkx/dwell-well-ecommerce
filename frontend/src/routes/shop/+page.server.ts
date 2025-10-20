@@ -31,6 +31,7 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 			strapiSort = undefined;
 	}
 
+	console.log(page, pageSize);
 	const variables: {
 		pagination: { page: number; pageSize: number };
 		filters: Record<string, unknown>;
@@ -56,7 +57,12 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	if (strapiResult.error) {
 		error(500, `GraphQL Error: ${strapiResult.error.message}`);
 	}
+
+	console.log(strapiResult.data);
+	const totalProducts = strapiResult.data.products_connection.pageInfo.total as number;
+
 	return {
+		totalProducts,
 		products: strapiResult.data.products as ProductCardI[]
 	};
 };
