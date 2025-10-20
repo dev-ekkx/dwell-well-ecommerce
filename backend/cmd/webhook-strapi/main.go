@@ -1,7 +1,7 @@
 package main
 
 import (
-	"backend/internal/services"
+	"dwell-well-ecommerce/internal/services"
 	"log"
 
 	"github.com/aws/aws-lambda-go/events"

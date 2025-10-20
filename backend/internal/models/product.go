@@ -8,3 +8,7 @@ type Product struct {
 	AverageRating float64 `json:"averageRating" dynamodbav:"averageRating"`
 	ReviewCount   int     `json:"reviewCount" dynamodbav:"reviewCount"`
 }
+
+type GetProductsRequest struct {
+	SKUs []string `json:"skus"`
+}

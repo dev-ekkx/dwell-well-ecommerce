@@ -1,8 +1,8 @@
 package services
 
 import (
-	"dwell-well-ecommerce/backend/internal/db"
-	"dwell-well-ecommerce/backend/internal/models"
+	"dwell-well-ecommerce/internal/db"
+	"dwell-well-ecommerce/internal/models"
 	"encoding/json"
 	"log"
 

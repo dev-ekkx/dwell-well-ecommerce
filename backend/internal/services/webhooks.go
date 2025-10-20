@@ -1,9 +1,12 @@
 package services
 
 import (
-	"backend/internal/models"
+	"dwell-well-ecommerce/internal/db"
+	"dwell-well-ecommerce/internal/models"
 	"encoding/json"
 	"log"
+
+	"github.com/aws/aws-lambda-go/events"
 )
 
 // WebhookService encapsulates all business logic for handling incoming webhooks.
@@ -29,7 +32,7 @@ func (s *WebhookService) HandleStrapiProductPublish(request events.APIGatewayPro
 		return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Invalid payload"}, nil
 	}
 
-	// We only care about publish events for the 'product' model that have a non-empty SKU.
+	// Only care about publish events for the 'product' model that have a non-empty SKU.
 	if payload.Event != "entry.publish" || payload.Model != "product" || payload.Entry.SKU == "" {
 		log.Printf("INFO: Ignoring webhook event: %s for model: %s. SKU: '%s'", payload.Event, payload.Model, payload.Entry.SKU)
 		return events.APIGatewayProxyResponse{StatusCode: 200, Body: "Event ignored as it's not a product publish event"}, nil
