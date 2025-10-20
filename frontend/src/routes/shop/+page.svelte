@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
-	import { formatNumberWithCommas } from '$lib/utils';
+	import { formatNumberWithCommas, setRouteParams } from '$lib/utils';
 	import FiltersAndSort from './filter-and-sort.svelte';
 	import ProductCard from './product-card.svelte';
 	import ContactUs from '$lib/components/contact-us.svelte';
@@ -26,17 +26,15 @@
 
 	import CaretIcon from '$lib/assets/caret-up.svg';
 	import FilterIcon from '$lib/assets/filter.svg';
-	import { MediaQuery, SvelteURLSearchParams } from 'svelte/reactivity';
+	import { MediaQuery } from 'svelte/reactivity';
 	import { onMount } from 'svelte';
-	import { resolve } from '$app/paths';
-	import { goto } from '$app/navigation';
-	import type { RouteId } from '$app/types';
 
 	const mediaQuery = new MediaQuery('max-width: 63.9rem');
 	const { data }: PageProps = $props();
 	const seoData = data.seo;
 	const filters = data.filters;
-	const searchTerm = $derived(data.searchTerm);
+	const searchTerm = $derived(page.url.searchParams.get('q') || '');
+	const products = $derived(data.products);
 	const isMobile = $derived(mediaQuery.current);
 
 	// Page state
@@ -44,40 +42,28 @@
 	const itemsPerPageOptions = $state([...ITEMS_PER_PAGE_OPTIONS]);
 	let currentPage = $state(parseInt(page.url.searchParams.get('page') || '1'));
 	let itemsPerPage = $state((page.url.searchParams.get('perPage') || '10'));
-	let products = $state(Array.from({ length: 32 }, (_, i) => ({
-		id: i + 1,
-		name: `Product ${i + 1}`
-	})));
-	let totalItems = $derived(products.length);
+	let totalProducts = $derived(data.totalProducts);
+	const moreThanAPage = $derived((totalProducts / +itemsPerPage) > 1);
 
-	// Slice products for current page
-	const startIndex = $derived((currentPage - 1) * +itemsPerPage);
-	const endIndex = $derived(startIndex + +itemsPerPage);
-	const currentProducts = $derived(products.slice(startIndex, endIndex));
-
-	const setRouteParams = () => {
-		const params = new SvelteURLSearchParams(page.url.searchParams);
-		params.set('page', String(currentPage));
-		params.set('perPage', String(itemsPerPage));
-
-		goto(resolve(`${page.url.pathname}?${params.toString()}` as RouteId), {
-			replaceState: true,
-			keepFocus: true,
-			noScroll: false
+	const setParams = () => {
+		setRouteParams({
+			page: currentPage,
+			perPage: itemsPerPage
 		});
 	};
 
 	const handleItemsPerPage = () => {
 		currentPage = 1;
-		setRouteParams();
+		setParams();
+
 	};
 
 	const handlePageChange = () => {
-		setRouteParams();
+		setParams();
 	};
 
 	onMount(() => {
-		setRouteParams();
+		setParams();
 	});
 </script>
 
@@ -123,55 +109,60 @@
 			<!--	Product items -->
 			<section class="flex flex-col gap-5 md:gap-7 xl:gap-10">
 				<div class="grid grid-cols-2 gap-4 gap-y-8 md:gap-y-12 sm:gap-6 md:grid-cols-3 xl:grid-cols-4">
-					{#each currentProducts as product (product.id)}
-						<ProductCard />
+					{#each products as product (product.SKU)}
+						<ProductCard {...product} />
 					{/each}
 				</div>
 
 				<!-- Items per page and pagination -->
 				<div class="flex items-center justify-between gap-4 mt-6 md:mt-8 xl:mt-10">
 					<!--	Items per page select -->
-					<Root bind:value={itemsPerPage} onValueChange={handleItemsPerPage} type="single">
-						<Trigger class="w-16">{itemsPerPage}</Trigger>
-						<Content>
-							{#each itemsPerPageOptions as option(option)}
-								<Item value={String(option)}>{option}</Item>
-							{/each}
-						</Content>
-					</Root>
+					<div class="flex items-center gap-4">
+						<span>Products per page</span>
+						<Root bind:value={itemsPerPage} onValueChange={handleItemsPerPage} type="single">
+							<Trigger class="w-16">{itemsPerPage}</Trigger>
+							<Content>
+								{#each itemsPerPageOptions as option(option)}
+									<Item value={String(option)}>{option}</Item>
+								{/each}
+							</Content>
+						</Root>
+					</div>
 
 					<!-- Pagination -->
-					<PaginationRoot bind:page={currentPage} count={totalItems} onPageChange={handlePageChange}
-													perPage={+itemsPerPage}>
-						{#snippet children({ pages, currentPage })}
-							<PaginationContent>
-								<PaginationItem>
-									<PaginationPrevButton class="cursor-pointer">
-										<img src={CaretIcon} class="-rotate-90" alt="caret-left" />
-									</PaginationPrevButton>
-								</PaginationItem>
+					{#if moreThanAPage}
+						<PaginationRoot bind:page={currentPage} count={totalProducts} onPageChange={handlePageChange}
+														perPage={+itemsPerPage}>
+							{#snippet children({ pages, currentPage })}
+								<PaginationContent>
+									<PaginationItem>
+										<PaginationPrevButton class="cursor-pointer">
+											<img src={CaretIcon} class="-rotate-90" alt="caret-left" />
+										</PaginationPrevButton>
+									</PaginationItem>
 
-								{#each pages as page (page.key)}
-									{#if page.type === "ellipsis"}
-										<PaginationItem>
-											<PaginationEllipsis />
-										</PaginationItem>
-									{:else}
-										<PaginationItem>
-											<PaginationLink {page} isActive={currentPage === page.value}>
-												{page.value}
-											</PaginationLink>
-										</PaginationItem>
-									{/if}
-								{/each}
-								<PaginationItem>
-									<PaginationNextButton class="cursor-pointer">
-										<img src={CaretIcon} class="rotate-90" alt="caret-left" />
-									</PaginationNextButton>
-								</PaginationItem>
-							</PaginationContent>
-						{/snippet}
-					</PaginationRoot>
+									{#each pages as page (page.key)}
+										{#if page.type === "ellipsis"}
+											<PaginationItem>
+												<PaginationEllipsis />
+											</PaginationItem>
+										{:else}
+											<PaginationItem>
+												<PaginationLink {page} isActive={currentPage === page.value}>
+													{page.value}
+												</PaginationLink>
+											</PaginationItem>
+										{/if}
+									{/each}
+									<PaginationItem>
+										<PaginationNextButton class="cursor-pointer">
+											<img src={CaretIcon} class="rotate-90" alt="caret-left" />
+										</PaginationNextButton>
+									</PaginationItem>
+								</PaginationContent>
+							{/snippet}
+						</PaginationRoot>
+					{/if}
 				</div>
 			</section>
 		</div>

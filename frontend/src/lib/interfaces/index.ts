@@ -12,6 +12,7 @@ export interface FilterDropdownI {
 	selectedSlides?: number[];
 	maxSlideValue?: number;
 	type?: "checkbox" | "slider";
+	onValueChange?: () => void;
 }
 
 // Category interface
@@ -280,9 +281,8 @@ export interface FiltersI {
 
 // Product card interface
 export interface ProductCardI
-	extends Pick<
-		ProductI,
-		"id" | "sku" | "slug" | "oldPrice" | "price" | "averageRating" | "reviewCount"
-	> {
+	extends Pick<ProductI, "slug" | "oldPrice" | "price" | "averageRating" | "reviewCount"> {
 	name: string;
+	SKU: string;
+	images: StrapiImageI[];
 }

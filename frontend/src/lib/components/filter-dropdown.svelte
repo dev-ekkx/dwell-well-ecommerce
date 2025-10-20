@@ -11,6 +11,7 @@
 	let {
 		title,
 		options,
+		onValueChange,
 		selectedOptions = $bindable([]),
 		selectedSlides = $bindable([]),
 		maxSlideValue,
@@ -21,7 +22,6 @@
 
 	const avgSlideVal = $derived((selectedSlides[0] + selectedSlides[1]) / 2);
 
-
 	const handleCheckboxChange = (slug: string) => {
 		let newSelected: string[];
 		const isChecked = selectedOptions.includes(slug);
@@ -31,6 +31,10 @@
 			newSelected = [...selectedOptions, slug];
 		}
 		selectedOptions = newSelected;
+
+		if (onValueChange) {
+			onValueChange();
+		}
 	};
 
 	const dropdownToggle = async () => {
@@ -74,7 +78,8 @@
 		<!-- Slider -->
 		{#if type === "slider"}
 			<div class="flex flex-col gap-4">
-				<Slider bind:value={selectedSlides} max={maxSlideValue} step={1} type="multiple" />
+				<Slider onValueChange={onValueChange} bind:value={selectedSlides} max={maxSlideValue} step={1}
+								type="multiple" />
 				<div class="flex items-center justify-between gap-4">
 					<span>${formatNumberWithCommas(Math.min(...selectedSlides))}</span>
 					<span>${formatNumberWithCommas(avgSlideVal)}</span>
@@ -94,7 +99,6 @@
 								value={option.slug}
 								onCheckedChange={() => handleCheckboxChange(option.slug)}
 							/>
-							<span>{option.slug}</span>
 							<span>{option.name}</span>
 						</Label>
 					{/each}

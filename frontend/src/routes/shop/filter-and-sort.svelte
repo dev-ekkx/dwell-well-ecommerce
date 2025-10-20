@@ -1,14 +1,15 @@
 <script lang="ts">
-	import { cn } from '$lib/utils.js';
+	import { cn, setRouteParams } from '$lib/utils.js';
 	import CaretUp from '$lib/assets/caret-up.svg';
 	import { Item, Root } from '$lib/components/ui/radio-group/index.js';
 	import FilterDropdown from '$lib/components/filter-dropdown.svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import gsap from 'gsap';
-	import { tick } from 'svelte';
+	import { onMount, tick } from 'svelte';
+	import { page } from '$app/state';
 
-	const { filters } = $props();
+	const { filters: filterOptions } = $props();
 
 	let isFiltersOpen = $state(true);
 	let isSortingOpen = $state(true);
@@ -23,14 +24,16 @@
 		{ label: 'Name: Z to A', value: 'name-desc' }
 	];
 
-	// Initial filter states
-	let selectedCategories = $state<string[]>([]);
-	let selectedSizes = $state<string[]>([]);
-	let selectedAvailabilities = $state<string[]>([]);
-	let selectedStyles = $state<string[]>([]);
+	// Initial filter and sort states
 	let maxSlideValue = $state(5000);
-	let selectedPriceRange = $state<[number, number]>([0, 5000]);
-	let selectedSorting = $state('');
+	let sort = $state('');
+	let filters = $state({
+		categories: [''],
+		sizes: [''],
+		styles: [''],
+		availabilities: [''],
+		priceRanges: [0, 5000]
+	});
 
 
 	const toggleContainer = async (
@@ -64,14 +67,53 @@
 	const sortingToggle = () =>
 		toggleContainer(sortingContainer, isSortingOpen, (v) => (isSortingOpen = v));
 
-	const resetFilterAndSorting = () => {
-		selectedCategories = [];
-		selectedSizes = [];
-		selectedAvailabilities = [];
-		selectedStyles = [];
-		selectedPriceRange = [0, 5000];
-		selectedSorting = '';
+	const buildFilterParams = () => {
+		const params: Record<string, string> = {};
+		for (const [key, value] of Object.entries(filters)) {
+			if (Array.isArray(value) && value.length > 0) {
+				params[key] = value.join(',');
+			}
+		}
+		return params;
 	};
+
+	const appyFilterAndSort = async () => {
+		const params = buildFilterParams();
+		await setRouteParams({ ...params, sort }, true);
+	};
+
+	const resetFilterAndSorting = async () => {
+		sort = '';
+		filters = {
+			categories: [''],
+			sizes: [''],
+			styles: [''],
+			availabilities: [''],
+			priceRanges: [0, 5000]
+		};
+		const params = buildFilterParams();
+		await setRouteParams({ ...params, sort, q: '' }, true);
+	};
+
+	const getNumberArrayParam = (params: URLSearchParams, key: string): number[] => {
+		const value = params.get(key);
+		return value ? value.split(',').map(Number) : [0, 5000];
+	};
+
+	onMount(() => {
+		const params = page.url.searchParams;
+
+		sort = params.get('sort') ?? '';
+		filters = {
+			categories: params.get('categories')?.split(',') ?? [''],
+			sizes: params.get('sizes')?.split(',') ?? [''],
+			styles: params.get('styles')?.split(',') ?? [''],
+			availabilities: params.get('availabilities')?.split(',') ?? [''],
+			priceRanges: getNumberArrayParam(params, 'priceRanges')
+		};
+
+	});
+
 </script>
 
 <aside class="flex flex-col gap-8 w-[14rem]">
@@ -86,28 +128,28 @@
 		<hr />
 
 		<FilterDropdown
-			bind:selectedOptions={selectedCategories}
-			options={filters.categories}
+			bind:selectedOptions={filters.categories}
+			options={filterOptions.categories}
 			title="categories"
 		/>
 		<FilterDropdown
-			bind:selectedOptions={selectedSizes}
-			options={filters.sizes}
+			bind:selectedOptions={filters.sizes}
+			options={filterOptions.sizes}
 			title="size & dimensions"
 		/>
 		<FilterDropdown
-			bind:selectedOptions={selectedAvailabilities}
-			options={filters.availabilities}
+			bind:selectedOptions={filters.availabilities}
+			options={filterOptions.availabilities}
 			title="availability"
 		/>
 		<FilterDropdown
-			bind:selectedOptions={selectedStyles}
-			options={filters.styles}
+			bind:selectedOptions={filters.styles}
+			options={filterOptions.styles}
 			title="style & design"
 		/>
 
 		<FilterDropdown
-			bind:selectedSlides={selectedPriceRange}
+			bind:selectedSlides={filters.priceRanges}
 			{maxSlideValue}
 			title="Pricing"
 			type="slider"
@@ -125,7 +167,7 @@
 
 		<hr />
 
-		<Root bind:value={selectedSorting}>
+		<Root bind:value={sort}>
 			<div class="flex flex-col gap-4">
 				{#each sortingItems as item (item.value)}
 					<div class="flex items-center space-x-2 **:cursor-pointer">
@@ -137,8 +179,11 @@
 		</Root>
 	</section>
 
-	<!--		Clear filters button-->
-	<Button class="text-primary border-primary cursor-pointer" onclick={resetFilterAndSorting} variant="outline">Clear
-		Filters
-	</Button>
+	<!--		Apply and  filters button-->
+	<div class="flex flex-col gap-4">
+		<Button class="cursor-pointer" onclick={appyFilterAndSort}>Apply</Button>
+		<Button class="text-primary border-primary cursor-pointer" onclick={resetFilterAndSorting} variant="outline">Clear
+			Filters
+		</Button>
+	</div>
 </aside>

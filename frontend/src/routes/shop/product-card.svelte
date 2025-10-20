@@ -1,14 +1,17 @@
 <script lang="ts">
-	import ProductImage from '$lib/assets/images/auth-bg.webp';
 	import { formatNumberWithCommas } from '$lib/utils';
 	import { type ConfigI, StarRating } from '@dev-ekkx/svelte-star-rating';
 	import CartIcon from '$lib/assets/cart.svg';
 	import { MediaQuery } from 'svelte/reactivity';
+	import type { ProductCardI } from '$lib/interfaces';
+
+	const product: ProductCardI = $props();
 
 	const mediaQuery = new MediaQuery('max-width: 63.9rem');
+	const baseCmsUrl = import.meta.env.VITE_CMS_URL;
 	const isMobile = $derived(mediaQuery.current);
-
-
+	const productImage = $derived(`${baseCmsUrl}${product.images[0].url}`);
+	
 	const config = $derived<ConfigI>({
 		readonly: true,
 		maxVal: 5,
@@ -39,13 +42,13 @@
 	</button>
 
 	<div class="h-[11rem] md:h-[12rem] rounded-lg overflow-clip">
-		<img alt=""
+		<img alt={product.name}
 				 class="object-cover group-hover:scale-110 w-full h-full transition-all duration-200 ease-linear"
-				 src={ProductImage}>
+				 src={productImage}>
 	</div>
 
 	<div class="flex flex-col gap-1">
-		<span class="font-semibold text-xl leading-7">Product name</span>
+		<span class="font-semibold text-xl leading-7">{product.name}</span>
 		<span class="flex items-center gap-1">
 			<StarRating bind:value {config} />
 	<span class="text-muted-foreground text-sm">4.8 (120 Reviews)</span>

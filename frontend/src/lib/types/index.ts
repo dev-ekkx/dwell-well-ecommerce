@@ -12,7 +12,6 @@ import type {
 
 export type QuestionT = z.infer<typeof QuestionFormSchema>;
 export type ContactFormFieldT = keyof QuestionT;
-
 export type InputT = "text" | "email" | "textarea";
 
 // A Union Type representing any possible component in the Dynamic Zone for a page
