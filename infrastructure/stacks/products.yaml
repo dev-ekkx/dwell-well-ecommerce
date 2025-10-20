@@ -1,0 +1,42 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Product-related resources, including the operational database and public API endpoints.
+
+Parameters:
+  ApiGatewayId:
+    Type: String
+
+Resources:
+  ProductsOperationalTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      TableName: ProductsOperational
+      PrimaryKey: { Name: sku, Type: String }
+      ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
+
+  GetProductsOperationalFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../../backend/src/handlers/get-products-operational/
+      Handler: bootstrap
+      Runtime: provided.al2
+      Events:
+        ApiEvent: { Type: Api, Properties: { RestApiId: !Ref ApiGatewayId, Path: /products-operational, Method: post, Auth: { Authorizer: NONE } } }
+      Policies:
+        - DynamoDBReadPolicy: { TableName: !Ref ProductsOperationalTable }
+
+  GetSKUsByPriceFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../../backend/src/handlers/get-skus-by-price/
+      Handler: bootstrap
+      Runtime: provided.al2
+      Events:
+        ApiEvent: { Type: Api, Properties: { RestApiId: !Ref ApiGatewayId, Path: /products/skus-by-price, Method: get, Auth: { Authorizer: NONE } } }
+      Policies:
+        - DynamoDBReadPolicy: { TableName: !Ref ProductsOperationalTable }
+
+Outputs:
+  ProductsOperationalTableName:
+    Value: !Ref ProductsOperationalTable
+
