@@ -14,6 +14,10 @@ Resources:
       CodeUri: ../../backend/src/handlers/webhook-paystack/
       Handler: bootstrap
       Runtime: provided.al2
+      Tracing: Active
+      Environment:
+        Variables:
+          EVENT_BUS_NAME: !Ref AppEventBusName
       Events:
         ApiEvent: { Type: Api, Properties: { RestApiId: !Ref ApiGatewayId, Path: /webhooks/paystack, Method: post, Auth: { Authorizer: NONE } } }
       Policies:
@@ -25,7 +29,12 @@ Resources:
       CodeUri: ../../backend/src/handlers/webhook-strapi/
       Handler: bootstrap
       Runtime: provided.al2
+      Tracing: Active
+      Environment:
+        Variables:
+          PRODUCTS_TABLE_NAME: !Ref ProductsTableName
       Events:
         ApiEvent: { Type: Api, Properties: { RestApiId: !Ref ApiGatewayId, Path: /webhooks/strapi, Method: post, Auth: { Authorizer: NONE } } }
       Policies:
         - DynamoDBCrudPolicy: { TableName: !Ref ProductsTableName }
+
