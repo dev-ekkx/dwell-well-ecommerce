@@ -4,11 +4,26 @@ Description: Product-related resources, including the on-demand database and pub
 
 Resources:
   ProductsOperationalTable:
-    Type: AWS::Serverless::SimpleTable
+    Type: AWS::DynamoDB::Table
     Properties:
       TableName: ProductsOperational
-      PrimaryKey: { Name: sku, Type: String }
       BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: sku
+          AttributeType: S
+        - AttributeName: price
+          AttributeType: N
+      KeySchema:
+        - AttributeName: sku
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: PriceIndex
+          KeySchema:
+            - AttributeName: price
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+
 
   GetProductsOperationalFunction:
     Type: AWS::Serverless::Function
