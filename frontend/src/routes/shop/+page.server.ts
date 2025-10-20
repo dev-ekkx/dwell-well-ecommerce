@@ -13,8 +13,8 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	const sizesFilter = url.searchParams.get("sizes")?.split(",").filter(Boolean);
 	const stylesFilter = url.searchParams.get("style")?.split(",").filter(Boolean);
 	const availabilitiesFilter = url.searchParams.get("availabilities")?.split(",").filter(Boolean);
+	const priceRangeFilter = url.searchParams.get("priceRange");
 
-	// --- NEW: Translate sort values for Strapi ---
 	let strapiSort: string | undefined;
 	switch (sort) {
 		case "name-asc":
@@ -51,6 +51,26 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 		variables.filters.availability = { in: availabilitiesFilter };
 	}
 	console.log(variables);
+	const goBackendUrl = "http://your-go-backend";
+	if (priceRangeFilter) {
+		const [min, max] = priceRangeFilter.split("-").map(Number);
+		if (!Number.isNaN(min) && !Number.isNaN(max)) {
+			const skuResponse = await fetch(
+				`${goBackendUrl}/api/products/skus-by-price?minPrice=${min}&maxPrice=${max}`
+			);
+			if (!skuResponse.ok) error(502, "Could not fetch price-filtered SKUs");
+			const priceFilteredSkus: string[] = await skuResponse.json();
+			if (priceFilteredSkus.length === 0) {
+				// If no products match the price, we can stop early.
+				return { products: [], pagination: { total: 0 } };
+			}
+			// Add the SKU filter to the main GraphQL query.
+			// This tells Strapi to only
+			// fetch content for products that are in our price-filtered list.
+			console.log(priceFilteredSkus);
+			variables.filters.sku = { in: priceFilteredSkus };
+		}
+	}
 
 	const strapiResult = await client.query(GET_PRODUCTS, variables).toPromise();
 	console.log(JSON.stringify(strapiResult.error?.graphQLErrors));
