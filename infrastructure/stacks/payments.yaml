@@ -1,0 +1,20 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Payment processing resources for Paystack integration.
+
+Parameters:
+  ApiGatewayId: { Type: String }
+  CognitoAuthorizerId: { Type: String }
+  ProductsTableName: { Type: String }
+
+Resources:
+  InitializePaymentFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../../backend/src/handlers/initialize-payment/
+      Handler: bootstrap
+      Runtime: provided.al2
+      Events:
+        ApiEvent: { Type: Api, Properties: { RestApiId: !Ref ApiGatewayId, Path: /payments/initialize, Method: post, Auth: { Authorizer: !Ref CognitoAuthorizerId } } }
+      Policies:
+        - DynamoDBReadPolicy: { TableName: !Ref ProductsTableName }
