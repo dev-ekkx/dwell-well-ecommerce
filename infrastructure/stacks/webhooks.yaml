@@ -1,9 +1,8 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Public webhook endpoints for integrating with third-party services like Strapi and Paystack.
+Description: Public webhook endpoints for third-party integrations.
 
 Parameters:
-  ApiGatewayId: { Type: String }
   AppEventBusName: { Type: String }
   ProductsTableName: { Type: String }
 
@@ -18,8 +17,6 @@ Resources:
       Environment:
         Variables:
           EVENT_BUS_NAME: !Ref AppEventBusName
-      Events:
-        ApiEvent: { Type: Api, Properties: { RestApiId: !Ref ApiGatewayId, Path: /webhooks/paystack, Method: post, Auth: { Authorizer: NONE } } }
       Policies:
         - EventBridgePutEventsPolicy: { EventBusName: !Ref AppEventBusName }
 
@@ -33,8 +30,15 @@ Resources:
       Environment:
         Variables:
           PRODUCTS_TABLE_NAME: !Ref ProductsTableName
-      Events:
-        ApiEvent: { Type: Api, Properties: { RestApiId: !Ref ApiGatewayId, Path: /webhooks/strapi, Method: post, Auth: { Authorizer: NONE } } }
       Policies:
         - DynamoDBCrudPolicy: { TableName: !Ref ProductsTableName }
 
+Outputs:
+  PaystackWebhookLambdaArn:
+    Value: !GetAtt PaystackWebhookFunction.Arn
+    Export:
+      Name: PaystackWebhookLambdaArn
+  StrapiWebhookLambdaArn:
+    Value: !GetAtt StrapiWebhookFunction.Arn
+    Export:
+      Name: StrapiWebhookLambdaArn
