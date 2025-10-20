@@ -1,0 +1,87 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Root SAM template for the Dwell Well E-commerce application.
+  This template orchestrates the deployment of nested stacks for each microservice.
+
+Globals:
+  Function:
+    Timeout: 10
+    MemorySize: 256
+    Runtime: provided.al2
+    Architectures:
+      - x86_64
+
+Resources:
+  # --- Core Infrastructure Stack (API Gateway, EventBus) ---
+  CoreStack:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./stacks/core.yaml
+
+  # --- Authentication Stack ---
+  AuthStack:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./stacks/auth.yaml
+
+  # --- Products Stack ---
+  ProductsStack:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./stacks/products.yaml
+      Parameters:
+        ApiGatewayId: !GetAtt CoreStack.Outputs.ApiGatewayId
+
+  # --- Orders Stack ---
+  OrdersStack:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./stacks/orders.yaml
+      Parameters:
+        ApiGatewayId: !GetAtt CoreStack.Outputs.ApiGatewayId
+        CognitoAuthorizerId: !GetAtt AuthStack.Outputs.CognitoAuthorizerId
+        AppEventBusName: !GetAtt CoreStack.Outputs.AppEventBusName
+        ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsOperationalTableName
+
+  # --- Payments Stack ---
+  PaymentsStack:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./stacks/payments.yaml
+      Parameters:
+        ApiGatewayId: !GetAtt CoreStack.Outputs.ApiGatewayId
+        CognitoAuthorizerId: !GetAtt AuthStack.Outputs.CognitoAuthorizerId
+        ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsOperationalTableName
+
+  # --- Ratings Stack ---
+  RatingsStack:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./stacks/ratings.yaml
+      Parameters:
+        ApiGatewayId: !GetAtt CoreStack.Outputs.ApiGatewayId
+        CognitoAuthorizerId: !GetAtt AuthStack.Outputs.CognitoAuthorizerId
+        AppEventBusName: !GetAtt CoreStack.Outputs.AppEventBusName
+        ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsOperationalTableName
+
+  # --- Webhooks Stack ---
+  WebhooksStack:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./stacks/webhooks.yaml
+      Parameters:
+        ApiGatewayId: !GetAtt CoreStack.Outputs.ApiGatewayId
+        AppEventBusName: !GetAtt CoreStack.Outputs.AppEventBusName
+        ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsOperationalTableName
+
+Outputs:
+  ApiEndpoint:
+    Description: "API Gateway endpoint URL"
+    Value: !GetAtt CoreStack.Outputs.ApiEndpoint
+  CognitoUserPoolId:
+    Description: "The ID of the Cognito User Pool"
+    Value: !GetAtt AuthStack.Outputs.CognitoUserPoolId
+  CognitoUserPoolClientId:
+    Description: "The ID of the Cognito User Pool Client"
+    Value: !GetAtt AuthStack.Outputs.CognitoUserPoolClientId
