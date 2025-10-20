@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Resources for managing product ratings.
+Description: Resources for managing product ratings with on-demand DB, tracing, and DLQs for reliability.
 
 Parameters:
   ApiGatewayId: { Type: String }
@@ -14,7 +14,7 @@ Resources:
     Properties:
       TableName: ProductRatings
       PrimaryKey: { Name: productId, Type: String }
-      ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
+      BillingMode: PAY_PER_REQUEST
 
   SubmitRatingFunction:
     Type: AWS::Serverless::Function
@@ -22,11 +22,19 @@ Resources:
       CodeUri: ../../backend/src/handlers/submit-rating/
       Handler: bootstrap
       Runtime: provided.al2
+      Tracing: Active
+      Environment:
+        Variables:
+          RATINGS_TABLE_NAME: !Ref ProductRatingsTable
+          EVENT_BUS_NAME: !Ref AppEventBusName
       Events:
         ApiEvent: { Type: Api, Properties: { RestApiId: !Ref ApiGatewayId, Path: /ratings, Method: post, Auth: { Authorizer: !Ref CognitoAuthorizerId } } }
       Policies:
         - DynamoDBCrudPolicy: { TableName: !Ref ProductRatingsTable }
         - EventBridgePutEventsPolicy: { EventBusName: !Ref AppEventBusName }
+
+  UpdateRatingDLQ:
+    Type: AWS::SQS::Queue
 
   UpdateAverageRatingFunction:
     Type: AWS::Serverless::Function
@@ -34,8 +42,18 @@ Resources:
       CodeUri: ../../backend/src/handlers/update-average-rating/
       Handler: bootstrap
       Runtime: provided.al2
+      Tracing: Active
+      DeadLetterQueue:
+        Type: SQS
+        TargetArn: !GetAtt UpdateRatingDLQ.Arn
+      Environment:
+        Variables:
+          PRODUCTS_TABLE_NAME: !Ref ProductsTableName
+          RATINGS_TABLE_NAME: !Ref ProductRatingsTable
       Events:
         RatingSubmittedEvent: { Type: EventBridgeRule, Properties: { EventBusName: !Ref AppEventBusName, Pattern: { source: ["app.ratings"], "detail-type": ["RatingSubmitted"] } } }
       Policies:
         - DynamoDBCrudPolicy: { TableName: !Ref ProductsTableName }
         - DynamoDBReadPolicy: { TableName: !Ref ProductRatingsTable }
+        - SQSSendMessagePolicy: { QueueName: !GetAtt UpdateRatingDLQ.QueueName }
+
