@@ -3,8 +3,6 @@ Transform: AWS::Serverless-2016-10-31
 Description: Payment processing resources with secure secret management for Paystack integration.
 
 Parameters:
-  ApiGatewayId: { Type: String }
-  CognitoAuthorizerId: { Type: String }
   ProductsTableName: { Type: String }
 
 Resources:
@@ -19,12 +17,15 @@ Resources:
         Variables:
           PRODUCTS_TABLE_NAME: !Ref ProductsTableName
           PAYSTACK_SECRET_KEY: '{{resolve:ssm:/dwellwell/paystack/secretkey:1}}'
-      Events:
-        ApiEvent: { Type: Api, Properties: { RestApiId: !Ref ApiGatewayId, Path: /payments/initialize, Method: post, Auth: { Authorizer: !Ref CognitoAuthorizerId } } }
       Policies:
         - DynamoDBReadPolicy: { TableName: !Ref ProductsTableName }
         - Statement:
             - Effect: Allow
-              Action: [ 'ssm:GetParameter' ]
+              Action: ['ssm:GetParameter']
               Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/dwellwell/paystack/secretkey'
 
+Outputs:
+  PaymentsLambdaArn:
+    Value: !GetAtt InitializePaymentFunction.Arn
+    Export:
+      Name: PaymentsLambdaArn
