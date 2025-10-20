@@ -1,10 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Product-related resources, including the on-demand database and public API endpoints with tracing and environment variables.
-
-Parameters:
-  ApiGatewayId:
-    Type: String
+Description: Product-related resources, including the on-demand database and public API endpoints.
 
 Resources:
   ProductsOperationalTable:
@@ -24,8 +20,6 @@ Resources:
       Environment:
         Variables:
           PRODUCTS_TABLE_NAME: !Ref ProductsOperationalTable
-      Events:
-        ApiEvent: { Type: Api, Properties: { RestApiId: !Ref ApiGatewayId, Path: /products-operational, Method: post, Auth: { Authorizer: NONE } } }
       Policies:
         - DynamoDBReadPolicy: { TableName: !Ref ProductsOperationalTable }
 
@@ -39,12 +33,17 @@ Resources:
       Environment:
         Variables:
           PRODUCTS_TABLE_NAME: !Ref ProductsOperationalTable
-      Events:
-        ApiEvent: { Type: Api, Properties: { RestApiId: !Ref ApiGatewayId, Path: /products/skus-by-price, Method: get, Auth: { Authorizer: NONE } } }
       Policies:
         - DynamoDBReadPolicy: { TableName: !Ref ProductsOperationalTable }
 
 Outputs:
+  ProductsOperationalLambdaArn:
+    Value: !GetAtt GetProductsOperationalFunction.Arn
+    Export:
+      Name: ProductsOperationalLambdaArn
+  SKUsByPriceLambdaArn:
+    Value: !GetAtt GetSKUsByPriceFunction.Arn
+    Export:
+      Name: SKUsByPriceLambdaArn
   ProductsOperationalTableName:
     Value: !Ref ProductsOperationalTable
-
