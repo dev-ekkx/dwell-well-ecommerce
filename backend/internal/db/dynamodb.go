@@ -64,7 +64,6 @@ func (d *DynamoDBClient) CreateProductWithDefaults(sku string) error {
 	if err != nil {
 		var conditionalCheckFailedException *types.ConditionalCheckFailedException
 		if !errors.As(err, &conditionalCheckFailedException) {
-			log.Printf("ERROR: Failed to put item in DynamoDB: %v", err)
 			return err
 		}
 		log.Printf("INFO: Product with SKU '%s' already exists. No action taken.", sku)
@@ -72,6 +71,47 @@ func (d *DynamoDBClient) CreateProductWithDefaults(sku string) error {
 		log.Printf("INFO: Successfully created new product with SKU '%s' in DynamoDB.", sku)
 	}
 
+	return nil
+}
+
+// SetProductInventoryToZero updates an existing product's inventory to 0.
+// This is the safe way to handle an "unpublish" event.
+func (d *DynamoDBClient) SetProductInventoryToZero(sku string) error {
+	key, err := attributevalue.MarshalMap(map[string]string{"sku": sku})
+	if err != nil {
+		return err
+	}
+
+	updateExpression := "SET inventory = :zero"
+	expressionAttributeValues, err := attributevalue.MarshalMap(map[string]int{":zero": 0})
+	if err != nil {
+		return err
+	}
+
+	// Use a condition expression to only update the item if it already exists.
+	// This prevents accidentally creating a new item if the webhook fires for a product
+	// that was never in our DB to begin with.
+	input := &dynamodb.UpdateItemInput{
+		TableName:                 awsSDK.String(d.tableName),
+		Key:                       key,
+		UpdateExpression:          awsSDK.String(updateExpression),
+		ExpressionAttributeValues: expressionAttributeValues,
+		ConditionExpression:       awsSDK.String("attribute_exists(sku)"),
+	}
+
+	_, err = d.client.UpdateItem(context.TODO(), input)
+
+	if err != nil {
+		// If the condition fails, it's not a true error; the product just doesn't exist.
+		var conditionalCheckFailedException *types.ConditionalCheckFailedException
+		if errors.As(err, &conditionalCheckFailedException) {
+			log.Printf("INFO: Product with SKU '%s' not found for unpublish. No action taken.", sku)
+			return nil
+		}
+		return err
+	}
+
+	log.Printf("INFO: Successfully set inventory to 0 for SKU '%s'.", sku)
 	return nil
 }
 
