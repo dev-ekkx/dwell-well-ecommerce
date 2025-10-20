@@ -1,6 +1,8 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Authentication resources including Cognito User Pool and a post-confirmation trigger.
+Description: >
+  (Production) Authentication resources including Cognito User Pool with a strong
+  password policy, MFA, and a post-confirmation trigger.
 
 Resources:
   CognitoUserPool:
@@ -8,9 +10,18 @@ Resources:
     Properties:
       UserPoolName: DwellWellUserPool
       Policies:
-        - PasswordPolicy: { MinimumLength: 8 }
+        - PasswordPolicy:
+            MinimumLength: 8
+            RequireLowercase: true
+            RequireUppercase: true
+            RequireNumbers: true
+            RequireSymbols: true
       UsernameAttributes: [email]
       AutoVerifiedAttributes: [email]
+      MfaConfiguration: OPTIONAL
+      EnabledMfas:
+        - SMS_MFA
+        - SOFTWARE_TOKEN_MFA
 
   CognitoUserPoolClient:
     Type: AWS::Serverless::CognitoUserPoolClient
@@ -19,12 +30,23 @@ Resources:
       ClientName: DwellWellWebAppClient
       GenerateSecret: false
 
+  CognitoAuthorizer:
+    Type: AWS::ApiGateway::Authorizer
+    Properties:
+      Name: CognitoAuthorizer
+      Type: COGNITO_USER_POOLS
+      IdentitySource: method.request.header.Authorization
+      ProviderARNs:
+        - !GetAtt CognitoUserPool.Arn
+      # RestApiId is passed implicitly when used in an API definition in other stacks
+
   PostConfirmationFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ../../backend/src/handlers/post-confirmation/
       Handler: bootstrap
       Runtime: provided.al2
+      Tracing: Active
       Events:
         CognitoEvent: { Type: Cognito, Properties: { UserPool: !Ref CognitoUserPool, Trigger: PostConfirmation } }
 
