@@ -4,16 +4,16 @@ Description: Authentication resources including Cognito User Pool with a strong 
 
 Resources:
   CognitoUserPool:
-    Type: AWS::Serverless::CognitoUserPool
+    Type: AWS::Cognito::UserPool
     Properties:
       UserPoolName: DwellWellUserPool
       Policies:
-        - PasswordPolicy:
-            MinimumLength: 8
-            RequireLowercase: true
-            RequireUppercase: true
-            RequireNumbers: true
-            RequireSymbols: true
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireLowercase: true
+          RequireUppercase: true
+          RequireNumbers: true
+          RequireSymbols: true
       UsernameAttributes: [email]
       AutoVerifiedAttributes: [email]
       MfaConfiguration: OPTIONAL
@@ -22,21 +22,11 @@ Resources:
         - SOFTWARE_TOKEN_MFA
 
   CognitoUserPoolClient:
-    Type: AWS::Serverless::CognitoUserPoolClient
+    Type: AWS::Cognito::UserPoolClient
     Properties:
       UserPoolId: !Ref CognitoUserPool
       ClientName: DwellWellWebAppClient
       GenerateSecret: false
-
-  CognitoAuthorizer:
-    Type: AWS::ApiGateway::Authorizer
-    Properties:
-      Name: CognitoAuthorizer
-      Type: COGNITO_USER_POOLS
-      IdentitySource: method.request.header.Authorization
-      ProviderARNs:
-        - !GetAtt CognitoUserPool.Arn
-      # RestApiId is passed implicitly when used in an API definition in other stacks
 
   PostConfirmationFunction:
     Type: AWS::Serverless::Function
@@ -53,8 +43,6 @@ Outputs:
     Value: !Ref CognitoUserPool
   CognitoUserPoolClientId:
     Value: !Ref CognitoUserPoolClient
-  CognitoAuthorizerId:
-    Value: !Ref CognitoAuthorizer
   CognitoUserPoolArn:
     Value: !GetAtt CognitoUserPool.Arn
 

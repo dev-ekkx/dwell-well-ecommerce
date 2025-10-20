@@ -1,10 +1,9 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description:  Order-related resources with on-demand DB, tracing, and Dead Letter Queues for reliability.
+Description: Order-related resources with on-demand DB, tracing, and Dead Letter Queues for reliability.
 
 Parameters:
   ApiGatewayId: { Type: String }
-  CognitoAuthorizerId: { Type: String }
   AppEventBusName: { Type: String }
   ProductsTableName: { Type: String }
 
@@ -28,7 +27,14 @@ Resources:
           ORDERS_TABLE_NAME: !Ref OrdersTable
           EVENT_BUS_NAME: !Ref AppEventBusName
       Events:
-        ApiEvent: { Type: Api, Properties: { RestApiId: !Ref ApiGatewayId, Path: /orders, Method: post, Auth: { Authorizer: !Ref CognitoAuthorizerId } } }
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGatewayId
+            Path: /orders
+            Method: post
+            Auth:
+              Authorizer: CognitoAuthorizer # Reference by name
       Policies:
         - DynamoDBCrudPolicy: { TableName: !Ref OrdersTable }
         - EventBridgePutEventsPolicy: { EventBusName: !Ref AppEventBusName }
