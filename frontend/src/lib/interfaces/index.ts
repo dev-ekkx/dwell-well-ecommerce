@@ -51,7 +51,7 @@ export interface ProductI {
 	sizes: string[];
 	availability: string;
 	style: string[];
-	oldPrice?: number;
+	oldPrice: number;
 	price: number;
 	averageRating: number;
 	reviewCount: number;
