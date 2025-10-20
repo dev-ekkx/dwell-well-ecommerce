@@ -1,8 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: >
-  Root SAM template for the Dwell Well E-commerce application.
-  This template orchestrates the deployment of nested stacks for each microservice.
+Description: Template for the Dwell Well E-commerce application. This template orchestrates the deployment of nested stacks for each microservice.
 
 Globals:
   Function:
