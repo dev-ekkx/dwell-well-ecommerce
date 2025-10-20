@@ -3,7 +3,6 @@ Transform: AWS::Serverless-2016-10-31
 Description: Order-related resources with on-demand DB, tracing, and Dead Letter Queues for reliability.
 
 Parameters:
-  ApiGatewayId: { Type: String }
   AppEventBusName: { Type: String }
   ProductsTableName: { Type: String }
 
@@ -26,38 +25,12 @@ Resources:
         Variables:
           ORDERS_TABLE_NAME: !Ref OrdersTable
           EVENT_BUS_NAME: !Ref AppEventBusName
-      Events:
-        ApiEvent:
-          Type: Api
-          Properties:
-            RestApiId: !Ref ApiGatewayId
-            Path: /orders
-            Method: post
-            Auth:
-              Authorizer: CognitoAuthorizer # Reference by name
       Policies:
         - DynamoDBCrudPolicy: { TableName: !Ref OrdersTable }
         - EventBridgePutEventsPolicy: { EventBusName: !Ref AppEventBusName }
 
-  UpdateInventoryDLQ:
-    Type: AWS::SQS::Queue
-
-  UpdateInventoryFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: ../../backend/src/handlers/update-inventory/
-      Handler: bootstrap
-      Runtime: provided.al2
-      Tracing: Active
-      DeadLetterQueue:
-        Type: SQS
-        TargetArn: !GetAtt UpdateInventoryDLQ.Arn
-      Environment:
-        Variables:
-          PRODUCTS_TABLE_NAME: !Ref ProductsTableName
-      Events:
-        OrderCreatedEvent: { Type: EventBridgeRule, Properties: { EventBusName: !Ref AppEventBusName, Pattern: { source: ["app.orders"], "detail-type": ["OrderCreated"] } } }
-      Policies:
-        - DynamoDBCrudPolicy: { TableName: !Ref ProductsTableName }
-        - SQSSendMessagePolicy: { QueueName: !GetAtt UpdateInventoryDLQ.QueueName }
-
+Outputs:
+  OrdersLambdaArn:
+    Value: !GetAtt CreateOrderFunction.Arn
+    Export:
+      Name: OrdersLambdaArn
