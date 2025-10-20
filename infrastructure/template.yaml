@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Template for the Dwell Well E-commerce application. This template orchestrates the deployment of nested stacks for each microservice.
+Description: Template for the Dwell Well E-commerce application. Orchestrates nested stacks for each microservice.
 
 Globals:
   Function:
@@ -11,12 +11,6 @@ Globals:
       - x86_64
 
 Resources:
-  # --- Core Infrastructure Stack (API Gateway, EventBus) ---
-  CoreStack:
-    Type: AWS::Serverless::Application
-    Properties:
-      Location: ./stacks/core.yaml
-
   # --- Authentication Stack ---
   AuthStack:
     Type: AWS::Serverless::Application
@@ -28,8 +22,6 @@ Resources:
     Type: AWS::Serverless::Application
     Properties:
       Location: ./stacks/products.yaml
-      Parameters:
-        ApiGatewayId: !GetAtt CoreStack.Outputs.ApiGatewayId
 
   # --- Orders Stack ---
   OrdersStack:
@@ -37,8 +29,6 @@ Resources:
     Properties:
       Location: ./stacks/orders.yaml
       Parameters:
-        ApiGatewayId: !GetAtt CoreStack.Outputs.ApiGatewayId
-        CognitoAuthorizerId: !GetAtt AuthStack.Outputs.CognitoAuthorizerId
         AppEventBusName: !GetAtt CoreStack.Outputs.AppEventBusName
         ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsOperationalTableName
 
@@ -48,8 +38,6 @@ Resources:
     Properties:
       Location: ./stacks/payments.yaml
       Parameters:
-        ApiGatewayId: !GetAtt CoreStack.Outputs.ApiGatewayId
-        CognitoAuthorizerId: !GetAtt AuthStack.Outputs.CognitoAuthorizerId
         ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsOperationalTableName
 
   # --- Ratings Stack ---
@@ -58,8 +46,6 @@ Resources:
     Properties:
       Location: ./stacks/ratings.yaml
       Parameters:
-        ApiGatewayId: !GetAtt CoreStack.Outputs.ApiGatewayId
-        CognitoAuthorizerId: !GetAtt AuthStack.Outputs.CognitoAuthorizerId
         AppEventBusName: !GetAtt CoreStack.Outputs.AppEventBusName
         ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsOperationalTableName
 
@@ -69,9 +55,16 @@ Resources:
     Properties:
       Location: ./stacks/webhooks.yaml
       Parameters:
-        ApiGatewayId: !GetAtt CoreStack.Outputs.ApiGatewayId
         AppEventBusName: !GetAtt CoreStack.Outputs.AppEventBusName
         ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsOperationalTableName
+
+  # --- Core Infrastructure Stack (API Gateway + EventBus) ---
+  CoreStack:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./stacks/core.yaml
+      Parameters:
+        CognitoUserPoolArn: !GetAtt AuthStack.Outputs.CognitoUserPoolArn
 
 Outputs:
   ApiEndpoint:
@@ -83,4 +76,3 @@ Outputs:
   CognitoUserPoolClientId:
     Description: "The ID of the Cognito User Pool Client"
     Value: !GetAtt AuthStack.Outputs.CognitoUserPoolClientId
-
