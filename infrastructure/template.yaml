@@ -83,3 +83,4 @@ Outputs:
   CognitoUserPoolClientId:
     Description: "The ID of the Cognito User Pool Client"
     Value: !GetAtt AuthStack.Outputs.CognitoUserPoolClientId
+
