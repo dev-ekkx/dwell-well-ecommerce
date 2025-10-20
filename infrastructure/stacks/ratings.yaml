@@ -1,10 +1,8 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Resources for managing product ratings with on-demand DB, tracing, and DLQs for reliability.
+Description: Resources for managing product ratings with on-demand DB, tracing, and DLQs.
 
 Parameters:
-  ApiGatewayId: { Type: String }
-  CognitoAuthorizerId: { Type: String }
   AppEventBusName: { Type: String }
   ProductsTableName: { Type: String }
 
@@ -27,8 +25,6 @@ Resources:
         Variables:
           RATINGS_TABLE_NAME: !Ref ProductRatingsTable
           EVENT_BUS_NAME: !Ref AppEventBusName
-      Events:
-        ApiEvent: { Type: Api, Properties: { RestApiId: !Ref ApiGatewayId, Path: /ratings, Method: post, Auth: { Authorizer: !Ref CognitoAuthorizerId } } }
       Policies:
         - DynamoDBCrudPolicy: { TableName: !Ref ProductRatingsTable }
         - EventBridgePutEventsPolicy: { EventBusName: !Ref AppEventBusName }
@@ -50,10 +46,13 @@ Resources:
         Variables:
           PRODUCTS_TABLE_NAME: !Ref ProductsTableName
           RATINGS_TABLE_NAME: !Ref ProductRatingsTable
-      Events:
-        RatingSubmittedEvent: { Type: EventBridgeRule, Properties: { EventBusName: !Ref AppEventBusName, Pattern: { source: ["app.ratings"], "detail-type": ["RatingSubmitted"] } } }
       Policies:
         - DynamoDBCrudPolicy: { TableName: !Ref ProductsTableName }
         - DynamoDBReadPolicy: { TableName: !Ref ProductRatingsTable }
         - SQSSendMessagePolicy: { QueueName: !GetAtt UpdateRatingDLQ.QueueName }
 
+Outputs:
+  RatingsLambdaArn:
+    Value: !GetAtt SubmitRatingFunction.Arn
+    Export:
+      Name: RatingsLambdaArn
