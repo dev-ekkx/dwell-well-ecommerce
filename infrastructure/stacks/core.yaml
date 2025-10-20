@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Core infrastructure including a shared API Gateway and EventBus.
+
+Resources:
+  ApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Cors:
+        AllowMethods: "'GET,POST,OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+
+  AppEventBus:
+    Type: AWS::Serverless::EventBus
+    Properties:
+      Name: DwellWellAppEventBus
+
+Outputs:
+  ApiGatewayId:
+    Value: !Ref ApiGateway
+  AppEventBusName:
+    Value: !Ref AppEventBus
+  ApiEndpoint:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+
