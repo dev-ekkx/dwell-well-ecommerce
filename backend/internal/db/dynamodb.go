@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 
 	awsSDK "github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
@@ -153,4 +154,45 @@ func (d *DynamoDBClient) GetProductsBySKUs(skus []string) ([]models.Product, err
 	}
 
 	return products, nil
+}
+
+// Hypothetical efficient query function (requires GSI change)
+// Hypothetical efficient query function (requires GSI change)
+func (d *DynamoDBClient) GetProductSKUsByPriceRangeEfficiently(minPrice, maxPrice float64) ([]string, error) {
+	var skus []string
+	var exclusiveStartKey map[string]types.AttributeValue
+	staticPartitionKeyValue := "ACTIVE" // The static value used as the HASH key in the GSI
+
+	for {
+		input := &dynamodb.QueryInput{
+			TableName:              awsSDK.String(d.tableName),
+			IndexName:              awsSDK.String("StatusPriceIndex"),                                                     // Target the correct GSI
+			KeyConditionExpression: awsSDK.String("productStatus = :statusVal AND price BETWEEN :minPrice AND :maxPrice"), // Query with range on sort key
+			ExpressionAttributeValues: map[string]types.AttributeValue{
+				":statusVal": &types.AttributeValueMemberS{Value: staticPartitionKeyValue},
+				":minPrice":  &types.AttributeValueMemberN{Value: strconv.FormatFloat(minPrice, 'f', -1, 64)},
+				":maxPrice":  &types.AttributeValueMemberN{Value: strconv.FormatFloat(maxPrice, 'f', -1, 64)},
+			},
+			ProjectionExpression: awsSDK.String("sku"), // Only get the SKU
+			ExclusiveStartKey:    exclusiveStartKey,
+		}
+
+		result, err := d.client.Query(context.TODO(), input)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, item := range result.Items {
+			var product struct {
+				SKU string `dynamodbav:"sku"`
+			}
+			// ... unmarshal and append SKU ...
+		}
+
+		if result.LastEvaluatedKey == nil {
+			break
+		}
+		exclusiveStartKey = result.LastEvaluatedKey
+	}
+	return skus, nil
 }
