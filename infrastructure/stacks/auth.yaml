@@ -1,8 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: >
-  (Production) Authentication resources including Cognito User Pool with a strong
-  password policy, MFA, and a post-confirmation trigger.
+Description: Authentication resources including Cognito User Pool with a strong password policy, MFA, and a post-confirmation trigger.
 
 Resources:
   CognitoUserPool:
