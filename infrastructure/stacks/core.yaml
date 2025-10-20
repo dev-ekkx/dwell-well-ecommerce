@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Core infrastructure including a shared API Gateway with a centralized Cognito Authorizer, and an EventBus.
+Description: Core infrastructure including API Gateway with centralized Cognito authorizer, and EventBus.
 
 Parameters:
   CognitoUserPoolArn:
@@ -22,6 +22,60 @@ Resources:
         Authorizers:
           CognitoAuthorizer:
             UserPoolArn: !Ref CognitoUserPoolArn
+      DefinitionBody:
+        openapi: 3.0.1
+        info:
+          title: DwellWell API
+          version: 1.0.0
+        paths:
+          /orders/v1:
+            post:
+              x-amazon-apigateway-integration:
+                uri: !ImportValue OrdersLambdaArn
+                httpMethod: POST
+                type: aws_proxy
+              security:
+                - CognitoAuthorizer: []
+          /products/v1/operational:
+            post:
+              x-amazon-apigateway-integration:
+                uri: !ImportValue ProductsOperationalLambdaArn
+                httpMethod: POST
+                type: aws_proxy
+          /products/v1/skus-by-price:
+            get:
+              x-amazon-apigateway-integration:
+                uri: !ImportValue SKUsByPriceLambdaArn
+                httpMethod: GET
+                type: aws_proxy
+          /payments/v1/initialize:
+            post:
+              x-amazon-apigateway-integration:
+                uri: !ImportValue PaymentsLambdaArn
+                httpMethod: POST
+                type: aws_proxy
+              security:
+                - CognitoAuthorizer: []
+          /ratings/v1:
+            post:
+              x-amazon-apigateway-integration:
+                uri: !ImportValue RatingsLambdaArn
+                httpMethod: POST
+                type: aws_proxy
+              security:
+                - CognitoAuthorizer: []
+          /webhooks/v1/paystack:
+            post:
+              x-amazon-apigateway-integration:
+                uri: !ImportValue PaystackWebhookLambdaArn
+                httpMethod: POST
+                type: aws_proxy
+          /webhooks/v1/strapi:
+            post:
+              x-amazon-apigateway-integration:
+                uri: !ImportValue StrapiWebhookLambdaArn
+                httpMethod: POST
+                type: aws_proxy
 
   AppEventBus:
     Type: AWS::Serverless::EventBus
@@ -34,6 +88,5 @@ Outputs:
   AppEventBusName:
     Value: !Ref AppEventBus
   ApiEndpoint:
-    Description: "API Gateway endpoint URL"
+    Description: API Gateway endpoint URL
     Value: !Sub "https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
-
