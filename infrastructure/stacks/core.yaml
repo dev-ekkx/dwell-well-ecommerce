@@ -1,6 +1,11 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Core infrastructure including a shared API Gateway and EventBus with active X-Ray tracing.
+Description: Core infrastructure including a shared API Gateway with a centralized Cognito Authorizer, and an EventBus.
+
+Parameters:
+  CognitoUserPoolArn:
+    Type: String
+    Description: ARN of the Cognito User Pool for the authorizer.
 
 Resources:
   ApiGateway:
@@ -12,6 +17,11 @@ Resources:
         AllowMethods: "'GET,POST,OPTIONS'"
         AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
         AllowOrigin: "'*'"
+      Auth:
+        DefaultAuthorizer: CognitoAuthorizer
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: !Ref CognitoUserPoolArn
 
   AppEventBus:
     Type: AWS::Serverless::EventBus
