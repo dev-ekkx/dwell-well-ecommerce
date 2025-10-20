@@ -117,14 +117,17 @@
 				<!-- Items per page and pagination -->
 				<div class="flex items-center justify-between gap-4 mt-6 md:mt-8 xl:mt-10">
 					<!--	Items per page select -->
-					<Root bind:value={itemsPerPage} onValueChange={handleItemsPerPage} type="single">
-						<Trigger class="w-16">{itemsPerPage}</Trigger>
-						<Content>
-							{#each itemsPerPageOptions as option(option)}
-								<Item value={String(option)}>{option}</Item>
-							{/each}
-						</Content>
-					</Root>
+					<div class="flex items-center gap-4">
+						<span>Products per page</span>
+						<Root bind:value={itemsPerPage} onValueChange={handleItemsPerPage} type="single">
+							<Trigger class="w-16">{itemsPerPage}</Trigger>
+							<Content>
+								{#each itemsPerPageOptions as option(option)}
+									<Item value={String(option)}>{option}</Item>
+								{/each}
+							</Content>
+						</Root>
+					</div>
 
 					<!-- Pagination -->
 					{#if moreThanAPage}
