@@ -30,7 +30,7 @@ Resources:
       Location: ./stacks/orders.yaml
       Parameters:
         AppEventBusName: !GetAtt CoreStack.Outputs.AppEventBusName
-        ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsOperationalTableName
+        ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsTableName
 
   # --- Payments Stack ---
   PaymentsStack:
@@ -38,7 +38,7 @@ Resources:
     Properties:
       Location: ./stacks/payments.yaml
       Parameters:
-        ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsOperationalTableName
+        ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsTableName
 
   # --- Ratings Stack ---
   RatingsStack:
@@ -47,7 +47,7 @@ Resources:
       Location: ./stacks/ratings.yaml
       Parameters:
         AppEventBusName: !GetAtt CoreStack.Outputs.AppEventBusName
-        ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsOperationalTableName
+        ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsTableName
 
   # --- Webhooks Stack ---
   WebhooksStack:
@@ -56,7 +56,7 @@ Resources:
       Location: ./stacks/webhooks.yaml
       Parameters:
         AppEventBusName: !GetAtt CoreStack.Outputs.AppEventBusName
-        ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsOperationalTableName
+        ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsTableName
 
   # --- Core Infrastructure Stack (API Gateway + EventBus) ---
   CoreStack:

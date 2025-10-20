@@ -32,7 +32,7 @@
 		sizes: [''],
 		styles: [''],
 		availabilities: [''],
-		priceRanges: [0, 5000]
+		priceRange: [0, 5000]
 	});
 
 
@@ -89,7 +89,7 @@
 			sizes: [''],
 			styles: [''],
 			availabilities: [''],
-			priceRanges: [0, 5000]
+			priceRange: [0, 5000]
 		};
 		const params = buildFilterParams();
 		await setRouteParams({ ...params, sort, q: '' }, true);
@@ -109,7 +109,7 @@
 			sizes: params.get('sizes')?.split(',') ?? [''],
 			styles: params.get('styles')?.split(',') ?? [''],
 			availabilities: params.get('availabilities')?.split(',') ?? [''],
-			priceRanges: getNumberArrayParam(params, 'priceRanges')
+			priceRange: getNumberArrayParam(params, 'priceRange')
 		};
 
 	});
@@ -149,7 +149,7 @@
 		/>
 
 		<FilterDropdown
-			bind:selectedSlides={filters.priceRanges}
+			bind:selectedSlides={filters.priceRange}
 			{maxSlideValue}
 			title="Pricing"
 			type="slider"

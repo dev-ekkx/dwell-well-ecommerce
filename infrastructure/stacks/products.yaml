@@ -3,31 +3,33 @@ Transform: AWS::Serverless-2016-10-31
 Description: Product-related resources, including the on-demand database and public API endpoints.
 
 Resources:
-    ProductsOperationalTable:
+  ProductsTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ProductsOperational
+        TableName: Products
         BillingMode: PAY_PER_REQUEST
         AttributeDefinitions:
           - AttributeName: sku
             AttributeType: S
+          - AttributeName: productStatus
+            AttributeType: S
           - AttributeName: price
             AttributeType: N
-          - AttributeName: type
-        AttributeType: S
         KeySchema:
           - AttributeName: sku
             KeyType: HASH
         GlobalSecondaryIndexes:
-          - IndexName: PriceIndex
+          - IndexName: StatusPriceIndex
             KeySchema:
-              - AttributeName: type
+              - AttributeName: productStatus
+                KeyType: HASH
               - AttributeName: price
+                KeyType: RANGE
             Projection:
-              ProjectionType: ALL
+              ProjectionType: KEYS_ONLY
 
 
-  GetProductsOperationalFunction:
+  GetProductsFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ../../backend/get-products/
@@ -36,9 +38,9 @@ Resources:
       Tracing: Active
       Environment:
         Variables:
-          PRODUCTS_TABLE_NAME: !Ref ProductsOperationalTable
+          PRODUCTS_TABLE_NAME: !Ref ProductsTable
       Policies:
-        - DynamoDBReadPolicy: { TableName: !Ref ProductsOperationalTable }
+        - DynamoDBReadPolicy: { TableName: !Ref ProductsTable }
 
   GetSKUsByPriceFunction:
     Type: AWS::Serverless::Function
@@ -49,18 +51,18 @@ Resources:
       Tracing: Active
       Environment:
         Variables:
-          PRODUCTS_TABLE_NAME: !Ref ProductsOperationalTable
+          PRODUCTS_TABLE_NAME: !Ref ProductsTable
       Policies:
-        - DynamoDBReadPolicy: { TableName: !Ref ProductsOperationalTable }
+        - DynamoDBReadPolicy: { TableName: !Ref ProductsTable }
 
 Outputs:
-  ProductsOperationalLambdaArn:
-    Value: !GetAtt GetProductsOperationalFunction.Arn
+  ProductsLambdaArn:
+    Value: !GetAtt GetProductsFunction.Arn
     Export:
-      Name: ProductsOperationalLambdaArn
+      Name: ProductsLambdaArn
   SKUsByPriceLambdaArn:
     Value: !GetAtt GetSKUsByPriceFunction.Arn
     Export:
       Name: SKUsByPriceLambdaArn
-  ProductsOperationalTableName:
-    Value: !Ref ProductsOperationalTable
+  ProductsTableName:
+    Value: !Ref ProductsTable

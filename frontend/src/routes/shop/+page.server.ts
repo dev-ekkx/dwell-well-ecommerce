@@ -31,7 +31,6 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 			strapiSort = undefined;
 	}
 
-	console.log(page, pageSize);
 	const variables: {
 		pagination: { page: number; pageSize: number };
 		filters: Record<string, unknown>;
@@ -50,8 +49,8 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	if (availabilitiesFilter?.length) {
 		variables.filters.availability = { in: availabilitiesFilter };
 	}
-	console.log(variables);
 	const goBackendUrl = "http://your-go-backend";
+	console.log(priceRangeFilter);
 	if (priceRangeFilter) {
 		const [min, max] = priceRangeFilter.split("-").map(Number);
 		if (!Number.isNaN(min) && !Number.isNaN(max)) {
@@ -67,7 +66,6 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 			// Add the SKU filter to the main GraphQL query.
 			// This tells Strapi to only
 			// fetch content for products that are in our price-filtered list.
-			console.log(priceFilteredSkus);
 			variables.filters.sku = { in: priceFilteredSkus };
 		}
 	}
@@ -78,7 +76,6 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 		error(500, `GraphQL Error: ${strapiResult.error.message}`);
 	}
 
-	console.log(strapiResult.data);
 	const totalProducts = strapiResult.data.products_connection.pageInfo.total as number;
 
 	return {
