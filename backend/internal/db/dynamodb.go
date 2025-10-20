@@ -42,6 +42,7 @@ func NewClient() (*DynamoDBClient, error) {
 func (d *DynamoDBClient) CreateProductWithDefaults(sku string) error {
 	product := models.Product{
 		SKU:           sku,
+		ProductStatus: "ACTIVE",
 		Price:         0,
 		OldPrice:      0,
 		Inventory:     0,
@@ -75,29 +76,28 @@ func (d *DynamoDBClient) CreateProductWithDefaults(sku string) error {
 	return nil
 }
 
-// SetProductInventoryToZero updates an existing product's inventory to 0.
-// This is the safe way to handle an "unpublish" event.
-func (d *DynamoDBClient) SetProductInventoryToZero(sku string) error {
+// UpdateProductStatus updates the 'productStatus' attribute for a given SKU.
+func (d *DynamoDBClient) UpdateProductStatus(sku string, newStatus string) error {
 	key, err := attributevalue.MarshalMap(map[string]string{"sku": sku})
 	if err != nil {
+		log.Printf("ERROR: Failed to marshal key for UpdateProductStatus: %v", err)
 		return err
 	}
 
-	updateExpression := "SET inventory = :zero"
-	expressionAttributeValues, err := attributevalue.MarshalMap(map[string]int{":zero": 0})
+	updateExpression := "SET productStatus = :newStatus"
+	expressionAttributeValues, err := attributevalue.MarshalMap(map[string]string{":newStatus": newStatus})
 	if err != nil {
+		log.Printf("ERROR: Failed to marshal attribute values for UpdateProductStatus: %v", err)
 		return err
 	}
 
 	// Use a condition expression to only update the item if it already exists.
-	// This prevents accidentally creating a new item if the webhook fires for a product
-	// that was never in our DB to begin with.
 	input := &dynamodb.UpdateItemInput{
 		TableName:                 awsSDK.String(d.tableName),
 		Key:                       key,
 		UpdateExpression:          awsSDK.String(updateExpression),
 		ExpressionAttributeValues: expressionAttributeValues,
-		ConditionExpression:       awsSDK.String("attribute_exists(sku)"),
+		ConditionExpression:       awsSDK.String("attribute_exists(sku)"), // Only update if product exists
 	}
 
 	_, err = d.client.UpdateItem(context.TODO(), input)
@@ -106,13 +106,14 @@ func (d *DynamoDBClient) SetProductInventoryToZero(sku string) error {
 		// If the condition fails, it's not a true error; the product just doesn't exist.
 		var conditionalCheckFailedException *types.ConditionalCheckFailedException
 		if errors.As(err, &conditionalCheckFailedException) {
-			log.Printf("INFO: Product with SKU '%s' not found for unpublish. No action taken.", sku)
+			log.Printf("INFO: Product with SKU '%s' not found for status update. No action taken.", sku)
 			return nil
 		}
+		log.Printf("ERROR: Failed to update status for SKU %s: %v", sku, err)
 		return err
 	}
 
-	log.Printf("INFO: Successfully set inventory to 0 for SKU '%s'.", sku)
+	log.Printf("INFO: Successfully updated status to '%s' for SKU '%s'.", newStatus, sku)
 	return nil
 }
 
@@ -156,43 +157,54 @@ func (d *DynamoDBClient) GetProductsBySKUs(skus []string) ([]models.Product, err
 	return products, nil
 }
 
-// Hypothetical efficient query function (requires GSI change)
-// Hypothetical efficient query function (requires GSI change)
-func (d *DynamoDBClient) GetProductSKUsByPriceRangeEfficiently(minPrice, maxPrice float64) ([]string, error) {
+func (d *DynamoDBClient) GetProductSKUsByPriceRange(minPrice, maxPrice float64) ([]string, error) {
 	var skus []string
 	var exclusiveStartKey map[string]types.AttributeValue
-	staticPartitionKeyValue := "ACTIVE" // The static value used as the HASH key in the GSI
+	productStatusValue := "ACTIVE"
 
+	// Use a loop to handle potential pagination from the Query operation
 	for {
 		input := &dynamodb.QueryInput{
-			TableName:              awsSDK.String(d.tableName),
-			IndexName:              awsSDK.String("StatusPriceIndex"),                                                     // Target the correct GSI
-			KeyConditionExpression: awsSDK.String("productStatus = :statusVal AND price BETWEEN :minPrice AND :maxPrice"), // Query with range on sort key
+			TableName: awsSDK.String(d.tableName),
+			IndexName: awsSDK.String("StatusPriceIndex"), // Target the GSI
+			// Query HASH key exactly and RANGE key (price) with BETWEEN
+			KeyConditionExpression: awsSDK.String("productStatus = :statusVal AND price BETWEEN :minPrice AND :maxPrice"),
 			ExpressionAttributeValues: map[string]types.AttributeValue{
-				":statusVal": &types.AttributeValueMemberS{Value: staticPartitionKeyValue},
+				":statusVal": &types.AttributeValueMemberS{Value: productStatusValue},
 				":minPrice":  &types.AttributeValueMemberN{Value: strconv.FormatFloat(minPrice, 'f', -1, 64)},
 				":maxPrice":  &types.AttributeValueMemberN{Value: strconv.FormatFloat(maxPrice, 'f', -1, 64)},
 			},
-			ProjectionExpression: awsSDK.String("sku"), // Only get the SKU
+			// Only retrieve the 'sku' attribute to minimize read cost
+			ProjectionExpression: awsSDK.String("sku"),
 			ExclusiveStartKey:    exclusiveStartKey,
 		}
 
+		// Execute the Query operation
 		result, err := d.client.Query(context.TODO(), input)
 		if err != nil {
+			log.Printf("ERROR: Failed to query StatusPriceIndex GSI: %v", err)
 			return nil, err
 		}
 
+		// Unmarshal the 'sku' from each returned item
 		for _, item := range result.Items {
-			var product struct {
+			var productSKU struct {
 				SKU string `dynamodbav:"sku"`
 			}
-			// ... unmarshal and append SKU ...
+			err := attributevalue.UnmarshalMap(item, &productSKU)
+			if err == nil && productSKU.SKU != "" {
+				skus = append(skus, productSKU.SKU)
+			} else if err != nil {
+				log.Printf("WARN: Failed to unmarshal SKU from GSI item: %v", err)
+			}
 		}
 
+		// Check if there are more items to fetch
 		if result.LastEvaluatedKey == nil {
-			break
+			break // Exit loop if all items have been read
 		}
-		exclusiveStartKey = result.LastEvaluatedKey
+		exclusiveStartKey = result.LastEvaluatedKey // Set the start key for the next page
 	}
+
 	return skus, nil
 }

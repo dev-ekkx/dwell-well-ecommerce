@@ -17,7 +17,7 @@ func main() {
 
 	// Strapi webhook handler function
 	handler := func(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-		return webhookService.HandleStrapiProductPublish(request)
+		return webhookService.HandleStrapiEvent(request)
 	}
 
 	lambda.Start(handler)

@@ -60,13 +60,13 @@ func (s *WebhookService) HandleStrapiEvent(request events.APIGatewayProxyRequest
 		return events.APIGatewayProxyResponse{StatusCode: 200, Body: "Product published successfully"}, nil
 
 	case "entry.unpublish":
-		// Call a new database function to set the inventory to zero.
-		err = s.dynamoDB.SetProductInventoryToZero(payload.Entry.SKU)
+		// Call the new database function to update the status to "INACTIVE".
+		err = s.dynamoDB.UpdateProductStatus(payload.Entry.SKU, "INACTIVE")
 		if err != nil {
-			log.Printf("ERROR: Failed to unpublish product for SKU %s: %v", payload.Entry.SKU, err)
+			log.Printf("ERROR: Failed to unpublish product (update status) for SKU %s: %v", payload.Entry.SKU, err)
 			return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Failed to process unpublish event"}, nil
 		}
-		return events.APIGatewayProxyResponse{StatusCode: 200, Body: "Product unpublished successfully"}, nil
+		return events.APIGatewayProxyResponse{StatusCode: 200, Body: "Product unpublished (status updated) successfully"}, nil
 
 	default:
 		log.Printf("INFO: Ignoring unhandled event type: %s", payload.Event)

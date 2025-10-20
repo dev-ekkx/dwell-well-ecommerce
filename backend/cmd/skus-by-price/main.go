@@ -8,7 +8,7 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
-// main is the entry point for the GetSKUsByPrice Lambda function.
+// the main is the entry point for the GetSKUsByPrice Lambda function.
 func main() {
 	// Initialize the service that contains all the business logic.
 	productService, err := services.NewProductService()

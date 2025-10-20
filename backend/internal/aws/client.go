@@ -43,12 +43,3 @@ func Init() {
 		EventClient = eventbridge.NewFromConfig(cfg)
 	})
 }
-
-// GetConfig provides access to the loaded AWS config if needed elsewhere.
-func GetConfig() (aws.Config, error) {
-	Init()                // Ensure initialization has run
-	if cfg.Region == "" { // Check if cfg is initialized properly, error might have occurred in init
-		return aws.Config{}, err // Return the potential error from init
-	}
-	return cfg, nil
-}
