@@ -41,5 +41,5 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 		variables.filters.availability = { slug: { in: availabilitiesFilter } };
 	}
 
-	console.log(JSON.stringify(variables));
+	console.log(variables);
 };

@@ -32,7 +32,7 @@
 		sizes: [''],
 		styles: [''],
 		availabilities: [''],
-		priceRanges: []
+		priceRanges: [0, 5000]
 	});
 
 	const toggleContainer = async (
@@ -88,7 +88,7 @@
 			sizes: [''],
 			styles: [''],
 			availabilities: [''],
-			priceRanges: []
+			priceRanges: [0, 5000]
 		};
 		const params = buildFilterParams();
 		await setRouteParams({ ...params, sort, q: '' }, true);
@@ -101,6 +101,8 @@
 
 	onMount(() => {
 		const params = page.url.searchParams;
+
+		sort = params.get('sort') ?? '';
 		filters = {
 			categories: params.get('categories')?.split(',') ?? [''],
 			sizes: params.get('sizes')?.split(',') ?? [''],

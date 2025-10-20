@@ -42,6 +42,8 @@ export const setRouteParams = async (
 		queryString ? `${page.url.pathname}?${queryString}` : page.url.pathname
 	) as RouteId;
 
+	console.log(newPath);
+
 	// Navigate to the new URL
 	await goto(resolve(newPath), {
 		replaceState: true,
