@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Public webhook endpoints for third-party integrations.
+
+Parameters:
+  AppEventBusName: { Type: String }
+  ProductsTableName: { Type: String }
+
+Resources:
+  PaystackWebhookFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../../backend/src/handlers/webhook-paystack/
+      Handler: bootstrap
+      Runtime: provided.al2
+      Tracing: Active
+      Environment:
+        Variables:
+          EVENT_BUS_NAME: !Ref AppEventBusName
+      Policies:
+        - EventBridgePutEventsPolicy: { EventBusName: !Ref AppEventBusName }
+
+  StrapiWebhookFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../../backend/src/handlers/webhook-strapi/
+      Handler: bootstrap
+      Runtime: provided.al2
+      Tracing: Active
+      Environment:
+        Variables:
+          PRODUCTS_TABLE_NAME: !Ref ProductsTableName
+      Policies:
+        - DynamoDBCrudPolicy: { TableName: !Ref ProductsTableName }
+
+Outputs:
+  PaystackWebhookLambdaArn:
+    Value: !GetAtt PaystackWebhookFunction.Arn
+    Export:
+      Name: PaystackWebhookLambdaArn
+  StrapiWebhookLambdaArn:
+    Value: !GetAtt StrapiWebhookFunction.Arn
+    Export:
+      Name: StrapiWebhookLambdaArn
