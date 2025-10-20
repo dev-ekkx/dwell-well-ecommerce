@@ -1,0 +1,41 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Order-related resources for creating orders and updating inventory.
+
+Parameters:
+  ApiGatewayId: { Type: String }
+  CognitoAuthorizerId: { Type: String }
+  AppEventBusName: { Type: String }
+  ProductsTableName: { Type: String }
+
+Resources:
+  OrdersTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      TableName: Orders
+      PrimaryKey: { Name: orderId, Type: String }
+      ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
+
+  CreateOrderFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../../backend/src/handlers/create-order/
+      Handler: bootstrap
+      Runtime: provided.al2
+      Events:
+        ApiEvent: { Type: Api, Properties: { RestApiId: !Ref ApiGatewayId, Path: /orders, Method: post, Auth: { Authorizer: !Ref CognitoAuthorizerId } } }
+      Policies:
+        - DynamoDBCrudPolicy: { TableName: !Ref OrdersTable }
+        - EventBridgePutEventsPolicy: { EventBusName: !Ref AppEventBusName }
+
+  UpdateInventoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../../backend/src/handlers/update-inventory/
+      Handler: bootstrap
+      Runtime: provided.al2
+      Events:
+        OrderCreatedEvent: { Type: EventBridgeRule, Properties: { EventBusName: !Ref AppEventBusName, Pattern: { source: ["app.orders"], "detail-type": ["OrderCreated"] } } }
+      Policies:
+        - DynamoDBCrudPolicy: { TableName: !Ref ProductsTableName }
+
