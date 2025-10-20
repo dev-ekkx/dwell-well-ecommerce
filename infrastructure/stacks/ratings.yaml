@@ -8,11 +8,25 @@ Parameters:
 
 Resources:
   ProductRatingsTable:
-    Type: AWS::Serverless::SimpleTable
+    Type: AWS::DynamoDB::Table
     Properties:
       TableName: ProductRatings
-      PrimaryKey: { Name: productId, Type: String }
       BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: productId
+          AttributeType: S
+        - AttributeName: rating
+          AttributeType: N
+      KeySchema:
+        - AttributeName: productId
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: RatingIndex
+          KeySchema:
+            - AttributeName: rating
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
 
   SubmitRatingFunction:
     Type: AWS::Serverless::Function
