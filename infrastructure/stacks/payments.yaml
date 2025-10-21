@@ -9,7 +9,7 @@ Resources:
   InitializePaymentFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ../../backend/cmd/initialize-payment/
+      CodeUri: ./cmd/initialize-payment/
       Handler: bootstrap
       Runtime: provided.al2
       Tracing: Active

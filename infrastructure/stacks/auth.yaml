@@ -36,7 +36,7 @@ Resources:
   PostConfirmationFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ../../backend/cmd/post-confirmation/
+      CodeUri: ./cmd/post-confirmation/
       Handler: bootstrap
       Runtime: provided.al2
       Tracing: Active

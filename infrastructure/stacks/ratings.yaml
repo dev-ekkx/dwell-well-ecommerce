@@ -31,7 +31,7 @@ Resources:
   SubmitRatingFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ../../backend/cmd/submit-rating/
+      CodeUri: ./cmd/submit-rating/
       Handler: bootstrap
       Runtime: provided.al2
       Tracing: Active
@@ -49,7 +49,7 @@ Resources:
   UpdateAverageRatingFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ../../backend/cmd/update-average-rating/
+      CodeUri: ./cmd/update-average-rating/
       Handler: bootstrap
       Runtime: provided.al2
       Tracing: Active
