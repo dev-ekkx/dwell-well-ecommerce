@@ -10,7 +10,7 @@ Resources:
   PaystackWebhookFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ../../backend/cmd/webhook-paystack/
+      CodeUri: ./cmd/webhook-paystack/
       Handler: bootstrap
       Runtime: provided.al2
       Tracing: Active
@@ -23,7 +23,7 @@ Resources:
   StrapiWebhookFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ../../backend/cmd/webhook-strapi/
+      CodeUri: ./cmd/webhook-strapi/
       Handler: bootstrap
       Runtime: provided.al2
       Tracing: Active

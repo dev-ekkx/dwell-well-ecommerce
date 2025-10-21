@@ -32,7 +32,7 @@ Resources:
   GetProductsFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ../../backend/cmd/get-products/
+      CodeUri: ./cmd/get-products/
       Handler: bootstrap
       Runtime: provided.al2
       Tracing: Active
@@ -45,7 +45,7 @@ Resources:
   GetSKUsByPriceFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ../../backend/cmd/get-skus-by-price/
+      CodeUri: ./cmd/get-skus-by-price/
       Handler: bootstrap
       Runtime: provided.al2
       Tracing: Active
