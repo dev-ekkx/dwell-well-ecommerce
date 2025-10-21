@@ -7,6 +7,11 @@ Resources:
     Type: AWS::Cognito::UserPool
     Properties:
       UserPoolName: DwellWellUserPool
+      Schema:
+        - Name: name
+          AttributeDataType: String
+          Mutable: true
+          Required: true
       Policies:
         PasswordPolicy:
           MinimumLength: 8
@@ -19,7 +24,7 @@ Resources:
       MfaConfiguration: OPTIONAL
       EnabledMfas:
         - SMS_MFA
-        - SOFTWARE_TOKEN_MFA
+        - SOFTWARE_TOKEN_MFA  
 
   CognitoUserPoolClient:
     Type: AWS::Cognito::UserPoolClient
