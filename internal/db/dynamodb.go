@@ -2,8 +2,6 @@ package db
 
 import (
 	"context"
-	"dwell-well-ecommerce/internal/aws"
-	"dwell-well-ecommerce/internal/models"
 	"errors"
 	"fmt"
 	"log"
@@ -14,6 +12,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"github.com/dev-ekkx/dwell-well-ecommerce/internal/aws"
+	"github.com/dev-ekkx/dwell-well-ecommerce/internal/models"
 )
 
 // DynamoDBClient holds the client for interacting with DynamoDB.

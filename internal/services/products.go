@@ -1,13 +1,13 @@
 package services
 
 import (
-	"dwell-well-ecommerce/internal/db"
-	"dwell-well-ecommerce/internal/models"
 	"encoding/json"
 	"log"
 	"strconv"
 
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/dev-ekkx/dwell-well-ecommerce/internal/db"
+	"github.com/dev-ekkx/dwell-well-ecommerce/internal/models"
 )
 
 // ProductService encapsulates all business logic related to products.

@@ -1,11 +1,11 @@
 package main
 
 import (
-	"dwell-well-ecommerce/internal/services"
 	"log"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/dev-ekkx/dwell-well-ecommerce/internal/services"
 )
 
 func main() {
