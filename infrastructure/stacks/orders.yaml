@@ -32,7 +32,7 @@ Resources:
   CreateOrderFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ../../backend/src/handlers/create-order/
+      CodeUri: ../../backend/cmd/create-order/
       Handler: bootstrap
       Runtime: provided.al2
       Tracing: Active

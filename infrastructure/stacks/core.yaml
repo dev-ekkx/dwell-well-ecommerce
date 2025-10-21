@@ -36,10 +36,10 @@ Resources:
                 type: aws_proxy
               security:
                 - CognitoAuthorizer: []
-          /products/v1/operational:
+          /products/v1:
             post:
               x-amazon-apigateway-integration:
-                uri: !ImportValue ProductsOperationalLambdaArn
+                uri: !ImportValue ProductsLambdaArn
                 httpMethod: POST
                 type: aws_proxy
           /products/v1/skus-by-price:

@@ -2,6 +2,7 @@ package models
 
 type Product struct {
 	SKU           string  `json:"sku" dynamodbav:"sku"`
+	ProductStatus string  `json:"productStatus" dynamodbav:"productStatus"`
 	OldPrice      float64 `json:"oldPrice,omitempty" dynamodbav:"oldPrice,omitempty"`
 	Price         float64 `json:"price" dynamodbav:"price"`
 	Inventory     int     `json:"inventory" dynamodbav:"inventory"`

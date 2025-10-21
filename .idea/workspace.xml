@@ -1,52 +1,118 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="c4d2c48a-6913-45ab-9d0f-5ba06eff305a" name="Changes" comment="" />
+    <list default="true" id="f52702dd-72be-4614-b19e-dee3747e7a5d" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/cmd/get-products/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/get-products/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/skus-by-price/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/skus-by-price/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/webhook-strapi/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/webhook-strapi/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/db/dynamodb.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/db/dynamodb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/services/products.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/services/products.go" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Go File" />
+      </list>
+    </option>
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 1
-}]]></component>
-  <component name="ProjectId" id="32VNc5StiYUbbGJReuEe2Z9GDVj" />
+  <component name="GOROOT" url="file:///usr/local/go" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="OptimizeOnSaveOptions">
+    <option name="myRunOnSave" value="true" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
+  <component name="ProjectId" id="34KwRYj1wa9cMWd4UqnyflLm2LS" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "DefaultGoTemplateProperty": "Go File",
+    "Go Build.go build dwell-well-ecommerce/cmd/get-products.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.GoLinterPluginOnboarding": "true",
+    "RunOnceActivity.GoLinterPluginStorageMigration": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "/home/emmanuel-kpendo/projects/personal/dwell-well-ecommerce",
-    "nodejs_package_manager_path": "bun",
-    "to.speed.mode.migration.done": "true",
-    "vue.rearranger.settings.migration": "true"
+    "RunOnceActivity.go.formatter.settings.were.checked": "true",
+    "RunOnceActivity.go.migrated.go.modules.settings": "true",
+    "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
+    "code.cleanup.on.save": "true",
+    "git-widget-placeholder": "feat/link-strapi-to-backend",
+    "go.import.settings.migrated": "true",
+    "last_opened_file_path": "/home/emmanuel-kpendo",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "onboarding.tips.debug.path": "/home/emmanuel-kpendo/projects/personal/dwell-well-ecommerce/backend/main.go",
+    "rearrange.code.on.save": "true",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/cmd/skus-by-price" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="go build dwell-well-ecommerce/cmd/get-products" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="backend" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="dwell-well-ecommerce/cmd/get-products" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/cmd/get-products/main.go" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go Build.go build dwell-well-ecommerce/cmd/get-products" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-b598e85cdad2-JavaScript-WS-252.25557.126" />
+        <option value="bundled-gosdk-f466f9b0953e-146d08934cbf-org.jetbrains.plugins.go.sharedIndexes.bundled-GO-252.26830.102" />
+        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-GO-252.26830.102" />
       </set>
     </attachedChunks>
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="c4d2c48a-6913-45ab-9d0f-5ba06eff305a" name="Changes" comment="" />
-      <created>1757501856368</created>
+      <changelist id="f52702dd-72be-4614-b19e-dee3747e7a5d" name="Changes" comment="" />
+      <created>1760975563813</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1757501856368</updated>
-      <workItem from="1757501858377" duration="11000" />
+      <updated>1760975563813</updated>
     </task>
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VgoProject">
+    <settings-migrated>true</settings-migrated>
   </component>
 </project>

@@ -1,11 +1,11 @@
 package main
 
 import (
-	"dwell-well-ecommerce/internal/services"
 	"log"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/dev-ekkx/dwell-well-ecommerce/internal/services"
 )
 
 func main() {
@@ -17,7 +17,7 @@ func main() {
 
 	// Strapi webhook handler function
 	handler := func(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-		return webhookService.HandleStrapiProductPublish(request)
+		return webhookService.HandleStrapiEvent(request)
 	}
 
 	lambda.Start(handler)
