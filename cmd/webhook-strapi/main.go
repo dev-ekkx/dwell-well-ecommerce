@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -9,6 +10,8 @@ import (
 )
 
 func main() {
+	fmt.Println("Starting Strapi Webhook Handler...")
+
 	// Initialize the service that contains all the business logic.
 	webhookService, err := services.NewWebhookService()
 	if err != nil {
