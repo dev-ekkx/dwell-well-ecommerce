@@ -7,7 +7,7 @@ on:
     types: [ opened, reopened, synchronize ]
 
 env:
-  STACK_NAME: dwell-well-ecommerce-pr-${{ github.event.number }}  
+  STACK_NAME: dwell-well-ecommerce-stack
   AWS_REGION: us-east-1
   S3_BUCKET: ${{ secrets.SAM_S3_BUCKET }}
   GO_VERSION: '1.25.3'
