@@ -31,11 +31,10 @@ Resources:
 
   GetProductsFunction:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
     Properties:
-      CodeUri: ./cmd/get-products/
-      Handler: bootstrap
-      Runtime: provided.al2
-      Tracing: Active
+      CodeUri: ../../../cmd/get-products/
       Environment:
         Variables:
           PRODUCTS_TABLE_NAME: !Ref ProductsTable
@@ -44,11 +43,10 @@ Resources:
 
   GetSKUsByPriceFunction:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
     Properties:
-      CodeUri: ./cmd/get-skus-by-price/
-      Handler: bootstrap
-      Runtime: provided.al2
-      Tracing: Active
+      CodeUri: ../../../cmd/get-skus-by-price/
       Environment:
         Variables:
           PRODUCTS_TABLE_NAME: !Ref ProductsTable

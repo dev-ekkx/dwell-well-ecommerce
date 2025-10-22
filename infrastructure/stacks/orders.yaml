@@ -31,11 +31,10 @@ Resources:
 
   CreateOrderFunction:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
     Properties:
-      CodeUri: ./cmd/create-order/
-      Handler: bootstrap
-      Runtime: provided.al2
-      Tracing: Active
+      CodeUri: ../../../cmd/create-order/
       Environment:
         Variables:
           ORDERS_TABLE_NAME: !Ref OrdersTable

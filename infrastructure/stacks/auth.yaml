@@ -35,11 +35,10 @@ Resources:
 
   PostConfirmationFunction:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
     Properties:
-      CodeUri: ./cmd/post-confirmation/
-      Handler: bootstrap
-      Runtime: provided.al2
-      Tracing: Active
+      CodeUri: ../../../cmd/post-confirmation/
       Events:
         CognitoEvent: { Type: Cognito, Properties: { UserPool: !Ref CognitoUserPool, Trigger: PostConfirmation } }
 
