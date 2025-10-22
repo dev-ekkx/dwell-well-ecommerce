@@ -21,10 +21,6 @@ Resources:
           RequireSymbols: true
       UsernameAttributes: [email]
       AutoVerifiedAttributes: [email]
-      MfaConfiguration: OPTIONAL
-      EnabledMfas:
-        - SMS_MFA
-        - SOFTWARE_TOKEN_MFA  
 
   CognitoUserPoolClient:
     Type: AWS::Cognito::UserPoolClient
