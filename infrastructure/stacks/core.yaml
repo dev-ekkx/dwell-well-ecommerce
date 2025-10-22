@@ -78,7 +78,7 @@ Resources:
                 type: aws_proxy
 
   AppEventBus:
-    Type: AWS::Serverless::EventBus
+    Type: AWS::Events::EventBus
     Properties:
       Name: DwellWellAppEventBus
 
