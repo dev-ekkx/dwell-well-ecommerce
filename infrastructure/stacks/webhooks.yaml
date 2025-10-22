@@ -13,6 +13,7 @@ Resources:
       BuildMethod: go1.x
     Properties:
       CodeUri: ../../../cmd/webhook-paystack/
+      Handler: webhook-paystack
       Environment:
         Variables:
           EVENT_BUS_NAME: !Ref AppEventBusName
@@ -25,6 +26,7 @@ Resources:
       BuildMethod: go1.x
     Properties:
       CodeUri: ../../../cmd/webhook-strapi/
+      Handler: webhook-strapi
       Environment:
         Variables:
           PRODUCTS_TABLE_NAME: !Ref ProductsTableName

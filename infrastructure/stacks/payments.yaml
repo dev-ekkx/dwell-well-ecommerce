@@ -12,6 +12,7 @@ Resources:
       BuildMethod: go1.x
     Properties:
       CodeUri: ../../../cmd/initialize-payment/
+      Handler: initialize-payment
       Environment:
         Variables:
           PRODUCTS_TABLE_NAME: !Ref ProductsTableName
