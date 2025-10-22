@@ -8,10 +8,9 @@
 	const product: ProductCardI = $props();
 
 	const mediaQuery = new MediaQuery('max-width: 63.9rem');
-	const baseCmsUrl = import.meta.env.VITE_CMS_URL;
 	const isMobile = $derived(mediaQuery.current);
-	const productImage = $derived(`${baseCmsUrl}${product.images[0].url}`);
-	
+	const productImage = $derived(`${product.images[0].url}`);
+
 	const config = $derived<ConfigI>({
 		readonly: true,
 		maxVal: 5,

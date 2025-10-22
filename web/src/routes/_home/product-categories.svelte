@@ -3,12 +3,10 @@
 	import gsap from 'gsap';
 	import Picture from '$lib/components/picture.svelte';
 	import ArrowButton from '$lib/components/arrow-button.svelte';
-	import type { PageProps } from './$types';
 	import type { CategoryI } from '$lib/interfaces';
 
-	const { productCategoriesData }: PageProps = $props();
+	const { productCategoriesData } = $props();
 	const productsCategories = productCategoriesData as CategoryI;
-	const cmsBaseUrl = import.meta.env.VITE_CMS_URL;
 
 	// Build a repeated list to loop seamlessly by starting in the middle block
 	const REPEAT = 5;
@@ -110,7 +108,7 @@
 			<div class="flex flex-col items-center gap-6">
 				<Picture alt={product.title}
 								 class="transition-all ease-linear duration-500 rounded-lg w-[12.7rem] h-[12.7rem] md:h-[17.9rem] md:w-[17.9rem] lg:w-[22.6rem] lg:h-[22.6rem] object-cover"
-								 src={`${cmsBaseUrl}${product.image.url}`} source={`${cmsBaseUrl}${product.image.url}`} />
+								 src={`${product.image.url}`} source={`${product.image.url}`} />
 				<span class="capitalize text-lg font-medium">{product.title}</span>
 			</div>
 		{/each}

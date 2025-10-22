@@ -4,9 +4,8 @@
 
 	const { flashSalesData } = $props();
 	const flashSales = flashSalesData as FlashSaleI;
-	const cmsBaseUrl = import.meta.env.VITE_CMS_URL;
 
-	const imageUrl = cmsBaseUrl + (flashSales.product.images[0].url ?? '');
+	const imageUrl = (flashSales.product.images[0].url ?? '');
 	const imageAlt = flashSales.product.images[0].alternativeText ?? '';
 
 
