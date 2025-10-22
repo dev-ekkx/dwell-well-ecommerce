@@ -33,14 +33,14 @@ Resources:
       ClientName: DwellWellWebAppClient
       GenerateSecret: false
 
-  PostConfirmationFunction:
-    Type: AWS::Serverless::Function
-    Metadata:
-      BuildMethod: go1.x
-    Properties:
-      CodeUri: ../../../cmd/post-confirmation/
-      Events:
-        CognitoEvent: { Type: Cognito, Properties: { UserPool: !Ref CognitoUserPool, Trigger: PostConfirmation } }
+  # PostConfirmationFunction:
+  #   Type: AWS::Serverless::Function
+  #   Metadata:
+  #     BuildMethod: go1.x
+  #   Properties:
+  #     CodeUri: ../../../cmd/post-confirmation/
+  #     Events:
+  #       CognitoEvent: { Type: Cognito, Properties: { UserPool: !Ref CognitoUserPool, Trigger: PostConfirmation } }
 
 Outputs:
   CognitoUserPoolId:
