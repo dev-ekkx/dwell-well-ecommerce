@@ -72,7 +72,7 @@ jobs:
       - name: Package
         run: |
           sam package \
-            --template-file .aws-sam/build/${{ env.SAM_TEMPLATE }} \
+            --template-file .aws-sam/build/template.yaml \
             --s3-bucket ${{ env.S3_BUCKET }} \
             --output-template-file packaged.yaml
 
