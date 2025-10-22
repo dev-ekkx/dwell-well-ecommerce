@@ -33,8 +33,8 @@ jobs:
         # run: go test ./...
 
   deploy:
-    needs: test 
-
+    needs: test
+    if: github.event_name == 'pull_request' 
     name: Package & Deploy SAM
     runs-on: ubuntu-latest
 
