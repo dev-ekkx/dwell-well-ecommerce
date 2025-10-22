@@ -8,7 +8,7 @@ on:
 
 env:
   STACK_NAME: dwell-well-ecommerce-pr-${{ github.event.number }}  
-  SAM_TEMPLATE: infrastructure/template.yaml
+  SAM_TEMPLATE: ./infrastructure/template.yaml
   AWS_REGION: us-east-1
   S3_BUCKET: ${{ secrets.SAM_S3_BUCKET }}
   GO_VERSION: '1.25.3'
