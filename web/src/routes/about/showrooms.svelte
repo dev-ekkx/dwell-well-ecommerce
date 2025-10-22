@@ -6,8 +6,6 @@
 
 	const { showroomData } = $props();
 	const showrooms: ShowroomI[] = showroomData.showrooms || [];
-	const cmsBaseUrl = import.meta.env.VITE_CMS_URL;
-
 
 	const groupedShowrooms = $derived(() => {
 
@@ -63,7 +61,7 @@
 						{#each group.showrooms as showroom (showroom.country.name)}
 							<div class="rounded-lg h-[21.75rem] relative overflow-clip group">
 								<img
-									src={`${cmsBaseUrl}${showroom.image.url}`}
+									src={`${showroom.image.url}`}
 									alt={showroom.country.name}
 									class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
 								/>

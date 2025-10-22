@@ -8,8 +8,6 @@
 	import { marked } from 'marked';
 	import DOMPurify from 'dompurify';
 
-	const cmsBaseUrl = import.meta.env.VITE_CMS_URL;
-
 	const { footer } = $props();
 	const footerData = footer as FooterI;
 	const socials = footerData.socialLinks;
@@ -91,7 +89,7 @@
 		<span>&copy; {new Date().getFullYear()} {footerData.copyrightText}</span>
 		<div class="flex items-center gap-4">
 			{#each socials as social (social)}
-				<img class="w-5 h-5" src={`${cmsBaseUrl}${social.icon.url}`} alt={social.icon.alternativeText}>
+				<img class="w-5 h-5" src={`${social.icon.url}`} alt={social.icon.alternativeText}>
 			{/each}
 		</div>
 	</section>

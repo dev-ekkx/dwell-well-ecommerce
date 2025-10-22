@@ -17,9 +17,7 @@
 	let secondImageContainer = $state<HTMLElement>();
 	let thirdImageContainer = $state<HTMLElement>();
 	let previewImageContainer = $state<HTMLElement>();
-
-	const cmsBaseUrl = import.meta.env.VITE_CMS_URL;
-
+	
 	const targets = $derived([
 		firstImageContainer,
 		secondImageContainer,
@@ -118,7 +116,7 @@
 	<div bind:this={previewImageContainer}
 			 class="relative flex h-full items-center w-full justify-center rounded-t-full bg-muted"
 			 id="preview-container">
-		<img alt="current" class="img-thumbnail scale-75" src={`${cmsBaseUrl}${heroImages[0].url}`} />
+		<img alt="current" class="img-thumbnail scale-75" src={`${heroImages[0].url}`} />
 
 		<!--	Carousel buttons-->
 		<div class="absolute flex -bottom-16 items-center justify-center gap-4">
@@ -136,7 +134,7 @@
 			id="first-image-container"
 		>
 			<div class="absolute rounded-b-full bottom-0 left-0 -z-10 h-1/2 w-full bg-muted"></div>
-			<img alt="first" class="img-thumbnail scale-75" src={`${cmsBaseUrl}${heroImages[1].url}`} />
+			<img alt="first" class="img-thumbnail scale-75" src={`${heroImages[1].url}`} />
 		</div>
 
 		<!--Second image-->
@@ -146,7 +144,7 @@
 			id="second-image-container"
 		>
 			<div class="absolute rounded-b-full bottom-0 left-0 -z-10 h-1/2 w-full bg-muted"></div>
-			<img alt="second" class="img-thumbnail scale-75" src={`${cmsBaseUrl}${heroImages[2].url}`} />
+			<img alt="second" class="img-thumbnail scale-75" src={`${heroImages[2].url}`} />
 		</div>
 
 		<!--Third Image-->
@@ -156,7 +154,7 @@
 			id="third-image-container"
 		>
 			<div class="absolute rounded-b-full bottom-0 left-0 -z-10 h-1/2 w-full bg-muted"></div>
-			<img alt="third" class="img-thumbnail scale-75" src={`${cmsBaseUrl}${heroImages[3].url}`} />
+			<img alt="third" class="img-thumbnail scale-75" src={`${heroImages[3].url}`} />
 		</div>
 	</div>
 </section>

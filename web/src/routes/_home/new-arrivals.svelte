@@ -7,7 +7,7 @@
 
 	const { newArrivalsData } = $props();
 	const newArrivals = newArrivalsData as NewArrivalI;
-	const cmsBaseUrl = import.meta.env.VITE_CMS_URL;
+
 	// Build a repeated list to loop seamlessly by starting in the middle block
 	const REPEAT = 5;
 	const displayedProducts = Array.from({ length: REPEAT }, (_, r) =>
@@ -113,7 +113,7 @@
 			<div class="flex flex-col items-center gap-6">
 				<Picture loading="eager" alt={product.title}
 								 class="transition-all ease-linear duration-500 rounded-lg w-[14.75rem] h-[18.75rem] lg:w-[26.3rem] lg:h-[35.125rem] object-cover"
-								 src={`${cmsBaseUrl}${product.image.url}`} source={`${cmsBaseUrl}${product.image.url}`} />
+								 src={`${product.image.url}`} source={`${product.image.url}`} />
 				<span class="capitalize text-lg font-medium">{product.title}</span>
 			</div>
 		{/each}

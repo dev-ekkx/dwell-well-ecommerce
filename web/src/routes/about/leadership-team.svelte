@@ -2,7 +2,6 @@
 	import type { LeadershipTeamI } from '$lib/interfaces';
 
 	const { leadershipTeamData }: { leadershipTeamData: LeadershipTeamI } = $props();
-	const cmsBaseUrl = import.meta.env.VITE_CMS_URL;
 </script>
 
 <section class="g-px g-mt-pt flex flex-col gap-6">
@@ -13,7 +12,7 @@
 	<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
 		{#each leadershipTeamData.team as manager (manager.name)}
 			<div class="h-[28rem] lg:h-[23rem] relative rounded-lg overflow-hidden">
-				<img alt={manager.name} src={`${cmsBaseUrl}${manager.profilePicture.url}`}
+				<img alt={manager.name} src={`${manager.profilePicture.url}`}
 						 class="h-full w-full object-cover object-top" />
 				<div
 					class="absolute flex flex-col **:text-white justify-end px-4 py-3 gap-1 bg-gradient-to-b from-transparent to-black/90 bottom-0 left-0 w-full h-3/12">

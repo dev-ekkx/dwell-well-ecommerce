@@ -3,7 +3,6 @@
 	import type { WhyChooseUsI } from '$lib/interfaces';
 
 	const { whatWeAreKnownForData }: { whatWeAreKnownForData: WhyChooseUsI } = $props();
-	const cmsBaseUrl = import.meta.env.VITE_CMS_URL;
 </script>
 
 <section class="g-mt-pt flex-col gap-6 g-px grid grid-cols-10 ">
@@ -17,7 +16,7 @@
 			{#each whatWeAreKnownForData.reasons as achievement (achievement.title)}
 				<div class="flex flex-col gap-6 md:gap-4">
 					<div class="h-16 w-16 rounded-lg bg-primary-foreground flex items-center justify-center">
-						<img src={`${cmsBaseUrl}${achievement.icon.url}`} alt={achievement.title} />
+						<img src={`${achievement.icon.url}`} alt={achievement.title} />
 					</div>
 					<span class="font-semibold text-md">{achievement.title}</span>
 					<p>{achievement.description}</p>
@@ -27,5 +26,5 @@
 	</div>
 	<img alt="wardrobe"
 			 class="transition-all duration-500 ease-linear col-span-10 w-full max-h-[20rem] lg:col-span-4 md:max-h-[35rem] lg:max-h-auto rounded-lg object-cover"
-			 src={`${cmsBaseUrl}${whatWeAreKnownForData.image.url}`} />
+			 src={`${whatWeAreKnownForData.image.url}`} />
 </section>
