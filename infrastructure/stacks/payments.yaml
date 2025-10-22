@@ -8,11 +8,10 @@ Parameters:
 Resources:
   InitializePaymentFunction:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
     Properties:
-      CodeUri: ./cmd/initialize-payment/
-      Handler: bootstrap
-      Runtime: provided.al2
-      Tracing: Active
+      CodeUri: ../../../cmd/initialize-payment/
       Environment:
         Variables:
           PRODUCTS_TABLE_NAME: !Ref ProductsTableName

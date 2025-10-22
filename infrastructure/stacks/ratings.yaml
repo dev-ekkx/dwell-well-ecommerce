@@ -30,11 +30,10 @@ Resources:
 
   SubmitRatingFunction:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
     Properties:
-      CodeUri: ./cmd/submit-rating/
-      Handler: bootstrap
-      Runtime: provided.al2
-      Tracing: Active
+      CodeUri: ../../../cmd/submit-rating/
       Environment:
         Variables:
           RATINGS_TABLE_NAME: !Ref ProductRatingsTable
@@ -48,11 +47,10 @@ Resources:
 
   UpdateAverageRatingFunction:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
     Properties:
-      CodeUri: ./cmd/update-average-rating/
-      Handler: bootstrap
-      Runtime: provided.al2
-      Tracing: Active
+      CodeUri: ../../../cmd/update-average-rating/
       DeadLetterQueue:
         Type: SQS
         TargetArn: !GetAtt UpdateRatingDLQ.Arn

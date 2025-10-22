@@ -9,11 +9,10 @@ Parameters:
 Resources:
   PaystackWebhookFunction:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
     Properties:
-      CodeUri: ./cmd/webhook-paystack/
-      Handler: bootstrap
-      Runtime: provided.al2
-      Tracing: Active
+      CodeUri: ../../../cmd/webhook-paystack/
       Environment:
         Variables:
           EVENT_BUS_NAME: !Ref AppEventBusName
@@ -22,11 +21,10 @@ Resources:
 
   StrapiWebhookFunction:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
     Properties:
-      CodeUri: ./cmd/webhook-strapi/
-      Handler: bootstrap
-      Runtime: provided.al2
-      Tracing: Active
+      CodeUri: ../../../cmd/webhook-strapi/
       Environment:
         Variables:
           PRODUCTS_TABLE_NAME: !Ref ProductsTableName

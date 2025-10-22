@@ -4,11 +4,11 @@ Description: Template for the Dwell Well E-commerce application. Orchestrates ne
 
 Globals:
   Function:
-    Timeout: 10
+    Timeout: 30
     MemorySize: 256
-    Runtime: provided.al2
-    Architectures:
-      - x86_64
+    Runtime: provided.al2023
+    Handler: bootstrap
+    Tracing: Active
 
 Resources:
   # --- Core Infrastructure Stack (API Gateway + EventBus) ---
@@ -18,7 +18,7 @@ Resources:
       Location: ./stacks/core.yaml
       Parameters:
         CognitoUserPoolArn: !GetAtt AuthStack.Outputs.CognitoUserPoolArn
-        
+
   # --- Authentication Stack ---
   AuthStack:
     Type: AWS::Serverless::Application
