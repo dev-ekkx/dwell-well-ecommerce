@@ -17,6 +17,14 @@ Resources:
     Properties:
       Location: ./stacks/auth.yaml
 
+  # --- Payments Stack ---
+  PaymentsStack:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./stacks/payments.yaml
+      Parameters:
+        ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsTableName
+
   # --- Core Infrastructure Stack (API Gateway + EventBus) ---
   CoreStack:
     Type: AWS::Serverless::Application
@@ -24,6 +32,7 @@ Resources:
       Location: ./stacks/core.yaml
       Parameters:
         CognitoUserPoolArn: !GetAtt AuthStack.Outputs.CognitoUserPoolArn
+        PaymentsLambdaArn: !GetAtt PaymentsStack.Outputs.PaymentsLambdaArn
 
   # --- Products Stack ---
   ProductsStack:
@@ -38,14 +47,6 @@ Resources:
       Location: ./stacks/orders.yaml
       Parameters:
         AppEventBusName: !GetAtt CoreStack.Outputs.AppEventBusName
-        ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsTableName
-
-  # --- Payments Stack ---
-  PaymentsStack:
-    Type: AWS::Serverless::Application
-    Properties:
-      Location: ./stacks/payments.yaml
-      Parameters:
         ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsTableName
 
   # --- Ratings Stack ---

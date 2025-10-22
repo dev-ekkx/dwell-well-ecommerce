@@ -6,6 +6,9 @@ Parameters:
   CognitoUserPoolArn:
     Type: String
     Description: ARN of the Cognito User Pool for the authorizer.
+  PaymentsLambdaArn:
+    Type: String
+    Description: ARN of the Lambda function for processing payments.
 
 Resources:
   ApiGateway:
