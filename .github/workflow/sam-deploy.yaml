@@ -1,6 +1,7 @@
-name: Deploy SAM on PR to main
+name: Build and Deploy SAM Application (DwellWell E-commerce App)
 
 on:
+  push:
   pull_request:
     branches: [ main ]
     types: [ opened, reopened, synchronize ]
@@ -28,7 +29,13 @@ jobs:
         run: |
           go mod download
           go mod verify
+
+      # - name: Run tests
+        # run: go test ./...
+
   deploy:
+    needs: test 
+
     name: Package & Deploy SAM
     runs-on: ubuntu-latest
 
@@ -60,7 +67,7 @@ jobs:
           role-to-assume: ${{ secrets.CFN_EXEC_ROLE }}
 
       - name: Build
-        run: sam build --template ${{ env.SAM_TEMPLATE }}
+        run: sam build --template ${{ env.SAM_TEMPLATE }} --use-container
 
       - name: Package
         run: |

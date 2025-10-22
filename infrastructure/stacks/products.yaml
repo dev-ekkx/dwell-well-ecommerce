@@ -34,8 +34,9 @@ Resources:
     Metadata:
       BuildMethod: go1.x
     Properties:
-      CodeUri: ../../../cmd/get-products/
+      CodeUri: ../../cmd/
       Handler: get-products
+      Runtime: provided.al2023
       Environment:
         Variables:
           PRODUCTS_TABLE_NAME: !Ref ProductsTable
@@ -47,8 +48,9 @@ Resources:
     Metadata:
       BuildMethod: go1.x
     Properties:
-      CodeUri: ../../../cmd/get-skus-by-price/
+      CodeUri: ../../cmd/
       Handler: get-skus-by-price
+      Runtime: provided.al2023
       Environment:
         Variables:
           PRODUCTS_TABLE_NAME: !Ref ProductsTable

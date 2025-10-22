@@ -38,8 +38,9 @@ Resources:
     Metadata:
       BuildMethod: go1.x
     Properties:
-      CodeUri: ../../../cmd/post-confirmation/
+      CodeUri: ../../cmd/
       Handler: post-confirmation
+      Runtime: provided.al2023
       Events:
         CognitoEvent: { Type: Cognito, Properties: { UserPool: !Ref CognitoUserPool, Trigger: PostConfirmation } }
 

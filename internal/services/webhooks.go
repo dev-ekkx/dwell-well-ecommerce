@@ -1,12 +1,12 @@
 package services
 
 import (
-	"dwell-well-ecommerce/internal/db"
-	"dwell-well-ecommerce/internal/models"
 	"encoding/json"
 	"log"
 
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/dev-ekkx/dwell-well-ecommerce/internal/db"
+	"github.com/dev-ekkx/dwell-well-ecommerce/internal/models"
 )
 
 // WebhookService encapsulates all business logic for handling incoming webhooks.
