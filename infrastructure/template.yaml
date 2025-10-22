@@ -11,6 +11,12 @@ Globals:
     Tracing: Active
 
 Resources:
+  # --- Authentication Stack ---
+  AuthStack:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./stacks/auth.yaml
+
   # --- Core Infrastructure Stack (API Gateway + EventBus) ---
   CoreStack:
     Type: AWS::Serverless::Application
@@ -18,12 +24,6 @@ Resources:
       Location: ./stacks/core.yaml
       Parameters:
         CognitoUserPoolArn: !GetAtt AuthStack.Outputs.CognitoUserPoolArn
-
-  # --- Authentication Stack ---
-  AuthStack:
-    Type: AWS::Serverless::Application
-    Properties:
-      Location: ./stacks/auth.yaml
 
   # --- Products Stack ---
   ProductsStack:
