@@ -11,6 +11,14 @@ Globals:
       - x86_64
 
 Resources:
+  # --- Core Infrastructure Stack (API Gateway + EventBus) ---
+  CoreStack:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./stacks/core.yaml
+      Parameters:
+        CognitoUserPoolArn: !GetAtt AuthStack.Outputs.CognitoUserPoolArn
+        
   # --- Authentication Stack ---
   AuthStack:
     Type: AWS::Serverless::Application
@@ -57,14 +65,6 @@ Resources:
       Parameters:
         AppEventBusName: !GetAtt CoreStack.Outputs.AppEventBusName
         ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsTableName
-
-  # --- Core Infrastructure Stack (API Gateway + EventBus) ---
-  CoreStack:
-    Type: AWS::Serverless::Application
-    Properties:
-      Location: ./stacks/core.yaml
-      Parameters:
-        CognitoUserPoolArn: !GetAtt AuthStack.Outputs.CognitoUserPoolArn
 
 Outputs:
   ApiEndpoint:

@@ -1,0 +1,61 @@
+name: Deploy SAM on PR to main
+
+on:
+  pull_request:
+    branches: [ main ]
+    types: [ opened, reopened, synchronize ]
+
+env:
+  STACK_NAME: dwell-well-ecommerce-pr-${{ github.event.number }}  
+  SAM_TEMPLATE: infrastructure/template.yaml
+  AWS_REGION: us-east-1
+  S3_BUCKET: ${{ secrets.SAM_S3_BUCKET }}
+
+jobs:
+  deploy:
+    name: Package & Deploy SAM
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    # Only run when the PR's source branch name contains "sam"
+    if: contains(github.head_ref, 'sam')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install SAM CLI
+        uses: aws-actions/setup-sam@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.CFN_EXEC_ROLE }}
+
+      - name: Build
+        run: sam build --template ${{ env.SAM_TEMPLATE }} --use-container
+
+      - name: Package
+        run: |
+          sam package \
+            --template-file .aws-sam/build/${{ env.SAM_TEMPLATE }} \
+            --s3-bucket ${{ env.S3_BUCKET }} \
+            --output-template-file packaged.yaml
+
+      - name: Deploy
+        run: |
+          sam deploy \
+            --template-file packaged.yaml \
+            --stack-name ${{ env.STACK_NAME }} \
+            --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
+            --no-fail-on-empty-changeset \
+            --no-confirm-changeset \
+            --region ${{ env.AWS_REGION }}
