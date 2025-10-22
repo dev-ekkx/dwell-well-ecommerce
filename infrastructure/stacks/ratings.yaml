@@ -33,7 +33,9 @@ Resources:
     Metadata:
       BuildMethod: go1.x
     Properties:
-      CodeUri: ../../../cmd/submit-rating/
+      CodeUri: ../../cmd/
+      Handler: submit-rating
+      Runtime: provided.al2023
       Environment:
         Variables:
           RATINGS_TABLE_NAME: !Ref ProductRatingsTable
@@ -50,7 +52,9 @@ Resources:
     Metadata:
       BuildMethod: go1.x
     Properties:
-      CodeUri: ../../../cmd/update-average-rating/
+      CodeUri: ../../cmd/
+      Handler: update-average-rating
+      Runtime: provided.al2023
       DeadLetterQueue:
         Type: SQS
         TargetArn: !GetAtt UpdateRatingDLQ.Arn

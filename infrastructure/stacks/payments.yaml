@@ -11,7 +11,9 @@ Resources:
     Metadata:
       BuildMethod: go1.x
     Properties:
-      CodeUri: ../../../cmd/initialize-payment/
+      CodeUri: ../../cmd/
+      Handler: initialize-payment
+      Runtime: provided.al2023
       Environment:
         Variables:
           PRODUCTS_TABLE_NAME: !Ref ProductsTableName

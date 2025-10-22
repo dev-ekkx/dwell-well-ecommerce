@@ -12,7 +12,9 @@ Resources:
     Metadata:
       BuildMethod: go1.x
     Properties:
-      CodeUri: ../../../cmd/webhook-paystack/
+      CodeUri: ../../cmd/
+      Handler: webhook-paystack
+      Runtime: provided.al2023
       Environment:
         Variables:
           EVENT_BUS_NAME: !Ref AppEventBusName
@@ -24,7 +26,9 @@ Resources:
     Metadata:
       BuildMethod: go1.x
     Properties:
-      CodeUri: ../../../cmd/webhook-strapi/
+      CodeUri: ../../cmd/
+      Handler: webhook-strapi
+      Runtime: provided.al2023
       Environment:
         Variables:
           PRODUCTS_TABLE_NAME: !Ref ProductsTableName

@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Payment processing resources with secure secret management for Paystack
+  integration.
+Parameters:
+  ProductsTableName:
+    Type: String
+Resources:
+  InitializePaymentFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
+      SamResourceId: InitializePaymentFunction
+    Properties:
+      CodeUri: InitializePaymentFunction
+      Handler: initialize-payment
+      Runtime: provided.al2023
+      Environment:
+        Variables:
+          PRODUCTS_TABLE_NAME:
+            Ref: ProductsTableName
+          PAYSTACK_SECRET_KEY: '{{resolve:ssm:/dwellwell/paystack/secretkey:1}}'
+      Policies:
+      - DynamoDBReadPolicy:
+          TableName:
+            Ref: ProductsTableName
+      - Statement:
+        - Effect: Allow
+          Action:
+          - ssm:GetParameter
+          Resource:
+            Fn::Sub: arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/dwellwell/paystack/secretkey
+Outputs:
+  PaymentsLambdaArn:
+    Value:
+      Fn::GetAtt:
+      - InitializePaymentFunction
+      - Arn
+    Export:
+      Name: PaymentsLambdaArn
