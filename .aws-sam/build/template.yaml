@@ -1,0 +1,82 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Template for the Dwell Well E-commerce application. Orchestrates nested
+  stacks for each microservice.
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 256
+    Tracing: Active
+    Architectures:
+    - x86_64
+Resources:
+  AuthStack:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: AuthStack/template.yaml
+    Metadata:
+      SamResourceId: AuthStack
+  ProductsStack:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ProductsStack/template.yaml
+    Metadata:
+      SamResourceId: ProductsStack
+  WebhooksStack:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: WebhooksStack/template.yaml
+      Parameters:
+        AppEventBusName: DwellWellAppEventBus
+        ProductsTableName:
+          Fn::GetAtt:
+          - ProductsStack
+          - Outputs.ProductsTableName
+    Metadata:
+      SamResourceId: WebhooksStack
+  GatewayStack:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: GatewayStack/template.yaml
+      Parameters:
+        CognitoUserPoolArn:
+          Fn::GetAtt:
+          - AuthStack
+          - Outputs.CognitoUserPoolArn
+        ProductsLambdaArn:
+          Fn::GetAtt:
+          - ProductsStack
+          - Outputs.ProductsLambdaArn
+        SKUsByPriceLambdaArn:
+          Fn::GetAtt:
+          - ProductsStack
+          - Outputs.SKUsByPriceLambdaArn
+        StrapiWebhookLambdaArn:
+          Fn::GetAtt:
+          - WebhooksStack
+          - Outputs.StrapiWebhookLambdaArn
+        PaystackWebhookLambdaArn:
+          Fn::GetAtt:
+          - WebhooksStack
+          - Outputs.PaystackWebhookLambdaArn
+    Metadata:
+      SamResourceId: GatewayStack
+Outputs:
+  ApiEndpoint:
+    Description: API Gateway endpoint URL
+    Value:
+      Fn::GetAtt:
+      - GatewayStack
+      - Outputs.ApiEndpoint
+  CognitoUserPoolId:
+    Description: The ID of the Cognito User Pool
+    Value:
+      Fn::GetAtt:
+      - AuthStack
+      - Outputs.CognitoUserPoolId
+  CognitoUserPoolClientId:
+    Description: The ID of the Cognito User Pool Client
+    Value:
+      Fn::GetAtt:
+      - AuthStack
+      - Outputs.CognitoUserPoolClientId

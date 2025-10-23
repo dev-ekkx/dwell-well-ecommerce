@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Public webhook endpoints for third-party integrations.
+Parameters:
+  AppEventBusName:
+    Type: String
+  ProductsTableName:
+    Type: String
+Resources:
+  PaystackWebhookFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
+      SamResourceId: PaystackWebhookFunction
+    Properties:
+      CodeUri: PaystackWebhookFunction
+      Handler: webhook-paystack
+      Runtime: provided.al2023
+      Environment:
+        Variables:
+          EVENT_BUS_NAME:
+            Ref: AppEventBusName
+      Policies:
+      - EventBridgePutEventsPolicy:
+          EventBusName:
+            Ref: AppEventBusName
+      - AWSXrayWriteOnlyAccess
+      - CloudWatchLogsFullAccess
+  StrapiWebhookFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
+      SamResourceId: StrapiWebhookFunction
+    Properties:
+      CodeUri: StrapiWebhookFunction
+      Handler: webhook-strapi
+      Runtime: provided.al2023
+      Environment:
+        Variables:
+          PRODUCTS_TABLE_NAME:
+            Ref: ProductsTableName
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: ProductsTableName
+      - AWSXrayWriteOnlyAccess
+      - CloudWatchLogsFullAccess
+Outputs:
+  PaystackWebhookLambdaArn:
+    Value:
+      Fn::GetAtt:
+      - PaystackWebhookFunction
+      - Arn
+    Export:
+      Name: PaystackWebhookLambdaArn
+  StrapiWebhookLambdaArn:
+    Value:
+      Fn::GetAtt:
+      - StrapiWebhookFunction
+      - Arn
+    Export:
+      Name: StrapiWebhookLambdaArn
