@@ -101,7 +101,7 @@ Resources:
           Properties:
             RestApiId:
               Ref: ApiGateway
-            Path: /products/v1/skus-by-price
+            Path: /products/skus-by-price
             Method: GET
   PaystackWebhookLambda:
     Type: AWS::Serverless::Function
@@ -128,7 +128,7 @@ Resources:
           Properties:
             RestApiId:
               Ref: ApiGateway
-            Path: /webhooks/v1/paystack
+            Path: /webhooks/paystack
             Method: POST
   StrapiWebhookLambda:
     Type: AWS::Serverless::Function
@@ -155,7 +155,7 @@ Resources:
           Properties:
             RestApiId:
               Ref: ApiGateway
-            Path: /webhooks/v1/strapi
+            Path: /webhooks/strapi
             Method: POST
 Outputs:
   ApiGatewayId:

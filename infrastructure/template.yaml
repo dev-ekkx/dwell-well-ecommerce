@@ -3,6 +3,10 @@ Transform: AWS::Serverless-2016-10-31
 Description: Template for the Dwell Well E-commerce application. All microservices and API Gateway in a single stack.
 
 Globals:
+  Api:
+    Authorizers:
+      CognitoAuthorizer:
+        UserPoolArn: !GetAtt CognitoUserPool.Arn
   Function:
     Timeout: 30
     MemorySize: 256
@@ -64,11 +68,11 @@ Resources:
         AllowMethods: "'GET,POST,OPTIONS'"
         AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
         AllowOrigin: "'*'"
-      Auth:
-        DefaultAuthorizer: CognitoAuthorizer
-        Authorizers:
-          CognitoAuthorizer:
-            UserPoolArn: !GetAtt CognitoUserPool.Arn
+#      Auth:
+#        DefaultAuthorizer: CognitoAuthorizer
+#        Authorizers:
+#          CognitoAuthorizer:
+#            UserPoolArn: !GetAtt CognitoUserPool.Arn
 
   # --- Event Bus ---
   AppEventBus:
@@ -106,10 +110,10 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref ApiGateway
-            Path: /products/v1
+            Path: /products
             Method: GET
             Auth:
-              Authorizer: None
+                Authorizer: NONE
 
   # SKUsByPriceLambda:
     Type: AWS::Serverless::Function
@@ -127,7 +131,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref ApiGateway
-            Path: /products/v1/skus-by-price
+            Path: /products/skus-by-price
             Method: GET
 
   # --- Webhooks Lambdas ---
@@ -152,7 +156,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref ApiGateway
-            Path: /webhooks/v1/paystack
+            Path: /webhooks/paystack
             Method: POST
 
   StrapiWebhookLambda:
@@ -176,7 +180,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref ApiGateway
-            Path: /webhooks/v1/strapi
+            Path: /webhooks/strapi
             Method: POST
 
   # --- Optional / Future Stacks ---
