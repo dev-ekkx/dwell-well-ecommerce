@@ -6,6 +6,9 @@ Parameters:
   CognitoUserPoolArn:
     Type: String
     Description: ARN of the Cognito User Pool for the authorizer.
+  ProductsLambdaArn:
+    Type: String
+    Description: ARN of the Lambda function for product management.
   # PaymentsLambdaArn:
   #   Type: String
   #   Description: ARN of the Lambda function for processing payments.
@@ -42,7 +45,7 @@ Resources:
           /products/v1:
             post:
               x-amazon-apigateway-integration:
-                uri: !ImportValue ProductsLambdaArn
+                uri: !Ref ProductsLambdaArn
                 httpMethod: POST
                 type: aws_proxy
           /products/v1/skus-by-price:

@@ -17,6 +17,12 @@ Resources:
     Properties:
       Location: ./stacks/auth.yaml
 
+  # --- Products Stack ---
+  ProductsStack:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./stacks/products.yaml      
+
   # --- Payments Stack ---
   # PaymentsStack:
   #   Type: AWS::Serverless::Application
@@ -32,13 +38,9 @@ Resources:
       Location: ./stacks/core.yaml
       Parameters:
         CognitoUserPoolArn: !GetAtt AuthStack.Outputs.CognitoUserPoolArn
-        # PaymentsLambdaArn: !GetAtt PaymentsStack.Outputs.PaymentsLambdaArn
+        ProductsLambdaArn: !GetAtt ProductsStack.Outputs.ProductsLambdaArn
 
-  # --- Products Stack ---
-  ProductsStack:
-    Type: AWS::Serverless::Application
-    Properties:
-      Location: ./stacks/products.yaml
+        # PaymentsLambdaArn: !GetAtt PaymentsStack.Outputs.PaymentsLambdaArn
 
   # --- Orders Stack ---
   # OrdersStack:
