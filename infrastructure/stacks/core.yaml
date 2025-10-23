@@ -72,14 +72,14 @@ Resources:
           #       type: aws_proxy
           #     security:
           #       - CognitoAuthorizer: []
-          /ratings/v1:
-            post:
-              x-amazon-apigateway-integration:
-                uri: !Ref RatingsLambdaArn
-                httpMethod: POST
-                type: aws_proxy
-              security:
-                - CognitoAuthorizer: []
+          # /ratings/v1:
+          #   post:
+          #     x-amazon-apigateway-integration:
+          #       uri: !Ref RatingsLambdaArn
+          #       httpMethod: POST
+          #       type: aws_proxy
+          #     security:
+          #       - CognitoAuthorizer: []
           /webhooks/v1/paystack:
             post:
               x-amazon-apigateway-integration:
@@ -142,12 +142,12 @@ Resources:
   #     Action: lambda:InvokeFunction
   #     Principal: apigateway.amazonaws.com
 
-  RatingsLambdaInvokePermission:
-    Type: AWS::Lambda::Permission
-    Properties:
-      FunctionName: !ImportValue RatingsLambdaArn
-      Action: lambda:InvokeFunction
-      Principal: apigateway.amazonaws.com
+  # RatingsLambdaInvokePermission:
+  #   Type: AWS::Lambda::Permission
+  #   Properties:
+  #     FunctionName: !ImportValue RatingsLambdaArn
+  #     Action: lambda:InvokeFunction
+  #     Principal: apigateway.amazonaws.com
 
   PaystackWebhookLambdaInvokePermission:
     Type: AWS::Lambda::Permission
