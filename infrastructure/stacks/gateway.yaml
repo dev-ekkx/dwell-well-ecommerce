@@ -102,17 +102,9 @@ Resources:
     Type: AWS::Events::EventBusPolicy
     Properties:
       EventBusName: !Ref AppEventBus
-      Policy:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Action:
-              - events:PutEvents
-            Principal:
-              AWS: '*'
-            AWS:
-              - 'arn:aws:iam::${AWS::AccountId}:*'
-              - 'arn:aws:iam::${AWS::AccountId}:*'
+      StatementId: AllowPutEvents
+      Action: events:PutEvents
+      Principal: "*"
 
   # ApiGatewayInvokePermissions:
   #   Type: AWS::Lambda::Permission
