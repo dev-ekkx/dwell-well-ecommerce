@@ -41,8 +41,46 @@ Resources:
           RATINGS_TABLE_NAME: !Ref ProductRatingsTable
           EVENT_BUS_NAME: !Ref AppEventBusName
       Policies:
-        - DynamoDBCrudPolicy: { TableName: !Ref ProductRatingsTable }
-        - EventBridgePutEventsPolicy: { EventBusName: !Ref AppEventBusName }
+        - PolicyName: RatingsTableCrud
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:GetItem
+                  - dynamodb:DeleteItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                Resource: !GetAtt ProductRatingsTable.Arn
+        - PolicyName: EventBridgePutAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - events:PutEvents
+                Resource: !Sub 'arn:aws:events:${AWS::Region}:${AWS::AccountId}:event-bus/${AppEventBusName}'
+        - PolicyName: LambdaLogging
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: 'arn:aws:logs:*:*:*'
+        - PolicyName: XRayTracingAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - xray:PutTelemetryRecords
+                  - xray:PutTraceSegments
+                Resource: '*'
 
   UpdateRatingDLQ:
     Type: AWS::SQS::Queue
@@ -63,9 +101,56 @@ Resources:
           PRODUCTS_TABLE_NAME: !Ref ProductsTableName
           RATINGS_TABLE_NAME: !Ref ProductRatingsTable
       Policies:
-        - DynamoDBCrudPolicy: { TableName: !Ref ProductsTableName }
-        - DynamoDBReadPolicy: { TableName: !Ref ProductRatingsTable }
-        - SQSSendMessagePolicy: { QueueName: !GetAtt UpdateRatingDLQ.QueueName }
+        - PolicyName: ProductsTableCrud
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:GetItem
+                  - dynamodb:DeleteItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${ProductsTableName}'
+        - PolicyName: RatingsTableRead
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                Resource: !GetAtt ProductRatingsTable.Arn
+        - PolicyName: SQSSendMessage
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sqs:SendMessage
+                Resource: !GetAtt UpdateRatingDLQ.Arn
+        - PolicyName: LambdaLogging
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: 'arn:aws:logs:*:*:*'
+        - PolicyName: XRayTracingAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - xray:PutTelemetryRecords
+                  - xray:PutTraceSegments
+                Resource: '*'
 
 Outputs:
   RatingsLambdaArn:
