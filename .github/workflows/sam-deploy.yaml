@@ -15,7 +15,7 @@ env:
 jobs:
   test:
     name: Run unit tests
-    if: github.event_name == 'push'
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -34,11 +34,15 @@ jobs:
         # run: go test ./...
 
   package-and-deploy:
-    if: github.event_name == 'pull_request'
+    if: |
+          github.event_name == 'push' && 
+          (startsWith(github.ref, 'refs/heads/feature') ||
+          startsWith(github.ref, 'refs/heads/fix') ||
+          startsWith(github.ref, 'refs/heads/hotfix') ||
+          startsWith(github.ref, 'refs/heads/release'))
     needs: [test]
     name: Package & Deploy SAM
     runs-on: ubuntu-latest
-
     permissions:
       id-token: write
       contents: read
