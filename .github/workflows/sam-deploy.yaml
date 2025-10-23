@@ -34,8 +34,8 @@ jobs:
         # run: go test ./...
 
   package-and-deploy:
-    if: github.ref == 'refs/heads/main'
-    needs: test
+    if: github.event_name == 'pull_request'
+    needs: [test]
     name: Package & Deploy SAM
     runs-on: ubuntu-latest
 
