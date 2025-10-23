@@ -3,10 +3,6 @@ Transform: AWS::Serverless-2016-10-31
 Description: Template for the Dwell Well E-commerce application. All microservices and API Gateway in a single stack.
 
 Globals:
-  Api:
-    Authorizers:
-      CognitoAuthorizer:
-        UserPoolArn: !GetAtt CognitoUserPool.Arn
   Function:
     Timeout: 30
     MemorySize: 256
