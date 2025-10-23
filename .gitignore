@@ -9,6 +9,9 @@ node_modules
 /.svelte-kit
 /build
 .aws-sam
+.aws-sam/*
+/.aws-sam
+/.aws-sam/*
 
 # OS
 .DS_Store
@@ -244,3 +247,11 @@ dist
 .svelte-kit/
 package
 
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work

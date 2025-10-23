@@ -10,13 +10,50 @@ Globals:
     Architectures:
     - x86_64
 Parameters:
-  CognitoUserPoolArn:
-    Type: String
-    Description: ARN of the Cognito User Pool for the authorizer.
   ProductsTableName:
     Type: String
     Description: Name of the DynamoDB table for products.
+    Default: DwellWellProductsTable
 Resources:
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: DwellWellUserPool
+      Schema:
+      - Name: name
+        AttributeDataType: String
+        Mutable: true
+        Required: true
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireLowercase: true
+          RequireUppercase: true
+          RequireNumbers: true
+          RequireSymbols: true
+      UsernameAttributes:
+      - email
+      AutoVerifiedAttributes:
+      - email
+  CognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId:
+        Ref: CognitoUserPool
+      ClientName: DwellWellWebAppClient
+      GenerateSecret: false
+  IdentityPool:
+    Type: AWS::Cognito::IdentityPool
+    Properties:
+      IdentityPoolName: IncidentReportingIdentityPool
+      AllowUnauthenticatedIdentities: false
+      CognitoIdentityProviders:
+      - ClientId:
+          Ref: CognitoUserPoolClient
+        ProviderName:
+          Fn::GetAtt:
+          - CognitoUserPool
+          - ProviderName
   ApiGateway:
     Type: AWS::Serverless::Api
     Properties:
@@ -31,7 +68,9 @@ Resources:
         Authorizers:
           CognitoAuthorizer:
             UserPoolArn:
-              Ref: CognitoUserPoolArn
+              Fn::GetAtt:
+              - CognitoUserPool
+              - Arn
   AppEventBus:
     Type: AWS::Events::EventBus
     Properties:
