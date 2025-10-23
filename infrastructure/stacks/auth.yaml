@@ -39,6 +39,15 @@ Resources:
       Runtime: provided.al2023
       Events:
         CognitoEvent: { Type: Cognito, Properties: { UserPool: !Ref CognitoUserPool, Trigger: PostConfirmation } }
+      Policies:
+        - PolicyName: PostConfirmationDynamoDBWrite
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*'
 
 Outputs:
   CognitoUserPoolId:
