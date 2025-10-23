@@ -39,6 +39,9 @@ Resources:
       Parameters:
         CognitoUserPoolArn: !GetAtt AuthStack.Outputs.CognitoUserPoolArn
         ProductsLambdaArn: !GetAtt ProductsStack.Outputs.ProductsLambdaArn
+        SKUsByPriceLambdaArn: !GetAtt ProductsStack.Outputs.SKUsByPriceLambdaArn
+        StrapiWebhookLambdaArn: !GetAtt WebhooksStack.Outputs.StrapiWebhookLambdaArn
+        PaystackWebhookLambdaArn: !GetAtt WebhooksStack.Outputs.PaystackWebhookLambdaArn
 
         # PaymentsLambdaArn: !GetAtt PaymentsStack.Outputs.PaymentsLambdaArn
 

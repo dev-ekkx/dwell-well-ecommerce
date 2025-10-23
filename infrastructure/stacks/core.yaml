@@ -9,6 +9,16 @@ Parameters:
   ProductsLambdaArn:
     Type: String
     Description: ARN of the Lambda function for product management.
+  StrapiWebhookLambdaArn:
+    Type: String
+    Description: ARN of the Lambda function for handling Strapi webhooks.
+  PaystackWebhookLambdaArn:
+    Type: String
+    Description: ARN of the Lambda function for handling Paystack webhooks.
+  SKUsByPriceLambdaArn:
+    Type: String
+    Description: ARN of the Lambda function for fetching SKUs by price.
+
   # PaymentsLambdaArn:
   #   Type: String
   #   Description: ARN of the Lambda function for processing payments.
@@ -34,14 +44,14 @@ Resources:
           title: DwellWell API
           version: 1.0.0
         paths:
-          /orders/v1:
-            post:
-              x-amazon-apigateway-integration:
-                uri: !ImportValue OrdersLambdaArn
-                httpMethod: POST
-                type: aws_proxy
-              security:
-                - CognitoAuthorizer: []
+          # /orders/v1:
+          #   post:
+          #     x-amazon-apigateway-integration:
+          #       uri: !ImportValue OrdersLambdaArn
+          #       httpMethod: POST
+          #       type: aws_proxy
+          #     security:
+          #       - CognitoAuthorizer: []
           /products/v1:
             post:
               x-amazon-apigateway-integration:
@@ -51,13 +61,13 @@ Resources:
           /products/v1/skus-by-price:
             get:
               x-amazon-apigateway-integration:
-                uri: !ImportValue SKUsByPriceLambdaArn
+                uri: !Ref SKUsByPriceLambdaArn
                 httpMethod: GET
                 type: aws_proxy
           # /payments/v1/initialize:
           #   post:
           #     x-amazon-apigateway-integration:
-          #       uri: !ImportValue PaymentsLambdaArn
+          #       uri: !Ref PaymentsLambdaArn
           #       httpMethod: POST
           #       type: aws_proxy
           #     security:
@@ -65,7 +75,7 @@ Resources:
           /ratings/v1:
             post:
               x-amazon-apigateway-integration:
-                uri: !ImportValue RatingsLambdaArn
+                uri: !Ref RatingsLambdaArn
                 httpMethod: POST
                 type: aws_proxy
               security:
@@ -73,13 +83,13 @@ Resources:
           /webhooks/v1/paystack:
             post:
               x-amazon-apigateway-integration:
-                uri: !ImportValue PaystackWebhookLambdaArn
+                uri: !Ref PaystackWebhookLambdaArn
                 httpMethod: POST
                 type: aws_proxy
           /webhooks/v1/strapi:
             post:
               x-amazon-apigateway-integration:
-                uri: !ImportValue StrapiWebhookLambdaArn
+                uri: !Ref StrapiWebhookLambdaArn
                 httpMethod: POST
                 type: aws_proxy
 
