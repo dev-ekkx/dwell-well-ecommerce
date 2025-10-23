@@ -4,30 +4,29 @@ Description: Product-related resources, including the on-demand database and pub
 
 Resources:
   ProductsTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: Products
-        BillingMode: PAY_PER_REQUEST
-        AttributeDefinitions:
-          - AttributeName: sku
-            AttributeType: S
-          - AttributeName: productStatus
-            AttributeType: S
-          - AttributeName: price
-            AttributeType: N
-        KeySchema:
-          - AttributeName: sku
-            KeyType: HASH
-        GlobalSecondaryIndexes:
-          - IndexName: StatusPriceIndex
-            KeySchema:
-              - AttributeName: productStatus
-                KeyType: HASH
-              - AttributeName: price
-                KeyType: RANGE
-            Projection:
-              ProjectionType: KEYS_ONLY
-
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: Products
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: sku
+          AttributeType: S
+        - AttributeName: productStatus
+          AttributeType: S
+        - AttributeName: price
+          AttributeType: N
+      KeySchema:
+        - AttributeName: sku
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: StatusPriceIndex
+          KeySchema:
+            - AttributeName: productStatus
+              KeyType: HASH
+            - AttributeName: price
+              KeyType: RANGE
+          Projection:
+            ProjectionType: KEYS_ONLY
 
   GetProductsFunction:
     Type: AWS::Serverless::Function
@@ -41,26 +40,19 @@ Resources:
         Variables:
           PRODUCTS_TABLE_NAME: !Ref ProductsTable
       Policies:
-        - PolicyName: ProductsTableReadAccess
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - dynamodb:GetItem
-                  - dynamodb:Query
-                  - dynamodb:Scan
-                Resource: !GetAtt ProductsTable.Arn
-        - PolicyName: LambdaLogging
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogGroup
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Resource: 'arn:aws:logs:*:*:*'
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:Query
+                - dynamodb:Scan
+              Resource: !GetAtt ProductsTable.Arn
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: 'arn:aws:logs:*:*:*'
 
   GetSKUsByPriceFunction:
     Type: AWS::Serverless::Function
@@ -74,35 +66,35 @@ Resources:
         Variables:
           PRODUCTS_TABLE_NAME: !Ref ProductsTable
       Policies:
-        - PolicyName: ProductsTableReadAccess
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - dynamodb:GetItem
-                  - dynamodb:Query
-                  - dynamodb:Scan
-                Resource: !GetAtt ProductsTable.Arn
-        - PolicyName: LambdaLogging
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogGroup
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Resource: 'arn:aws:logs:*:*:*'
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:Query
+                - dynamodb:Scan
+              Resource: !GetAtt ProductsTable.Arn
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: 'arn:aws:logs:*:*:*'
 
 Outputs:
   ProductsLambdaArn:
+    Description: "ARN of GetProducts Lambda"
     Value: !GetAtt GetProductsFunction.Arn
     Export:
       Name: ProductsLambdaArn
+
   SKUsByPriceLambdaArn:
+    Description: "ARN of GetSKUsByPrice Lambda"
     Value: !GetAtt GetSKUsByPriceFunction.Arn
     Export:
       Name: SKUsByPriceLambdaArn
+
   ProductsTableName:
+    Description: "Products DynamoDB table name"
     Value: !Ref ProductsTable
+    Export:
+      Name: ProductsTableName
