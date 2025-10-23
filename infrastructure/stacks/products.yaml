@@ -41,7 +41,26 @@ Resources:
         Variables:
           PRODUCTS_TABLE_NAME: !Ref ProductsTable
       Policies:
-        - DynamoDBReadPolicy: { TableName: !Ref ProductsTable }
+        - PolicyName: ProductsTableReadAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                Resource: !GetAtt ProductsTable.Arn
+        - PolicyName: LambdaLogging
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: 'arn:aws:logs:*:*:*'
 
   GetSKUsByPriceFunction:
     Type: AWS::Serverless::Function
@@ -55,7 +74,26 @@ Resources:
         Variables:
           PRODUCTS_TABLE_NAME: !Ref ProductsTable
       Policies:
-        - DynamoDBReadPolicy: { TableName: !Ref ProductsTable }
+        - PolicyName: ProductsTableReadAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                Resource: !GetAtt ProductsTable.Arn
+        - PolicyName: LambdaLogging
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: 'arn:aws:logs:*:*:*'
 
 Outputs:
   ProductsLambdaArn:
