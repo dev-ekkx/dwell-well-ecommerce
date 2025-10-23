@@ -43,17 +43,12 @@ Resources:
           EVENT_BUS_NAME: !Ref AppEventBusName
           PRODUCTS_TABLE_NAME: !Ref ProductsTableName
       Policies:
-        # Lambda basic execution (CloudWatch Logs)
         - AWSLambdaBasicExecutionRole
-        # X-Ray tracing
         - XRayDaemonWriteAccess
-        # Full CRUD access to Orders table
         - DynamoDBCrudPolicy:
             TableName: !Ref OrdersTable
-        # Read-only access to Products table
         - DynamoDBReadPolicy:
             TableName: !Ref ProductsTableName
-        # Put events to EventBridge
         - Statement:
             - Effect: Allow
               Action:

@@ -6,9 +6,9 @@ Parameters:
   CognitoUserPoolArn:
     Type: String
     Description: ARN of the Cognito User Pool for the authorizer.
-  PaymentsLambdaArn:
-    Type: String
-    Description: ARN of the Lambda function for processing payments.
+  # PaymentsLambdaArn:
+  #   Type: String
+  #   Description: ARN of the Lambda function for processing payments.
 
 Resources:
   ApiGateway:
@@ -51,14 +51,14 @@ Resources:
                 uri: !ImportValue SKUsByPriceLambdaArn
                 httpMethod: GET
                 type: aws_proxy
-          /payments/v1/initialize:
-            post:
-              x-amazon-apigateway-integration:
-                uri: !ImportValue PaymentsLambdaArn
-                httpMethod: POST
-                type: aws_proxy
-              security:
-                - CognitoAuthorizer: []
+          # /payments/v1/initialize:
+          #   post:
+          #     x-amazon-apigateway-integration:
+          #       uri: !ImportValue PaymentsLambdaArn
+          #       httpMethod: POST
+          #       type: aws_proxy
+          #     security:
+          #       - CognitoAuthorizer: []
           /ratings/v1:
             post:
               x-amazon-apigateway-integration:
@@ -115,12 +115,12 @@ Resources:
       Action: lambda:InvokeFunction
       Principal: apigateway.amazonaws.com
 
-  PaymentsLambdaInvokePermission:
-    Type: AWS::Lambda::Permission
-    Properties:
-      FunctionName: !ImportValue PaymentsLambdaArn
-      Action: lambda:InvokeFunction
-      Principal: apigateway.amazonaws.com
+  # PaymentsLambdaInvokePermission:
+  #   Type: AWS::Lambda::Permission
+  #   Properties:
+  #     FunctionName: !ImportValue PaymentsLambdaArn
+  #     Action: lambda:InvokeFunction
+  #     Principal: apigateway.amazonaws.com
 
   RatingsLambdaInvokePermission:
     Type: AWS::Lambda::Permission

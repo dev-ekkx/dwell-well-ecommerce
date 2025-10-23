@@ -18,12 +18,12 @@ Resources:
       Location: ./stacks/auth.yaml
 
   # --- Payments Stack ---
-  PaymentsStack:
-    Type: AWS::Serverless::Application
-    Properties:
-      Location: ./stacks/payments.yaml
-      Parameters:
-        ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsTableName
+  # PaymentsStack:
+  #   Type: AWS::Serverless::Application
+  #   Properties:
+  #     Location: ./stacks/payments.yaml
+  #     Parameters:
+  #       ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsTableName
 
   # --- Core Infrastructure Stack (API Gateway + EventBus) ---
   CoreStack:
@@ -32,7 +32,7 @@ Resources:
       Location: ./stacks/core.yaml
       Parameters:
         CognitoUserPoolArn: !GetAtt AuthStack.Outputs.CognitoUserPoolArn
-        PaymentsLambdaArn: !GetAtt PaymentsStack.Outputs.PaymentsLambdaArn
+        # PaymentsLambdaArn: !GetAtt PaymentsStack.Outputs.PaymentsLambdaArn
 
   # --- Products Stack ---
   ProductsStack:
@@ -41,22 +41,22 @@ Resources:
       Location: ./stacks/products.yaml
 
   # --- Orders Stack ---
-  OrdersStack:
-    Type: AWS::Serverless::Application
-    Properties:
-      Location: ./stacks/orders.yaml
-      Parameters:
-        AppEventBusName: !GetAtt CoreStack.Outputs.AppEventBusName
-        ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsTableName
+  # OrdersStack:
+  #   Type: AWS::Serverless::Application
+  #   Properties:
+  #     Location: ./stacks/orders.yaml
+  #     Parameters:
+  #       AppEventBusName: !GetAtt CoreStack.Outputs.AppEventBusName
+  #       ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsTableName
 
   # --- Ratings Stack ---
-  RatingsStack:
-    Type: AWS::Serverless::Application
-    Properties:
-      Location: ./stacks/ratings.yaml
-      Parameters:
-        AppEventBusName: !GetAtt CoreStack.Outputs.AppEventBusName
-        ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsTableName
+  # RatingsStack:
+  #   Type: AWS::Serverless::Application
+  #   Properties:
+  #     Location: ./stacks/ratings.yaml
+  #     Parameters:
+  #       AppEventBusName: !GetAtt CoreStack.Outputs.AppEventBusName
+  #       ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsTableName
 
   # --- Webhooks Stack ---
   WebhooksStack:
