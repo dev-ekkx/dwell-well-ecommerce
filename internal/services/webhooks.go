@@ -2,6 +2,7 @@ package services
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -35,6 +36,7 @@ func (s *WebhookService) HandleStrapiEvent(request events.APIGatewayProxyRequest
 	//}
 
 	var payload models.WebhookPayload
+
 	err := json.Unmarshal([]byte(request.Body), &payload)
 	if err != nil {
 		log.Printf("ERROR: Failed to unmarshal Strapi webhook payload: %v", err)
@@ -44,10 +46,11 @@ func (s *WebhookService) HandleStrapiEvent(request events.APIGatewayProxyRequest
 	// We only care about events for the 'product' model that have a SKU.
 	if payload.Model != "product" || payload.Entry.SKU == "" {
 		log.Printf("INFO: Ignoring webhook for non-product model: %s", payload.Model)
-		return events.APIGatewayProxyResponse{StatusCode: 200, Body: "Event ignored (not a product)"}, nil
+		//return events.APIGatewayProxyResponse{StatusCode: 200, Body: "Event ignored (not a product)"}, nil
+		return events.APIGatewayProxyResponse{StatusCode: 200, Body: fmt.Sprintf("Payload event: %s", payload.Event)}, nil
 	}
 
-	log.Printf("INFO: Processing '%s' event for SKU: %s", payload.Event, payload.Entry.SKU)
+	fmt.Printf("INFO: Processing '%s' event for SKU: %s\n", payload.Event, payload.Entry.SKU)
 
 	// Use a switch statement to handle different events.
 	switch payload.Event {

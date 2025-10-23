@@ -90,7 +90,7 @@ Resources:
     Metadata:
       BuildMethod: go1.x
     Properties:
-      CodeUri: ../cmd/
+      CodeUri: ../cmd/get-products/
       Handler: get-products
       Runtime: provided.al2023
       Environment:
@@ -106,17 +106,17 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref ApiGateway
-            Path: /products
+            Path: /products/
             Method: GET
-            Auth:
-                Authorizer: NONE
+#            Auth:
+#                Authorizer: NONE
 
-  # SKUsByPriceLambda:
+  SKUsByPriceLambda:
     Type: AWS::Serverless::Function
     Metadata:
       BuildMethod: go1.x
     Properties:
-      CodeUri: ../cmd/
+      CodeUri: ../cmd/skus-by-price/
       Handler: skus-by-price
       Runtime: provided.al2023
       Policies:
@@ -131,36 +131,12 @@ Resources:
             Method: GET
 
   # --- Webhooks Lambdas ---
-  PaystackWebhookLambda:
-    Type: AWS::Serverless::Function
-    Metadata:
-      BuildMethod: go1.x
-    Properties:
-      CodeUri: ../cmd/
-      Handler: webhook-paystack
-      Runtime: provided.al2023
-      Environment:
-        Variables:
-          EVENT_BUS_NAME: !Ref AppEventBus
-      Policies:
-        - EventBridgePutEventsPolicy:
-            EventBusName: !Ref AppEventBus
-        - AWSXrayWriteOnlyAccess
-        - CloudWatchLogsFullAccess
-      Events:
-        ApiWebhookPaystack:
-          Type: Api
-          Properties:
-            RestApiId: !Ref ApiGateway
-            Path: /webhooks/paystack
-            Method: POST
-
   StrapiWebhookLambda:
     Type: AWS::Serverless::Function
     Metadata:
       BuildMethod: go1.x
     Properties:
-      CodeUri: ../cmd/
+      CodeUri: ../cmd/webhook-strapi/
       Handler: webhook-strapi
       Runtime: provided.al2023
       Environment:
@@ -178,6 +154,31 @@ Resources:
             RestApiId: !Ref ApiGateway
             Path: /webhooks/strapi
             Method: POST
+
+#  PaystackWebhookLambda:
+#    Type: AWS::Serverless::Function
+#    Metadata:
+#      BuildMethod: go1.x
+#    Properties:
+#      CodeUri: ../cmd/webhook-paystack/
+#      Handler: webhook-paystack
+#      Runtime: provided.al2023
+#      Environment:
+#        Variables:
+#          EVENT_BUS_NAME: !Ref AppEventBus
+#      Policies:
+#        - EventBridgePutEventsPolicy:
+#            EventBusName: !Ref AppEventBus
+#        - AWSXrayWriteOnlyAccess
+#        - CloudWatchLogsFullAccess
+#      Events:
+#        ApiWebhookPaystack:
+#          Type: Api
+#          Properties:
+#            RestApiId: !Ref ApiGateway
+#            Path: /webhooks/paystack
+#            Method: POST
+
 
   # --- Optional / Future Stacks ---
   # PaymentsStack:
