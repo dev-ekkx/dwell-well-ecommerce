@@ -35,11 +35,8 @@ jobs:
 
   package-and-deploy:
     if: |
-          github.event_name == 'push' && 
-          (startsWith(github.ref, 'refs/heads/feature') ||
-          startsWith(github.ref, 'refs/heads/fix') ||
-          startsWith(github.ref, 'refs/heads/hotfix') ||
-          startsWith(github.ref, 'refs/heads/release'))
+      github.event_name == 'push' && 
+      github.ref != 'refs/heads/main'
     needs: [test]
     name: Package & Deploy SAM
     runs-on: ubuntu-latest
