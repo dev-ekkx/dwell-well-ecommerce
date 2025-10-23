@@ -81,18 +81,25 @@ Resources:
                 type: aws_proxy
 
   AppEventBus:
-    Type: AWS::Events::EventBus
+      Type: AWS::Events::EventBus
+      Properties:
+        Name: DwellWellAppEventBus
+
+  EventBusPutEventsPolicy:
+    Type: AWS::Events::EventBusPolicy
     Properties:
-      Name: DwellWellAppEventBus
-    Policies:
-      - PolicyName: EventBusPutEvents
-        PolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-            - Effect: Allow
-              Action:
-                - events:PutEvents
-              Resource: !Ref AppEventBus
+      EventBusName: !Ref AppEventBus
+      Policy:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - events:PutEvents
+            Principal:
+              AWS: '*'
+            AWS:
+              - 'arn:aws:iam::${AWS::AccountId}:*'
+              - 'arn:aws:iam::${AWS::AccountId}:*'
 
   ApiGatewayInvokePermissions:
     Type: AWS::Lambda::Permission
