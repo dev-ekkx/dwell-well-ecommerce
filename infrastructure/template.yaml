@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Template for the Dwell Well E-commerce application. Orchestrates nested stacks for each microservice.
+Description: Template for the Dwell Well E-commerce application. All microservices and API Gateway in a single stack.
 
 Globals:
   Function:
@@ -9,73 +9,205 @@ Globals:
     Tracing: Active
     Architectures:
       - x86_64
-    
+
+Parameters:
+  ProductsTableName:
+    Type: String
+    Description: Name of the DynamoDB table for products.
+    Default: DwellWellProductsTable
+
 Resources:
-  # --- Authentication Stack ---
-  AuthStack:
-    Type: AWS::Serverless::Application
+# --- Cognito Resources ---
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
     Properties:
-      Location: ./stacks/auth.yaml
+      UserPoolName: DwellWellUserPool
+      Schema:
+        - Name: name
+          AttributeDataType: String
+          Mutable: true
+          Required: true
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireLowercase: true
+          RequireUppercase: true
+          RequireNumbers: true
+          RequireSymbols: true
+      UsernameAttributes: [email]
+      AutoVerifiedAttributes: [email]
 
-  # --- Products Stack ---
-  ProductsStack:
-    Type: AWS::Serverless::Application
+  CognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
     Properties:
-      Location: ./stacks/products.yaml      
+      UserPoolId: !Ref CognitoUserPool
+      ClientName: DwellWellWebAppClient
+      GenerateSecret: false
 
-  # --- Payments Stack ---
+  IdentityPool:
+    Type: AWS::Cognito::IdentityPool
+    Properties:
+      IdentityPoolName: IncidentReportingIdentityPool
+      AllowUnauthenticatedIdentities: false
+      CognitoIdentityProviders:
+        - ClientId: !Ref CognitoUserPoolClient
+          ProviderName: !GetAtt CognitoUserPool.ProviderName
+
+
+  # --- API Gateway ---
+  ApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      TracingEnabled: true
+      Cors:
+        AllowMethods: "'GET,POST,OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+      Auth:
+        DefaultAuthorizer: CognitoAuthorizer
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: !GetAtt CognitoUserPool.Arn
+
+  # --- Event Bus ---
+  AppEventBus:
+    Type: AWS::Events::EventBus
+    Properties:
+      Name: DwellWellAppEventBus
+
+  EventBusPutEventsPolicy:
+    Type: AWS::Events::EventBusPolicy
+    Properties:
+      EventBusName: !Ref AppEventBus
+      StatementId: AllowPutEventsFromAccount
+      Action: events:PutEvents
+      Principal: "*"
+
+  # --- Products Lambdas ---
+  ProductsLambda:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
+    Properties:
+      CodeUri: ../cmd/
+      Handler: get-products
+      Runtime: provided.al2023
+      Environment:
+        Variables:
+          PRODUCTS_TABLE_NAME: !Ref ProductsTableName
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProductsTableName
+        - AWSXrayWriteOnlyAccess
+        - CloudWatchLogsFullAccess
+      Events:
+        ApiProducts:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /products/v1
+            Method: GET
+            Auth:
+              Authorizer: None
+
+  # SKUsByPriceLambda:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
+    Properties:
+      CodeUri: ../cmd/
+      Handler: skus-by-price
+      Runtime: provided.al2023
+      Policies:
+        - AWSXrayWriteOnlyAccess
+        - CloudWatchLogsFullAccess
+      Events:
+        ApiSkus:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /products/v1/skus-by-price
+            Method: GET
+
+  # --- Webhooks Lambdas ---
+  PaystackWebhookLambda:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
+    Properties:
+      CodeUri: ../cmd/
+      Handler: webhook-paystack
+      Runtime: provided.al2023
+      Environment:
+        Variables:
+          EVENT_BUS_NAME: !Ref AppEventBus
+      Policies:
+        - EventBridgePutEventsPolicy:
+            EventBusName: !Ref AppEventBus
+        - AWSXrayWriteOnlyAccess
+        - CloudWatchLogsFullAccess
+      Events:
+        ApiWebhookPaystack:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /webhooks/v1/paystack
+            Method: POST
+
+  StrapiWebhookLambda:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
+    Properties:
+      CodeUri: ../cmd/
+      Handler: webhook-strapi
+      Runtime: provided.al2023
+      Environment:
+        Variables:
+          PRODUCTS_TABLE_NAME: !Ref ProductsTableName
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProductsTableName
+        - AWSXrayWriteOnlyAccess
+        - CloudWatchLogsFullAccess
+      Events:
+        ApiWebhookStrapi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /webhooks/v1/strapi
+            Method: POST
+
+  # --- Optional / Future Stacks ---
   # PaymentsStack:
   #   Type: AWS::Serverless::Application
   #   Properties:
   #     Location: ./stacks/payments.yaml
   #     Parameters:
-  #       ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsTableName
+  #       ProductsTableName: !Ref ProductsTableName
 
-  # --- Core Infrastructure Stack (API Gateway + EventBus) ---
-  CoreStack:
-    Type: AWS::Serverless::Application
-    Properties:
-      Location: ./stacks/core.yaml
-      Parameters:
-        CognitoUserPoolArn: !GetAtt AuthStack.Outputs.CognitoUserPoolArn
-        ProductsLambdaArn: !GetAtt ProductsStack.Outputs.ProductsLambdaArn
-
-        # PaymentsLambdaArn: !GetAtt PaymentsStack.Outputs.PaymentsLambdaArn
-
-  # --- Orders Stack ---
   # OrdersStack:
   #   Type: AWS::Serverless::Application
   #   Properties:
   #     Location: ./stacks/orders.yaml
   #     Parameters:
-  #       AppEventBusName: !GetAtt CoreStack.Outputs.AppEventBusName
-  #       ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsTableName
+  #       AppEventBusName: !Ref AppEventBus
+  #       ProductsTableName: !Ref ProductsTableName
 
-  # --- Ratings Stack ---
   # RatingsStack:
   #   Type: AWS::Serverless::Application
   #   Properties:
   #     Location: ./stacks/ratings.yaml
   #     Parameters:
-  #       AppEventBusName: !GetAtt CoreStack.Outputs.AppEventBusName
-  #       ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsTableName
-
-  # --- Webhooks Stack ---
-  WebhooksStack:
-    Type: AWS::Serverless::Application
-    Properties:
-      Location: ./stacks/webhooks.yaml
-      Parameters:
-        AppEventBusName: !GetAtt CoreStack.Outputs.AppEventBusName
-        ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsTableName
+  #       AppEventBusName: !Ref AppEventBus
+  #       ProductsTableName: !Ref ProductsTableName
 
 Outputs:
+  ApiGatewayId:
+    Value: !Ref ApiGateway
   ApiEndpoint:
-    Description: "API Gateway endpoint URL"
-    Value: !GetAtt CoreStack.Outputs.ApiEndpoint
-  CognitoUserPoolId:
-    Description: "The ID of the Cognito User Pool"
-    Value: !GetAtt AuthStack.Outputs.CognitoUserPoolId
-  CognitoUserPoolClientId:
-    Description: "The ID of the Cognito User Pool Client"
-    Value: !GetAtt AuthStack.Outputs.CognitoUserPoolClientId
+    Description: API Gateway endpoint URL
+    Value: !Sub "https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+  AppEventBusName:
+    Value: !Ref AppEventBus

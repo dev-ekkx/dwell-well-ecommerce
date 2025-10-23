@@ -34,9 +34,9 @@ jobs:
         # run: go test ./...
 
   package-and-deploy:
-    if: |
-      github.event_name == 'push' && 
-      github.ref != 'refs/heads/main'
+    # if: |
+    #   github.event_name == 'push' && 
+    #   github.ref != 'refs/heads/main'
     needs: [test]
     name: Package & Deploy SAM
     runs-on: ubuntu-latest

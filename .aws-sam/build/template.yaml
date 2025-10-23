@@ -1,0 +1,131 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Template for the Dwell Well E-commerce application. All microservices
+  and API Gateway in a single stack.
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 256
+    Tracing: Active
+    Architectures:
+    - x86_64
+Parameters:
+  CognitoUserPoolArn:
+    Type: String
+    Description: ARN of the Cognito User Pool for the authorizer.
+  ProductsTableName:
+    Type: String
+    Description: Name of the DynamoDB table for products.
+Resources:
+  ApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      TracingEnabled: true
+      Cors:
+        AllowMethods: '''GET,POST,OPTIONS'''
+        AllowHeaders: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'''
+        AllowOrigin: '''*'''
+      Auth:
+        DefaultAuthorizer: CognitoAuthorizer
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn:
+              Ref: CognitoUserPoolArn
+  AppEventBus:
+    Type: AWS::Events::EventBus
+    Properties:
+      Name: DwellWellAppEventBus
+  EventBusPutEventsPolicy:
+    Type: AWS::Events::EventBusPolicy
+    Properties:
+      EventBusName:
+        Ref: AppEventBus
+      StatementId: AllowPutEventsFromAccount
+      Action: events:PutEvents
+      Principal: '*'
+  ProductsLambda:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
+      SamResourceId: ProductsLambda
+    Properties:
+      CodeUri: ProductsLambda
+      Handler: skus-by-price
+      Runtime: provided.al2023
+      Policies:
+      - AWSXrayWriteOnlyAccess
+      - CloudWatchLogsFullAccess
+      Events:
+        ApiSkus:
+          Type: Api
+          Properties:
+            RestApiId:
+              Ref: ApiGateway
+            Path: /products/v1/skus-by-price
+            Method: GET
+  PaystackWebhookLambda:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
+      SamResourceId: PaystackWebhookLambda
+    Properties:
+      CodeUri: PaystackWebhookLambda
+      Handler: webhook-paystack
+      Runtime: provided.al2023
+      Environment:
+        Variables:
+          EVENT_BUS_NAME:
+            Ref: AppEventBus
+      Policies:
+      - EventBridgePutEventsPolicy:
+          EventBusName:
+            Ref: AppEventBus
+      - AWSXrayWriteOnlyAccess
+      - CloudWatchLogsFullAccess
+      Events:
+        ApiWebhookPaystack:
+          Type: Api
+          Properties:
+            RestApiId:
+              Ref: ApiGateway
+            Path: /webhooks/v1/paystack
+            Method: POST
+  StrapiWebhookLambda:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
+      SamResourceId: StrapiWebhookLambda
+    Properties:
+      CodeUri: StrapiWebhookLambda
+      Handler: webhook-strapi
+      Runtime: provided.al2023
+      Environment:
+        Variables:
+          PRODUCTS_TABLE_NAME:
+            Ref: ProductsTableName
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: ProductsTableName
+      - AWSXrayWriteOnlyAccess
+      - CloudWatchLogsFullAccess
+      Events:
+        ApiWebhookStrapi:
+          Type: Api
+          Properties:
+            RestApiId:
+              Ref: ApiGateway
+            Path: /webhooks/v1/strapi
+            Method: POST
+Outputs:
+  ApiGatewayId:
+    Value:
+      Ref: ApiGateway
+  ApiEndpoint:
+    Description: API Gateway endpoint URL
+    Value:
+      Fn::Sub: https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Prod/
+  AppEventBusName:
+    Value:
+      Ref: AppEventBus
