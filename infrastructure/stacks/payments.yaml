@@ -14,6 +14,7 @@ Resources:
       CodeUri: ../../cmd/
       Handler: initialize-payment
       Runtime: provided.al2023
+      Tracing: Active
       Environment:
         Variables:
           PRODUCTS_TABLE_NAME: !Ref ProductsTableName
