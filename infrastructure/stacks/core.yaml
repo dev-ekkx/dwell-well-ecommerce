@@ -166,8 +166,6 @@ Resources:
 Outputs:
   ApiGatewayId:
     Value: !Ref ApiGateway
-  AppEventBusName:
-    Value: !Ref AppEventBus
   ApiEndpoint:
     Description: API Gateway endpoint URL
     Value: !Sub "https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Prod/"

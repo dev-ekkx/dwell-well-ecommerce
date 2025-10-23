@@ -23,6 +23,16 @@ Resources:
     Properties:
       Location: ./stacks/products.yaml      
 
+  # --- Webhooks Stack ---
+  WebhooksStack:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./stacks/webhooks.yaml
+      Parameters:
+        AppEventBusName: "DwellWellAppEventBus"
+        ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsTableName
+
+
   # --- Payments Stack ---
   # PaymentsStack:
   #   Type: AWS::Serverless::Application
@@ -31,19 +41,7 @@ Resources:
   #     Parameters:
   #       ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsTableName
 
-  # --- Core Infrastructure Stack (API Gateway + EventBus) ---
-  CoreStack:
-    Type: AWS::Serverless::Application
-    Properties:
-      Location: ./stacks/core.yaml
-      Parameters:
-        CognitoUserPoolArn: !GetAtt AuthStack.Outputs.CognitoUserPoolArn
-        ProductsLambdaArn: !GetAtt ProductsStack.Outputs.ProductsLambdaArn
-        SKUsByPriceLambdaArn: !GetAtt ProductsStack.Outputs.SKUsByPriceLambdaArn
-        StrapiWebhookLambdaArn: !GetAtt WebhooksStack.Outputs.StrapiWebhookLambdaArn
-        PaystackWebhookLambdaArn: !GetAtt WebhooksStack.Outputs.PaystackWebhookLambdaArn
 
-        # PaymentsLambdaArn: !GetAtt PaymentsStack.Outputs.PaymentsLambdaArn
 
   # --- Orders Stack ---
   # OrdersStack:
@@ -63,14 +61,19 @@ Resources:
   #       AppEventBusName: !GetAtt CoreStack.Outputs.AppEventBusName
   #       ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsTableName
 
-  # --- Webhooks Stack ---
-  WebhooksStack:
+  # --- Core Infrastructure Stack (API Gateway) ---
+  CoreStack:
     Type: AWS::Serverless::Application
     Properties:
-      Location: ./stacks/webhooks.yaml
+      Location: ./stacks/core.yaml
       Parameters:
-        AppEventBusName: !GetAtt CoreStack.Outputs.AppEventBusName
-        ProductsTableName: !GetAtt ProductsStack.Outputs.ProductsTableName
+        CognitoUserPoolArn: !GetAtt AuthStack.Outputs.CognitoUserPoolArn
+        ProductsLambdaArn: !GetAtt ProductsStack.Outputs.ProductsLambdaArn
+        SKUsByPriceLambdaArn: !GetAtt ProductsStack.Outputs.SKUsByPriceLambdaArn
+        StrapiWebhookLambdaArn: !GetAtt WebhooksStack.Outputs.StrapiWebhookLambdaArn
+        PaystackWebhookLambdaArn: !GetAtt WebhooksStack.Outputs.PaystackWebhookLambdaArn
+
+        # PaymentsLambdaArn: !GetAtt PaymentsStack.Outputs.PaymentsLambdaArn
 
 Outputs:
   ApiEndpoint:
