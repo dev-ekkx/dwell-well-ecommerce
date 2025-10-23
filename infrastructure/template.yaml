@@ -52,10 +52,12 @@ Resources:
   # --- Products Lambdas ---
   ProductsLambda:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
     Properties:
       CodeUri: ../cmd/
-      Handler: products
-      Runtime: provided.al2
+      Handler: get-products
+      Runtime: provided.al2023
       Environment:
         Variables:
           PRODUCTS_TABLE_NAME: !Ref ProductsTableName
@@ -70,16 +72,18 @@ Resources:
           Properties:
             RestApiId: !Ref ApiGateway
             Path: /products/v1
-            Method: POST
+            Method: GET
             Auth:
-              Authorizer: CognitoAuthorizer
+              Authorizer: None
 
-  SKUsByPriceLambda:
+  # SKUsByPriceLambda:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
     Properties:
       CodeUri: ../cmd/
       Handler: skus-by-price
-      Runtime: provided.al2
+      Runtime: provided.al2023
       Policies:
         - AWSXrayWriteOnlyAccess
         - CloudWatchLogsFullAccess
@@ -94,10 +98,12 @@ Resources:
   # --- Webhooks Lambdas ---
   PaystackWebhookLambda:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
     Properties:
       CodeUri: ../cmd/
       Handler: webhook-paystack
-      Runtime: provided.al2
+      Runtime: provided.al2023
       Environment:
         Variables:
           EVENT_BUS_NAME: !Ref AppEventBus
@@ -116,10 +122,12 @@ Resources:
 
   StrapiWebhookLambda:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
     Properties:
       CodeUri: ../cmd/
       Handler: webhook-strapi
-      Runtime: provided.al2
+      Runtime: provided.al2023
       Environment:
         Variables:
           PRODUCTS_TABLE_NAME: !Ref ProductsTableName

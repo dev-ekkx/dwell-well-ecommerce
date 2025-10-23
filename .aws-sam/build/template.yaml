@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Template for the Dwell Well E-commerce application. Orchestrates nested
-  stacks for each microservice.
+Description: Template for the Dwell Well E-commerce application. All microservices
+  and API Gateway in a single stack.
 Globals:
   Function:
     Timeout: 30
@@ -9,74 +9,123 @@ Globals:
     Tracing: Active
     Architectures:
     - x86_64
+Parameters:
+  CognitoUserPoolArn:
+    Type: String
+    Description: ARN of the Cognito User Pool for the authorizer.
+  ProductsTableName:
+    Type: String
+    Description: Name of the DynamoDB table for products.
 Resources:
-  AuthStack:
-    Type: AWS::Serverless::Application
+  ApiGateway:
+    Type: AWS::Serverless::Api
     Properties:
-      Location: AuthStack/template.yaml
-    Metadata:
-      SamResourceId: AuthStack
-  ProductsStack:
-    Type: AWS::Serverless::Application
+      StageName: Prod
+      TracingEnabled: true
+      Cors:
+        AllowMethods: '''GET,POST,OPTIONS'''
+        AllowHeaders: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'''
+        AllowOrigin: '''*'''
+      Auth:
+        DefaultAuthorizer: CognitoAuthorizer
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn:
+              Ref: CognitoUserPoolArn
+  AppEventBus:
+    Type: AWS::Events::EventBus
     Properties:
-      Location: ProductsStack/template.yaml
-    Metadata:
-      SamResourceId: ProductsStack
-  WebhooksStack:
-    Type: AWS::Serverless::Application
+      Name: DwellWellAppEventBus
+  EventBusPutEventsPolicy:
+    Type: AWS::Events::EventBusPolicy
     Properties:
-      Location: WebhooksStack/template.yaml
-      Parameters:
-        AppEventBusName: DwellWellAppEventBus
-        ProductsTableName:
-          Fn::GetAtt:
-          - ProductsStack
-          - Outputs.ProductsTableName
+      EventBusName:
+        Ref: AppEventBus
+      StatementId: AllowPutEventsFromAccount
+      Action: events:PutEvents
+      Principal: '*'
+  ProductsLambda:
+    Type: AWS::Serverless::Function
     Metadata:
-      SamResourceId: WebhooksStack
-  GatewayStack:
-    Type: AWS::Serverless::Application
+      BuildMethod: go1.x
+      SamResourceId: ProductsLambda
     Properties:
-      Location: GatewayStack/template.yaml
-      Parameters:
-        CognitoUserPoolArn:
-          Fn::GetAtt:
-          - AuthStack
-          - Outputs.CognitoUserPoolArn
-        ProductsLambdaArn:
-          Fn::GetAtt:
-          - ProductsStack
-          - Outputs.ProductsLambdaArn
-        SKUsByPriceLambdaArn:
-          Fn::GetAtt:
-          - ProductsStack
-          - Outputs.SKUsByPriceLambdaArn
-        StrapiWebhookLambdaArn:
-          Fn::GetAtt:
-          - WebhooksStack
-          - Outputs.StrapiWebhookLambdaArn
-        PaystackWebhookLambdaArn:
-          Fn::GetAtt:
-          - WebhooksStack
-          - Outputs.PaystackWebhookLambdaArn
+      CodeUri: ProductsLambda
+      Handler: skus-by-price
+      Runtime: provided.al2023
+      Policies:
+      - AWSXrayWriteOnlyAccess
+      - CloudWatchLogsFullAccess
+      Events:
+        ApiSkus:
+          Type: Api
+          Properties:
+            RestApiId:
+              Ref: ApiGateway
+            Path: /products/v1/skus-by-price
+            Method: GET
+  PaystackWebhookLambda:
+    Type: AWS::Serverless::Function
     Metadata:
-      SamResourceId: GatewayStack
+      BuildMethod: go1.x
+      SamResourceId: PaystackWebhookLambda
+    Properties:
+      CodeUri: PaystackWebhookLambda
+      Handler: webhook-paystack
+      Runtime: provided.al2023
+      Environment:
+        Variables:
+          EVENT_BUS_NAME:
+            Ref: AppEventBus
+      Policies:
+      - EventBridgePutEventsPolicy:
+          EventBusName:
+            Ref: AppEventBus
+      - AWSXrayWriteOnlyAccess
+      - CloudWatchLogsFullAccess
+      Events:
+        ApiWebhookPaystack:
+          Type: Api
+          Properties:
+            RestApiId:
+              Ref: ApiGateway
+            Path: /webhooks/v1/paystack
+            Method: POST
+  StrapiWebhookLambda:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
+      SamResourceId: StrapiWebhookLambda
+    Properties:
+      CodeUri: StrapiWebhookLambda
+      Handler: webhook-strapi
+      Runtime: provided.al2023
+      Environment:
+        Variables:
+          PRODUCTS_TABLE_NAME:
+            Ref: ProductsTableName
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: ProductsTableName
+      - AWSXrayWriteOnlyAccess
+      - CloudWatchLogsFullAccess
+      Events:
+        ApiWebhookStrapi:
+          Type: Api
+          Properties:
+            RestApiId:
+              Ref: ApiGateway
+            Path: /webhooks/v1/strapi
+            Method: POST
 Outputs:
+  ApiGatewayId:
+    Value:
+      Ref: ApiGateway
   ApiEndpoint:
     Description: API Gateway endpoint URL
     Value:
-      Fn::GetAtt:
-      - GatewayStack
-      - Outputs.ApiEndpoint
-  CognitoUserPoolId:
-    Description: The ID of the Cognito User Pool
+      Fn::Sub: https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Prod/
+  AppEventBusName:
     Value:
-      Fn::GetAtt:
-      - AuthStack
-      - Outputs.CognitoUserPoolId
-  CognitoUserPoolClientId:
-    Description: The ID of the Cognito User Pool Client
-    Value:
-      Fn::GetAtt:
-      - AuthStack
-      - Outputs.CognitoUserPoolClientId
+      Ref: AppEventBus
