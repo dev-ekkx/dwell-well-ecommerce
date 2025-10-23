@@ -41,8 +41,10 @@ Resources:
         Variables:
           ORDERS_TABLE_NAME: !Ref OrdersTable
           EVENT_BUS_NAME: !Ref AppEventBusName
+          PRODUCTS_TABLE_NAME: !Ref ProductsTableName
       Policies:
         - DynamoDBCrudPolicy: { TableName: !Ref OrdersTable }
+        - DynamoDBReadPolicy: { TableName: !Ref ProductsTableName }
         - EventBridgePutEventsPolicy: { EventBusName: !Ref AppEventBusName }
 
 Outputs:
