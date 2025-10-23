@@ -18,14 +18,45 @@ Resources:
       Environment:
         Variables:
           PRODUCTS_TABLE_NAME: !Ref ProductsTableName
-          PAYSTACK_SECRET_KEY: '{{resolve:ssm:/dwellwell/paystack/secretkey:1}}'
+          PAYSTACK_SECRET_KEY: '{{resolve:ssm:/dwellwell/paystack/secretkey}}'
       Policies:
-        - DynamoDBReadPolicy: { TableName: !Ref ProductsTableName }
-        - Statement:
-            - Effect: Allow
-              Action: ['ssm:GetParameter']
-              Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/dwellwell/paystack/secretkey'
-
+        - PolicyName: ProductsTableReadAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${ProductsTableName}'
+        - PolicyName: SSMReadSecret
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ssm:GetParameter
+                Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/dwellwell/paystack/secretkey'
+        - PolicyName: LambdaLogging
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: 'arn:aws:logs:*:*:*'
+        - PolicyName: XRayTracingAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - xray:PutTelemetryRecords
+                  - xray:PutTraceSegments
+                Resource: '*'
 Outputs:
   PaymentsLambdaArn:
     Value: !GetAtt InitializePaymentFunction.Arn
