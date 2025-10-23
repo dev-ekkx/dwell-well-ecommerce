@@ -41,8 +41,31 @@ Resources:
           RATINGS_TABLE_NAME: !Ref ProductRatingsTable
           EVENT_BUS_NAME: !Ref AppEventBusName
       Policies:
-        - DynamoDBCrudPolicy: { TableName: !Ref ProductRatingsTable }
-        - EventBridgePutEventsPolicy: { EventBusName: !Ref AppEventBusName }
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+                - dynamodb:GetItem
+                - dynamodb:DeleteItem
+                - dynamodb:Query
+                - dynamodb:Scan
+              Resource: !GetAtt ProductRatingsTable.Arn
+            - Effect: Allow
+              Action:
+                - events:PutEvents
+              Resource: !Sub 'arn:aws:events:${AWS::Region}:${AWS::AccountId}:event-bus/${AppEventBusName}'
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: 'arn:aws:logs:*:*:*'
+            - Effect: Allow
+              Action:
+                - xray:PutTelemetryRecords
+                - xray:PutTraceSegments
+              Resource: '*'
 
   UpdateRatingDLQ:
     Type: AWS::SQS::Queue
@@ -63,12 +86,53 @@ Resources:
           PRODUCTS_TABLE_NAME: !Ref ProductsTableName
           RATINGS_TABLE_NAME: !Ref ProductRatingsTable
       Policies:
-        - DynamoDBCrudPolicy: { TableName: !Ref ProductsTableName }
-        - DynamoDBReadPolicy: { TableName: !Ref ProductRatingsTable }
-        - SQSSendMessagePolicy: { QueueName: !GetAtt UpdateRatingDLQ.QueueName }
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+                - dynamodb:GetItem
+                - dynamodb:DeleteItem
+                - dynamodb:Query
+                - dynamodb:Scan
+              Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${ProductsTableName}'
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:Query
+                - dynamodb:Scan
+              Resource: !GetAtt ProductRatingsTable.Arn
+            - Effect: Allow
+              Action:
+                - sqs:SendMessage
+              Resource: !GetAtt UpdateRatingDLQ.Arn
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: 'arn:aws:logs:*:*:*'
+            - Effect: Allow
+              Action:
+                - xray:PutTelemetryRecords
+                - xray:PutTraceSegments
+              Resource: '*'
 
 Outputs:
   RatingsLambdaArn:
+    Description: "ARN of SubmitRating Lambda"
     Value: !GetAtt SubmitRatingFunction.Arn
     Export:
       Name: RatingsLambdaArn
+
+  UpdateAverageRatingLambdaArn:
+    Description: "ARN of UpdateAverageRating Lambda"
+    Value: !GetAtt UpdateAverageRatingFunction.Arn
+    Export:
+      Name: UpdateAverageRatingLambdaArn
+
+  ProductRatingsTableName:
+    Description: "DynamoDB table name for product ratings"
+    Value: !Ref ProductRatingsTable
+    Export:
+      Name: ProductRatingsTableName

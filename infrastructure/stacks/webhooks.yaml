@@ -19,7 +19,10 @@ Resources:
         Variables:
           EVENT_BUS_NAME: !Ref AppEventBusName
       Policies:
-        - EventBridgePutEventsPolicy: { EventBusName: !Ref AppEventBusName }
+        - EventBridgePutEventsPolicy:
+            EventBusName: !Ref AppEventBusName
+        - AWSXrayWriteOnlyAccess
+        - CloudWatchLogsFullAccess
 
   StrapiWebhookFunction:
     Type: AWS::Serverless::Function
@@ -33,8 +36,11 @@ Resources:
         Variables:
           PRODUCTS_TABLE_NAME: !Ref ProductsTableName
       Policies:
-        - DynamoDBCrudPolicy: { TableName: !Ref ProductsTableName }
-
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProductsTableName
+        - AWSXrayWriteOnlyAccess
+        - CloudWatchLogsFullAccess
+              
 Outputs:
   PaystackWebhookLambdaArn:
     Value: !GetAtt PaystackWebhookFunction.Arn

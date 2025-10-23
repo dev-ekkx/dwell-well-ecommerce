@@ -39,30 +39,16 @@ Resources:
       Runtime: provided.al2023
       Events:
         CognitoEvent: { Type: Cognito, Properties: { UserPool: !Ref CognitoUserPool, Trigger: PostConfirmation } }
-      Policies:
-        - PolicyName: PostConfirmationDynamoDBWrite
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - dynamodb:PutItem
-                  - dynamodb:UpdateItem
-                  - dynamodb:GetItem
-                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*'
-
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogGroup
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Resource: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*'
-
-              - Effect: Allow
-                Action:
-                  - cognito-idp:AdminUpdateUserAttributes
-                  - cognito-idp:AdminAddUserToGroup
-                Resource: !GetAtt CognitoUserPool.Arn                
+    Policies:
+      - AWSLambdaBasicExecutionRole
+      - DynamoDBWritePolicy:
+          TableName: '*'  
+      - Statement:
+          - Effect: Allow
+            Action:
+              - cognito-idp:AdminUpdateUserAttributes
+              - cognito-idp:AdminAddUserToGroup
+            Resource: !GetAtt CognitoUserPool.Arn 
 
 Outputs:
   CognitoUserPoolId:

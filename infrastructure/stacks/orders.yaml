@@ -28,7 +28,6 @@ Resources:
           Projection:
             ProjectionType: ALL
 
-
   CreateOrderFunction:
     Type: AWS::Serverless::Function
     Metadata:
@@ -37,62 +36,29 @@ Resources:
       CodeUri: ../../cmd/
       Handler: create-order
       Runtime: provided.al2023
+      Tracing: Active
       Environment:
         Variables:
           ORDERS_TABLE_NAME: !Ref OrdersTable
           EVENT_BUS_NAME: !Ref AppEventBusName
           PRODUCTS_TABLE_NAME: !Ref ProductsTableName
       Policies:
-        - PolicyName: OrdersTableDynamoDBAccess
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - dynamodb:PutItem
-                  - dynamodb:UpdateItem
-                  - dynamodb:GetItem
-                  - dynamodb:DeleteItem
-                  - dynamodb:Query
-                  - dynamodb:Scan
-                Resource: !GetAtt OrdersTable.Arn
-        - PolicyName: ProductsTableReadAccess
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - dynamodb:GetItem
-                  - dynamodb:Query
-                  - dynamodb:Scan
-                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${ProductsTableName}'
-        - PolicyName: EventBridgePutAccess
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - events:PutEvents
-                Resource: !Sub 'arn:aws:events:${AWS::Region}:${AWS::AccountId}:event-bus/${AppEventBusName}'
-        - PolicyName: LambdaLogging
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogGroup
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Resource: 'arn:aws:logs:*:*:*'
-        - PolicyName: XRayTracingAccess
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - xray:PutTelemetryRecords
-                  - xray:PutTraceSegments
-                Resource: '*'
+        # Lambda basic execution (CloudWatch Logs)
+        - AWSLambdaBasicExecutionRole
+        # X-Ray tracing
+        - XRayDaemonWriteAccess
+        # Full CRUD access to Orders table
+        - DynamoDBCrudPolicy:
+            TableName: !Ref OrdersTable
+        # Read-only access to Products table
+        - DynamoDBReadPolicy:
+            TableName: !Ref ProductsTableName
+        # Put events to EventBridge
+        - Statement:
+            - Effect: Allow
+              Action:
+                - events:PutEvents
+              Resource: !Sub 'arn:aws:events:${AWS::Region}:${AWS::AccountId}:event-bus/${AppEventBusName}'
 
 Outputs:
   OrdersLambdaArn:
