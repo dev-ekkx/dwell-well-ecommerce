@@ -64,11 +64,11 @@ Resources:
         AllowMethods: "'GET,POST,OPTIONS'"
         AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
         AllowOrigin: "'*'"
-#      Auth:
-#        DefaultAuthorizer: CognitoAuthorizer
-#        Authorizers:
-#          CognitoAuthorizer:
-#            UserPoolArn: !GetAtt CognitoUserPool.Arn
+      Auth:
+        DefaultAuthorizer: CognitoAuthorizer
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: !GetAtt CognitoUserPool.Arn
 
   # --- Event Bus ---
   AppEventBus:
@@ -108,8 +108,8 @@ Resources:
             RestApiId: !Ref ApiGateway
             Path: /products/
             Method: GET
-#            Auth:
-#                Authorizer: NONE
+            Auth:
+                Authorizer: NONE
 
   SKUsByPriceLambda:
     Type: AWS::Serverless::Function
