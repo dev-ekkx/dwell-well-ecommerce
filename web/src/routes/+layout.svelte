@@ -1,12 +1,13 @@
 <script lang="ts">
-	import '../app.css';
-	import favicon from '$lib/assets/favicon.ico';
-	import HeaderComponent from '$lib/components/header.svelte';
-	import FooterComponent from '$lib/components/footer.svelte';
-	import { page } from '$app/state';
-	import { cn } from '$lib/utils';
+    import '../app.css';
+    import favicon from '$lib/assets/favicon.ico';
+    import HeaderComponent from '$lib/components/header.svelte';
+    import FooterComponent from '$lib/components/footer.svelte';
+    import {page} from '$app/state';
+    import {cn} from '$lib/utils';
 
-	let { children, data } = $props();
+    let { children, data } = $props();
+
 	const activePage = $derived(page.route.id);
 	const isAuthPage = $derived(() => {
 		const path = page.url.href.split('/').pop() ?? '';
@@ -33,5 +34,5 @@
 
 <!--Footer component-->
 {#if !isAuthPage()}
-	<FooterComponent footer={data.footer} />
+	<FooterComponent blok={data.footerCms} footer={data.footer} />
 {/if}

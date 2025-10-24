@@ -13,16 +13,18 @@ export const load: LayoutLoad = async ({ fetch }) => {
             use: [apiPlugin],
         });
 
-        const storyblokAPI = await useStoryblokApi();
+        const storyblokAPI = useStoryblokApi();
         //
         // return {
         // };
 
+        const {data: footerConfig} = await storyblokAPI.get("cdn/stories/global/footer", {version: "draft"})
 		const footerData = await fetch(import.meta.env.VITE_CMS_URL + "/api/footer?populate=all");
 		const data = (await footerData.json()).data as FooterI;
 
 		return {
             storyblokAPI,
+            footerCms: footerConfig.story,
 			footer: data
 		};
 	} catch (error) {

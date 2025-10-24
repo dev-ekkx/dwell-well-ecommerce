@@ -1,14 +1,15 @@
 <script lang="ts">
-	import { Input } from '$lib/components/ui/input/index.js';
-	import { Button } from '$lib/components/ui/button';
-	import { resolve } from '$app/paths';
-	import type { RouteId } from '$app/types';
-	import type { FooterI } from '$lib/interfaces';
-	import { onMount } from 'svelte';
-	import { marked } from 'marked';
-	import DOMPurify from 'dompurify';
+    import {Input} from '$lib/components/ui/input/index.js';
+    import {Button} from '$lib/components/ui/button';
+    import {resolve} from '$app/paths';
+    import type {RouteId} from '$app/types';
+    import type {FooterI} from '$lib/interfaces';
+    import {onMount} from 'svelte';
+    import {marked} from 'marked';
+    import DOMPurify from 'dompurify';
+    import {renderRichText, storyblokEditable} from "@storyblok/svelte";
 
-	const { footer } = $props();
+    const { footer, blok } = $props();
 	const footerData = footer as FooterI;
 	const socials = footerData.socialLinks;
 	const columnLinks = footerData.linkColumns;
@@ -27,9 +28,14 @@
 		newsletterDisclaimer = DOMPurify.sanitize(rawHtml);
 	});
 
+    const disclaimer = $derived(renderRichText(blok.content.privacy_policy))
+
+    $inspect(blok)
+    $inspect(disclaimer)
+
 </script>
 
-<footer class="flex flex-col bg-muted-foreground **:text-white pb-6 g-pt g-px gap-8 font-medium">
+<footer class="flex flex-col bg-muted-foreground **:text-white pb-6 g-pt g-px gap-8 font-medium"  use:storyblokEditable={blok}>
 	<!--	Newsletter and footer links section-->
 	<section class="flex flex-col">
 		<div class="flex flex-col text-center md:text-left gap-2 lg:flex-row lg:justify-between lg:items-center">
@@ -50,7 +56,7 @@
 				</div>
 				<p class="text-sm">
 					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-					{@html newsletterDisclaimer}</p>
+					{@html disclaimer}</p>
 			</div>
 		</div>
 
