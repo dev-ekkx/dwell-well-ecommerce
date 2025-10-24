@@ -34,5 +34,7 @@
 
 <!--Footer component-->
 {#if !isAuthPage()}
-	<FooterComponent blok={data.footerCms} footer={data.footer} />
+<!--                     footer={data.footer}-->
+	<FooterComponent blok={data.footer}
+    />
 {/if}

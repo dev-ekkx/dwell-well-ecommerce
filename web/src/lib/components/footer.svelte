@@ -1,47 +1,46 @@
 <script lang="ts">
     import {Input} from '$lib/components/ui/input/index.js';
     import {Button} from '$lib/components/ui/button';
-    import {resolve} from '$app/paths';
     import type {RouteId} from '$app/types';
-    import type {FooterI} from '$lib/interfaces';
-    import {onMount} from 'svelte';
-    import {marked} from 'marked';
-    import DOMPurify from 'dompurify';
+    // import {marked} from 'marked';
+    // import DOMPurify from 'dompurify';
     import {renderRichText, storyblokEditable} from "@storyblok/svelte";
+    import {resolve} from "$app/paths";
 
-    const { footer, blok } = $props();
-	const footerData = footer as FooterI;
-	const socials = footerData.socialLinks;
-	const columnLinks = footerData.linkColumns;
+    const { blok } = $props();
+	// const footerData = footer as FooterI;
+	// const socials = footerData.socialLinks;
+	// const columnLinks = footerData.linkColumns;
 
-	let newsletterDisclaimer = $state('');
+	// let newsletterDisclaimer = $state('');
 	const isExternal = (link: string) =>
 		link.startsWith('http') ||
 		link.startsWith('mailto:') ||
 		link.startsWith('tel:');
 
 	const routeLink = (link: string) => link as RouteId;
-
-	onMount(() => {
-		const rawHtml = marked(footerData.newsletterDisclaimer).toString();
-		// We no longer need the 'if (browser)' check because onMount guarantees it.
-		newsletterDisclaimer = DOMPurify.sanitize(rawHtml);
-	});
+    //
+	// onMount(() => {
+	// 	const rawHtml = marked(footerData.newsletterDisclaimer).toString();
+	// 	// We no longer need the 'if (browser)' check because onMount guarantees it.
+	// 	newsletterDisclaimer = DOMPurify.sanitize(rawHtml);
+	// });
 
     const disclaimer = $derived(renderRichText(blok.content.privacy_policy))
-
-    $inspect(blok)
-    $inspect(disclaimer)
+    const socials = blok.content.social_media
+const newsletter = blok.content.newsletter[0]
+    const footerLinks = blok.content.footer_grid
+    $inspect(blok.content)
 
 </script>
-
+{#key blok}
 <footer class="flex flex-col bg-muted-foreground **:text-white pb-6 g-pt g-px gap-8 font-medium"  use:storyblokEditable={blok}>
 	<!--	Newsletter and footer links section-->
 	<section class="flex flex-col">
 		<div class="flex flex-col text-center md:text-left gap-2 lg:flex-row lg:justify-between lg:items-center">
 			<div class="flex flex-col gap-4">
-				<span class="font-semibold text-lg">{footerData.newsletterTitle}</span>
-				<p class="max-w-lg">{footerData.newsletterDescription}
+				<span class="font-semibold text-lg">{newsletter.label}</span>
+				<p class="max-w-lg">{newsletter.description}
 				</p>
 			</div>
 
@@ -60,24 +59,24 @@
 			</div>
 		</div>
 
-		<!--		Footer links-->
+		<!-- Footer links -->
 		<div class="grid grid-cols-1 **:items-center sm:grid-cols-2 md:grid-cols-4 md:**:items-start mt-8 gap-8">
-			{#each columnLinks as item (item.title)}
+			{#each footerLinks as item (item.title)}
 				<div class="flex flex-col gap-3">
 					<span class="capitalize font-semibold">{item.title}</span>
 					<div class="flex flex-col">
-						{#each item.links as link (link.label)}
-							{#if isExternal(link.url)}
+						{#each item.links as link (link.title)}
+							{#if isExternal(link.route)}
 								<a
 									target="_blank"
 									rel="noopener noreferrer"
-									href={link.url}
+									href={link.route}
 								>
-									{link.label}
+									{link.title}
 								</a>
 							{:else}
-								<a class="py-2" href={resolve(routeLink(link.url))}>
-									{link.label}
+								<a class="py-2" href={resolve(routeLink(link.route))}>
+									{link.title}
 								</a>
 							{/if}
 						{/each}
@@ -86,17 +85,21 @@
 				</div>
 			{/each}
 		</div>
-	</section>
+
+    </section>
 
 	<hr />
 
 	<!--	Copyright and socials section-->
 	<section class="flex flex-col gap-4 items-center justify-center lg:flex-row lg:justify-between">
-		<span>&copy; {new Date().getFullYear()} {footerData.copyrightText}</span>
+		<span>&copy; {new Date().getFullYear()} {blok.content.footer_copyright}</span>
 		<div class="flex items-center gap-4">
 			{#each socials as social (social)}
-				<img class="w-5 h-5" src={`${social.icon.url}`} alt={social.icon.alternativeText}>
+                <a href={social.link} target="_blank" rel="noopener noreferrer">
+				<img class="w-5 h-5" src={`${social.icon.filename}`} alt={social.icon.alt}>
+                </a>
 			{/each}
 		</div>
 	</section>
 </footer>
+{/key}

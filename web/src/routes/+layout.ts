@@ -1,6 +1,5 @@
 import type {LayoutLoad} from "./$types";
 import {apiPlugin, storyblokInit, useStoryblokApi} from "@storyblok/svelte";
-import type {FooterI} from "$lib/interfaces";
 
 export const load: LayoutLoad = async ({ fetch }) => {
 	try {
@@ -18,14 +17,12 @@ export const load: LayoutLoad = async ({ fetch }) => {
         // return {
         // };
 
-        const {data: footerConfig} = await storyblokAPI.get("cdn/stories/global/footer", {version: "draft"})
-		const footerData = await fetch(import.meta.env.VITE_CMS_URL + "/api/footer?populate=all");
-		const data = (await footerData.json()).data as FooterI;
-
+        const {data} = await storyblokAPI.get("cdn/stories/global/footer", {version: "draft"})
+		// const footerData = await fetch(import.meta.env.VITE_CMS_URL + "/api/footer?populate=all");
+		// const data = (await footerData.json()).data as FooterI;
 		return {
             storyblokAPI,
-            footerCms: footerConfig.story,
-			footer: data
+			footer: data.story
 		};
 	} catch (error) {
 		console.error("Error loading footer data: ", error);
