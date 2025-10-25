@@ -64,6 +64,7 @@ func (d *DynamoDBClient) CreateProductWithDefaults(sku string) error {
 	_, err = d.client.PutItem(context.TODO(), input)
 
 	if err != nil {
+		fmt.Println("ERROR: Failed to create product in DynamoDB", err)
 		var conditionalCheckFailedException *types.ConditionalCheckFailedException
 		if !errors.As(err, &conditionalCheckFailedException) {
 			return err
