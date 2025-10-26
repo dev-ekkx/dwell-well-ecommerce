@@ -1,33 +1,35 @@
 <script lang="ts">
-	import Hero from './_home/hero.svelte';
-	import WhyChooseUs from './_home/why-choose-us.svelte';
-	import ProductCategories from './_home/product-categories.svelte';
-	import FlashSales from './_home/flash-sales.svelte';
-	import NewArrivals from './_home/new-arrivals.svelte';
-	import type { PageProps } from './$types';
-	import type { HeroI, PageI } from '$lib/interfaces';
-	import { setContext } from 'svelte';
+	import Hero from "./_home/hero.svelte";
+	import WhyChooseUs from "./_home/why-choose-us.svelte";
+	import ProductCategories from "./_home/product-categories.svelte";
+	import FlashSales from "./_home/flash-sales.svelte";
+	import NewArrivals from "./_home/new-arrivals.svelte";
+	import type { PageProps } from "./$types";
+	import type { HeroI, PageI } from "$lib/interfaces";
+	import { setContext } from "svelte";
 
 	const { data }: PageProps = $props();
 	const homePageData = data.homepage as PageI;
-	const heroData = homePageData.contentSections.find(item => item.__component === 'page-controls.hero') as HeroI;
+	const heroData = homePageData.contentSections.find(
+		(item) => item.__component === "page-controls.hero"
+	) as HeroI;
 	const seoData = homePageData.seo;
 	const whyChooseUsData = homePageData.contentSections.find(
-		item => item.__component === 'page-controls.why-choose-us'
+		(item) => item.__component === "page-controls.why-choose-us"
 	);
 	const productCategoriesData = homePageData.contentSections.find(
-		item => item.sectionId === 'categories'
+		(item) => item.sectionId === "categories"
 	);
 	const flashSalesData = homePageData.contentSections.find(
-		item => item.__component === 'page-controls.promotion'
+		(item) => item.__component === "page-controls.promotion"
 	);
 
 	const newArrivalsData = homePageData.contentSections.find(
-		item => item.sectionId === 'newArrivals'
+		(item) => item.sectionId === "newArrivals"
 	)!;
 
 	// Provide hero images to the HeroCarousel component via context
-	setContext('hero-images', heroData.images);
+	setContext("hero-images", heroData.images);
 </script>
 
 <svelte:head>
@@ -36,9 +38,9 @@
 </svelte:head>
 
 <div class="g-px">
-	<Hero heroData={heroData} />
-	<WhyChooseUs whyChooseUsData={whyChooseUsData} />
-	<ProductCategories productCategoriesData={productCategoriesData} />
-	<FlashSales flashSalesData={flashSalesData} />
-	<NewArrivals newArrivalsData={newArrivalsData} />
+	<Hero {heroData} />
+	<WhyChooseUs {whyChooseUsData} />
+	<ProductCategories {productCategoriesData} />
+	<FlashSales {flashSalesData} />
+	<NewArrivals {newArrivalsData} />
 </div>

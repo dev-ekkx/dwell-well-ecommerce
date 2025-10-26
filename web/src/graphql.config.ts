@@ -8,5 +8,5 @@ export const client = new Client({
 			"Content-Type": "application/json"
 		}
 	}),
-	requestPolicy: "cache-first",
+	requestPolicy: "cache-first"
 });

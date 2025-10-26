@@ -1,12 +1,12 @@
 <script lang="ts">
-	import CaretUp from '$lib/assets/caret-up.svg';
-	import { cn, formatNumberWithCommas } from '$lib/utils';
-	import { Label } from '$lib/components/ui/label';
-	import { Checkbox } from '$lib/components/ui/checkbox';
-	import type { FilterDropdownI } from '$lib/interfaces';
-	import gsap from 'gsap';
-	import { tick } from 'svelte';
-	import { Slider } from '$lib/components/ui/slider';
+	import CaretUp from "$lib/assets/caret-up.svg";
+	import { cn, formatNumberWithCommas } from "$lib/utils";
+	import { Label } from "$lib/components/ui/label";
+	import { Checkbox } from "$lib/components/ui/checkbox";
+	import type { FilterDropdownI } from "$lib/interfaces";
+	import gsap from "gsap";
+	import { tick } from "svelte";
+	import { Slider } from "$lib/components/ui/slider";
 
 	let {
 		title,
@@ -15,7 +15,7 @@
 		selectedOptions = $bindable([]),
 		selectedSlides = $bindable([]),
 		maxSlideValue,
-		type = 'checkbox'
+		type = "checkbox"
 	}: FilterDropdownI = $props();
 	let isDropdownOpen = $state(true);
 	let dropdownContainer = $state<HTMLDivElement | null>(null);
@@ -42,35 +42,37 @@
 
 		if (isDropdownOpen) {
 			gsap.to(dropdownContainer, {
-				height: '2rem',
+				height: "2rem",
 				duration: 0.4,
-				ease: 'power4.out',
+				ease: "power4.out",
 				onComplete: () => {
 					isDropdownOpen = false;
 				}
 			});
 		} else {
-			gsap.set(dropdownContainer, { clearProps: 'height,opacity' });
+			gsap.set(dropdownContainer, { clearProps: "height,opacity" });
 			isDropdownOpen = true;
 			await tick();
 			gsap.from(dropdownContainer, {
 				height: 0,
 				duration: 0.4,
-				ease: 'power4.out'
+				ease: "power4.out"
 			});
 		}
 	};
-
 </script>
 
-
-<div bind:this={dropdownContainer} class="flex flex-col gap-4  overflow-y-clip">
+<div bind:this={dropdownContainer} class="flex flex-col gap-4 overflow-y-clip">
 	<!--	Dropdown toggle button -->
-	<button class="flex items-center justify-between gap-4 cursor-pointer" onclick={dropdownToggle}>
-		<span class="font-semibold text-lg capitalize">{title}</span>
-		<img alt="caret" class={cn('transition-all duration-200 ease-linear rotate-180', {
-			'rotate-0': isDropdownOpen,
-		})} src={CaretUp}>
+	<button class="flex cursor-pointer items-center justify-between gap-4" onclick={dropdownToggle}>
+		<span class="text-lg font-semibold capitalize">{title}</span>
+		<img
+			alt="caret"
+			class={cn("rotate-180 transition-all duration-200 ease-linear", {
+				"rotate-0": isDropdownOpen
+			})}
+			src={CaretUp}
+		/>
 	</button>
 
 	<!--	Dropdown items -->
@@ -78,8 +80,13 @@
 		<!-- Slider -->
 		{#if type === "slider"}
 			<div class="flex flex-col gap-4">
-				<Slider onValueChange={onValueChange} bind:value={selectedSlides} max={maxSlideValue} step={1}
-								type="multiple" />
+				<Slider
+					{onValueChange}
+					bind:value={selectedSlides}
+					max={maxSlideValue}
+					step={1}
+					type="multiple"
+				/>
 				<div class="flex items-center justify-between gap-4">
 					<span>${formatNumberWithCommas(Math.min(...selectedSlides))}</span>
 					<span>${formatNumberWithCommas(avgSlideVal)}</span>
@@ -92,7 +99,7 @@
 				{#if !!options}
 					{#each options as option (option.slug)}
 						{@const checked = selectedOptions.includes(option.slug)}
-						<Label class="flex options-center gap-2 **:cursor-pointer">
+						<Label class="options-center flex gap-2 **:cursor-pointer">
 							<Checkbox
 								{checked}
 								id={option.slug}

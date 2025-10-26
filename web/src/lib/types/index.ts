@@ -24,4 +24,7 @@ export type ContentSectionT =
 	| GlobalPresenceI
 	| LeadershipTeamI;
 
-export type ProductDataMap = Record<string, { price: number; oldPrice: number; averageRating: number; reviewCount: number }>;
+export type ProductDataMap = Record<
+	string,
+	{ price: number; oldPrice?: number; averageRating: number; reviewCount: number }
+>;
