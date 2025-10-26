@@ -117,81 +117,97 @@ func (d *DynamoDBClient) UpdateProductStatus(sku string, newStatus string) error
 	return nil
 }
 
-// GetAllProducts from the database
-func (d *DynamoDBClient) GetAllProducts() ([]models.Product, error) {
-	var allProducts []models.Product
-	var exclusiveStartKey map[string]types.AttributeValue
-
-	// Loop to handle paginated results from the Scan operation
-	for {
-		input := &dynamodb.ScanInput{
-			TableName:         awsSDK.String(d.tableName),
-			ExclusiveStartKey: exclusiveStartKey,
-		}
-
-		result, err := d.client.Scan(context.TODO(), input)
-		if err != nil {
-			log.Printf("ERROR: Failed to scan DynamoDB table for all products: %v", err)
-			return nil, err
-		}
-
-		var productsPage []models.Product
-		err = attributevalue.UnmarshalListOfMaps(result.Items, &productsPage)
-		if err != nil {
-			log.Printf("ERROR: Failed to unmarshal scanned items: %v", err)
-			return nil, err
-		}
-		allProducts = append(allProducts, productsPage...)
-
-		// If LastEvaluatedKey is nil, we've scanned the whole table
-		if result.LastEvaluatedKey == nil {
-			break
-		}
-		exclusiveStartKey = result.LastEvaluatedKey
-	}
-
-	log.Printf("INFO: Scanned and retrieved %d products", len(allProducts))
-	return allProducts, nil
-}
-
 // GetProductsBySKUs performs a BatchGetItem to fetch multiple products.
+//func (d *DynamoDBClient) GetProductsBySKUs(skus []string) ([]models.Product, error) {
+//	if len(skus) == 0 {
+//		return []models.Product{}, nil
+//	}
+//
+//	keys := make([]map[string]types.AttributeValue, len(skus))
+//	for i, sku := range skus {
+//		keys[i] = map[string]types.AttributeValue{
+//			"sku": &types.AttributeValueMemberS{Value: sku},
+//		}
+//	}
+//
+//	input := &dynamodb.BatchGetItemInput{
+//		RequestItems: map[string]types.KeysAndAttributes{
+//			d.tableName: {
+//				Keys: keys,
+//			},
+//		},
+//	}
+//
+//	result, err := d.client.BatchGetItem(context.TODO(), input)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	var products []models.Product
+//	// Ensure result.Responses are not nil and the table name exists
+//	if result.Responses == nil || len(result.Responses[d.tableName]) == 0 {
+//		return []models.Product{}, nil
+//	}
+//
+//	err = attributevalue.UnmarshalListOfMaps(result.Responses[d.tableName], &products)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	return products, nil
+//}
+
 func (d *DynamoDBClient) GetProductsBySKUs(skus []string) ([]models.Product, error) {
 	if len(skus) == 0 {
 		return []models.Product{}, nil
 	}
 
-	keys := make([]map[string]types.AttributeValue, len(skus))
-	for i, sku := range skus {
-		keys[i] = map[string]types.AttributeValue{
-			"sku": &types.AttributeValueMemberS{Value: sku},
+	const batchSize = 100 // DynamoDB BatchGetItem limit
+	var allProducts []models.Product
+
+	for start := 0; start < len(skus); start += batchSize {
+		end := start + batchSize
+		if end > len(skus) {
+			end = len(skus)
+		}
+		batchSKUs := skus[start:end]
+
+		// Prepare keys for this batch
+		keys := make([]map[string]types.AttributeValue, len(batchSKUs))
+		for i, sku := range batchSKUs {
+			keys[i] = map[string]types.AttributeValue{
+				"sku": &types.AttributeValueMemberS{Value: sku},
+			}
+		}
+
+		input := &dynamodb.BatchGetItemInput{
+			RequestItems: map[string]types.KeysAndAttributes{
+				d.tableName: {Keys: keys},
+			},
+		}
+
+		// Handle unprocessed keys automatically
+		for len(input.RequestItems) > 0 {
+			result, err := d.client.BatchGetItem(context.TODO(), input)
+			if err != nil {
+				return nil, err
+			}
+
+			if resp, ok := result.Responses[d.tableName]; ok {
+				var products []models.Product
+				err = attributevalue.UnmarshalListOfMaps(resp, &products)
+				if err != nil {
+					return nil, err
+				}
+				allProducts = append(allProducts, products...)
+			}
+
+			// Retry unprocessed keys
+			input.RequestItems = result.UnprocessedKeys
 		}
 	}
 
-	input := &dynamodb.BatchGetItemInput{
-		RequestItems: map[string]types.KeysAndAttributes{
-			d.tableName: {
-				Keys: keys,
-			},
-		},
-	}
-
-	result, err := d.client.BatchGetItem(context.TODO(), input)
-	if err != nil {
-		return nil, err
-	}
-
-	var products []models.Product
-	// Ensure result.Responses are not nil and the table name exists
-	if result.Responses == nil || len(result.Responses[d.tableName]) == 0 {
-		return []models.Product{}, nil
-	}
-
-	err = attributevalue.UnmarshalListOfMaps(result.Responses[d.tableName], &products)
-	if err != nil {
-		return nil, err
-	}
-
-	return products, nil
+	return allProducts, nil
 }
 
 func (d *DynamoDBClient) GetProductSKUsByPriceRange(minPrice, maxPrice float64) ([]string, error) {

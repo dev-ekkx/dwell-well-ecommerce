@@ -12,7 +12,7 @@ import (
 
 // ProductService encapsulates all business logic related to products.
 type ProductService struct {
-	dynamoDB db.DynamoDBClient // Dependency on the DynamoDB client
+	dynamoDB db.DynamoDBClient
 }
 
 // NewProductService creates a new product service with its dependencies.
@@ -106,9 +106,4 @@ func (s *ProductService) GetProducts(request events.APIGatewayProxyRequest) (eve
 		Headers:    map[string]string{"Content-Type": "application/json"},
 		Body:       string(responseBody),
 	}, nil
-}
-
-// List all products
-func (s *ProductService) GetAllProducts() (events.APIGatewayProxyResponse, error) {
-	products, err := s.dynamoDB
 }
