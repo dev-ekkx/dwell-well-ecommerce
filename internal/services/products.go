@@ -107,3 +107,8 @@ func (s *ProductService) GetProducts(request events.APIGatewayProxyRequest) (eve
 		Body:       string(responseBody),
 	}, nil
 }
+
+// List all products
+func (s *ProductService) GetAllProducts() (events.APIGatewayProxyResponse, error) {
+	products, err := s.dynamoDB
+}

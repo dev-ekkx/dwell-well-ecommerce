@@ -84,11 +84,11 @@ Resources:
       Action: events:PutEvents
       Principal: "*"
 
+# --- Products table resource ---
   ProductsTable:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: !Ref ProductsTableName
-      BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
         - AttributeName: sku
           AttributeType: S

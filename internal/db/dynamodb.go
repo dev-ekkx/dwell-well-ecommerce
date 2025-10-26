@@ -64,7 +64,6 @@ func (d *DynamoDBClient) CreateProductWithDefaults(sku string) error {
 	_, err = d.client.PutItem(context.TODO(), input)
 
 	if err != nil {
-		fmt.Println("ERROR: Failed to create product in DynamoDB", err)
 		var conditionalCheckFailedException *types.ConditionalCheckFailedException
 		if !errors.As(err, &conditionalCheckFailedException) {
 			return err
@@ -116,6 +115,43 @@ func (d *DynamoDBClient) UpdateProductStatus(sku string, newStatus string) error
 
 	log.Printf("INFO: Successfully updated status to '%s' for SKU '%s'.", newStatus, sku)
 	return nil
+}
+
+// GetAllProducts from the database
+func (d *DynamoDBClient) GetAllProducts() ([]models.Product, error) {
+	var allProducts []models.Product
+	var exclusiveStartKey map[string]types.AttributeValue
+
+	// Loop to handle paginated results from the Scan operation
+	for {
+		input := &dynamodb.ScanInput{
+			TableName:         awsSDK.String(d.tableName),
+			ExclusiveStartKey: exclusiveStartKey,
+		}
+
+		result, err := d.client.Scan(context.TODO(), input)
+		if err != nil {
+			log.Printf("ERROR: Failed to scan DynamoDB table for all products: %v", err)
+			return nil, err
+		}
+
+		var productsPage []models.Product
+		err = attributevalue.UnmarshalListOfMaps(result.Items, &productsPage)
+		if err != nil {
+			log.Printf("ERROR: Failed to unmarshal scanned items: %v", err)
+			return nil, err
+		}
+		allProducts = append(allProducts, productsPage...)
+
+		// If LastEvaluatedKey is nil, we've scanned the whole table
+		if result.LastEvaluatedKey == nil {
+			break
+		}
+		exclusiveStartKey = result.LastEvaluatedKey
+	}
+
+	log.Printf("INFO: Scanned and retrieved %d products", len(allProducts))
+	return allProducts, nil
 }
 
 // GetProductsBySKUs performs a BatchGetItem to fetch multiple products.
