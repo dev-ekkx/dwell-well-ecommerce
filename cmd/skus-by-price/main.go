@@ -16,8 +16,6 @@ func main() {
 		log.Fatalf("failed to initialize product service: %v", err)
 	}
 
-	// The handler calls the specific method on the service
-	// to process the price filter request.
 	handler := func(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 		return productService.GetSKUsByPrice(request)
 	}

@@ -107,7 +107,7 @@ Resources:
           Properties:
             RestApiId: !Ref ApiGateway
             Path: /products/
-            Method: GET
+            Method: POST
             Auth:
                 Authorizer: NONE
 
@@ -119,6 +119,9 @@ Resources:
       CodeUri: ../cmd/skus-by-price/
       Handler: skus-by-price
       Runtime: provided.al2023
+      Environment:
+        Variables:
+          PRODUCTS_TABLE_NAME: !Ref ProductsTableName
       Policies:
         - AWSXrayWriteOnlyAccess
         - CloudWatchLogsFullAccess
