@@ -12,7 +12,7 @@ import (
 
 // ProductService encapsulates all business logic related to products.
 type ProductService struct {
-	dynamoDB db.DynamoDBClient // Dependency on the DynamoDB client
+	dynamoDB db.DynamoDBClient
 }
 
 // NewProductService creates a new product service with its dependencies.

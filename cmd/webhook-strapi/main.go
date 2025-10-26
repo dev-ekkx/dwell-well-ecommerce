@@ -18,10 +18,8 @@ func main() {
 		log.Fatalf("failed to initialize webhook service: %v", err)
 	}
 
-	// Strapi webhook handler function
 	handler := func(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 		return webhookService.HandleStrapiEvent(request)
 	}
-
 	lambda.Start(handler)
 }
