@@ -43,11 +43,10 @@ func (s *WebhookService) HandleStrapiEvent(request events.APIGatewayProxyRequest
 		return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Invalid payload"}, nil
 	}
 
-	// We only care about events for the 'product' model that have a SKU.
+	// Only check events for the 'product' model that have a SKU.
 	if payload.Model != "product" || payload.Entry.SKU == "" {
 		log.Printf("INFO: Ignoring webhook for non-product model: %s", payload.Model)
-		//return events.APIGatewayProxyResponse{StatusCode: 200, Body: "Event ignored (not a product)"}, nil
-		return events.APIGatewayProxyResponse{StatusCode: 200, Body: fmt.Sprintf("Payload event: %s", payload.Event)}, nil
+		return events.APIGatewayProxyResponse{StatusCode: 200, Body: "Event ignored (not a product)"}, nil
 	}
 
 	fmt.Printf("INFO: Processing '%s' event for SKU: %s\n", payload.Event, payload.Entry.SKU)
@@ -58,7 +57,7 @@ func (s *WebhookService) HandleStrapiEvent(request events.APIGatewayProxyRequest
 		err = s.dynamoDB.CreateProductWithDefaults(payload.Entry.SKU)
 		if err != nil {
 			log.Printf("ERROR: Failed to create product for SKU %s: %v", payload.Entry.SKU, err)
-			return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Failed to process publish event"}, nil
+			return events.APIGatewayProxyResponse{StatusCode: 500, Body: fmt.Sprintf("ERROR: Failed to create product for SKU %s: %v", payload.Entry.SKU, err)}, nil
 		}
 		return events.APIGatewayProxyResponse{StatusCode: 200, Body: "Product published successfully"}, nil
 
