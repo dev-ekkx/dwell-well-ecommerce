@@ -36,16 +36,21 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	const variables: {
 		pagination: { page: number; pageSize: number };
 		filters: Record<string, unknown>;
+        productsConnectionFilters2: Record<string, unknown>;
 		sort?: string[];
 	} = {
 		pagination: { page, pageSize },
-		filters: {}
+		filters: {},
+        productsConnectionFilters2: {}
 	};
 
 	// Build query variables
 	if (strapiSort) variables.sort = [strapiSort];
-	if (searchTerm) variables.filters.name = { containsi: searchTerm };
-	if (categoriesFilter?.length) variables.filters.categories = { slug: { in: categoriesFilter } };
+	if (searchTerm) {
+        variables.filters.name = { containsi: searchTerm }
+        variables.productsConnectionFilters2.name = { containsi: searchTerm }
+    }
+	if (categoriesFilter?.length) variables.filters.categories = { slug: { in: categoriesFilter } }
 	if (sizesFilter?.length) variables.filters.sizes = { slug: { in: sizesFilter } };
 	if (stylesFilter?.length) variables.filters.styles = { slug: { in: stylesFilter } };
 	if (availabilitiesFilter?.length) {
@@ -75,6 +80,8 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	if (strapiResult.error) {
 		error(500, `GraphQL Error: ${strapiResult.error.message}`);
 	}
+
+    console.log(JSON.stringify(strapiResult.data))
 
 	const totalProducts = strapiResult.data.products_connection.pageInfo.total as number;
 	const productsFromStrapi = (strapiResult.data.products || []) as ProductCardI[];
@@ -111,6 +118,8 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	} else if (sort === "price-desc") {
 		mergedProducts.sort((a, b) => b.price - a.price);
 	}
+
+    console.log(totalProducts)
 
 	return {
 		totalProducts,

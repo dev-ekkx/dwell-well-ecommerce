@@ -1,4 +1,4 @@
-import { gql } from "@urql/svelte";
+import {gql} from "@urql/svelte";
 
 export const GET_SHOWROOMS_QUERY = gql`
 	query Showrooms {
@@ -38,24 +38,23 @@ export const GET_FILTERS = gql`
 `;
 
 export const GET_PRODUCTS = gql`
-	query GetPaginatedProducts(
-		$pagination: PaginationArg
-		$sort: [String]
-		$filters: ProductFiltersInput
-	) {
-		products_connection {
-			pageInfo {
-				total
-			}
-		}
-		products(pagination: $pagination, sort: $sort, filters: $filters) {
-			SKU
-			name
-			slug
-			images(pagination: { limit: 1 }) {
-				alternativeText
-				url
-			}
-		}
-	}
+    query GetPaginatedProducts($pagination: PaginationArg, $sort: [String], $filters: ProductFiltersInput, $productsConnectionFilters2: ProductFiltersInput) {
+        products(pagination: $pagination, sort: $sort, filters: $filters) {
+            SKU
+            description
+            name
+            images(pagination: {limit: 1}) {
+                alternativeText
+                url
+            }
+            categories {
+                slug
+            }
+        }
+        products_connection(filters: $productsConnectionFilters2) {
+            pageInfo {
+                total
+            }
+        }
+    }
 `;

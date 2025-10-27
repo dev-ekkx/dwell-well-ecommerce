@@ -4,21 +4,7 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f52702dd-72be-4614-b19e-dee3747e7a5d" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/backend.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/material_theme_project_new.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/get-products/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/get-products/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/webhook-strapi/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/webhook-strapi/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/infrastructure/template.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/infrastructure/template.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/db/dynamodb.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/db/dynamodb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/services/products.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/services/products.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/services/webhooks.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/services/webhooks.go" afterDir="false" />
-    </list>
+    <list default="true" id="f52702dd-72be-4614-b19e-dee3747e7a5d" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -66,7 +52,7 @@
     &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
     &quot;code.cleanup.on.save&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Merging feat/integrate-lambdas-with-frontend&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feat/product-details&quot;,
     &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;/home/emmanuel-kpendo&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
