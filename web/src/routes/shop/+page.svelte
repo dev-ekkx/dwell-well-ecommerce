@@ -1,35 +1,35 @@
 <script lang="ts">
-	import type { PageProps } from "./$types";
-	import { formatNumberWithCommas, setRouteParams } from "$lib/utils";
-	import FiltersAndSort from "./filter-and-sort.svelte";
-	import ProductCard from "./product-card.svelte";
-	import ContactUs from "$lib/components/contact-us.svelte";
-	import { page } from "$app/state";
-	import { ITEMS_PER_PAGE_OPTIONS } from "$lib/constants";
-	import { Content, Item, Root, Trigger } from "$lib/components/ui/select";
-	import {
-		Content as PaginationContent,
-		Ellipsis as PaginationEllipsis,
-		Item as PaginationItem,
-		Link as PaginationLink,
-		NextButton as PaginationNextButton,
-		PrevButton as PaginationPrevButton,
-		Root as PaginationRoot
-	} from "$lib/components/ui/pagination/index.js";
+    import type {PageProps} from "./$types";
+    import {formatNumberWithCommas, setRouteParams} from "$lib/utils";
+    import FiltersAndSort from "./filter-and-sort.svelte";
+    import ProductCard from "./product-card.svelte";
+    import ContactUs from "$lib/components/contact-us.svelte";
+    import {page} from "$app/state";
+    import {ITEMS_PER_PAGE_OPTIONS} from "$lib/constants";
+    import {Content, Item, Root, Trigger} from "$lib/components/ui/select";
+    import {
+        Content as PaginationContent,
+        Ellipsis as PaginationEllipsis,
+        Item as PaginationItem,
+        Link as PaginationLink,
+        NextButton as PaginationNextButton,
+        PrevButton as PaginationPrevButton,
+        Root as PaginationRoot
+    } from "$lib/components/ui/pagination/index.js";
 
-	import {
-		Content as SheetContent,
-		Overlay as SheetOverlay,
-		Root as SheetRoot,
-		Trigger as SheetTrigger
-	} from "$lib/components/ui/sheet/index.js";
+    import {
+        Content as SheetContent,
+        Overlay as SheetOverlay,
+        Root as SheetRoot,
+        Trigger as SheetTrigger
+    } from "$lib/components/ui/sheet/index.js";
 
-	import CaretIcon from "$lib/assets/caret-up.svg";
-	import FilterIcon from "$lib/assets/filter.svg";
-	import { MediaQuery } from "svelte/reactivity";
-	import { onMount } from "svelte";
+    import CaretIcon from "$lib/assets/caret-up.svg";
+    import FilterIcon from "$lib/assets/filter.svg";
+    import {MediaQuery} from "svelte/reactivity";
+    import {onMount} from "svelte";
 
-	const mediaQuery = new MediaQuery("max-width: 63.9rem");
+    const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const { data }: PageProps = $props();
 	const seoData = data.seo;
 	const filters = data.filters;
@@ -123,7 +123,7 @@
 				<div class="mt-6 flex items-center justify-between gap-4 md:mt-8 xl:mt-10">
 					<!--	Items per page select -->
 					<div class="flex items-center gap-4">
-						<span>Products per page</span>
+						<span class="w-max">Products per page:</span>
 						<Root bind:value={itemsPerPage} onValueChange={handleItemsPerPage} type="single">
 							<Trigger class="w-16">{itemsPerPage}</Trigger>
 							<Content>
