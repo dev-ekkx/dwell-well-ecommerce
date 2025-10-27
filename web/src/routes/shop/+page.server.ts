@@ -1,10 +1,13 @@
-import type { PageServerLoad } from "./$types";
-import { GET_PRODUCTS } from "../../graphql.queries";
-import { client } from "../../graphql.config";
-import { error } from "@sveltejs/kit";
-import type { ProductCardI } from "$lib/interfaces";
+import type {PageServerLoad} from "./$types";
+import {GET_PRODUCTS} from "../../graphql.queries";
+import {client} from "../../graphql.config";
+import {error} from "@sveltejs/kit";
+import type {ProductCardI} from "$lib/interfaces";
+import type {ProductDataMap} from "$lib/types";
 
 export const load: PageServerLoad = async ({ fetch, url }) => {
+	const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 	const searchTerm = url.searchParams.get("q");
 	const page = Number(url.searchParams.get("page") ?? "1");
 	const pageSize = Number(url.searchParams.get("perPage") ?? "5");
@@ -26,7 +29,6 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 		case "newest":
 			strapiSort = "publishedAt:desc";
 			break;
-		// Price sorting will be handled later in JavaScript
 		default:
 			strapiSort = undefined;
 	}
@@ -49,24 +51,22 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	if (availabilitiesFilter?.length) {
 		variables.filters.availability = { in: availabilitiesFilter };
 	}
-	const goBackendUrl = "http://your-go-backend";
-	console.log(priceRangeFilter);
 	if (priceRangeFilter) {
-		const [min, max] = priceRangeFilter.split("-").map(Number);
+		const [min, max] = priceRangeFilter.split(",").map(Number);
 		if (!Number.isNaN(min) && !Number.isNaN(max)) {
-			const skuResponse = await fetch(
-				`${goBackendUrl}/api/products/skus-by-price?minPrice=${min}&maxPrice=${max}`
-			);
-			if (!skuResponse.ok) error(502, "Could not fetch price-filtered SKUs");
-			const priceFilteredSkus: string[] = await skuResponse.json();
-			if (priceFilteredSkus.length === 0) {
-				// If no products match the price, we can stop early.
-				return { products: [], pagination: { total: 0 } };
+			try {
+				const skuResponse = await fetch(
+					`${backendUrl}/products/skus-by-price?minPrice=${min}&maxPrice=${max}`
+				);
+				if (!skuResponse.ok) error(502, "Could not fetch price-filtered SKUs");
+				const priceFilteredSkus: string[] = await skuResponse.json();
+				if (priceFilteredSkus.length === 0) {
+					return { products: [], pagination: { total: 0 } };
+				}
+				variables.filters.SKU = { in: priceFilteredSkus };
+			} catch {
+				error(502, "Failed to apply price filter");
 			}
-			// Add the SKU filter to the main GraphQL query.
-			// This tells Strapi to only
-			// fetch content for products that are in our price-filtered list.
-			variables.filters.sku = { in: priceFilteredSkus };
 		}
 	}
 
@@ -77,9 +77,43 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	}
 
 	const totalProducts = strapiResult.data.products_connection.pageInfo.total as number;
+	const productsFromStrapi = (strapiResult.data.products || []) as ProductCardI[];
+	const skusToFetch = productsFromStrapi.map((product) => product.SKU);
+	let productDataMap: ProductDataMap = {};
+	if (skusToFetch.length > 0) {
+		const operationalDataResponse = await fetch(`${backendUrl}/products`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ skus: skusToFetch })
+		});
+
+		if (!operationalDataResponse.ok) error(502, "Failed to fetch operational product data");
+		productDataMap = await operationalDataResponse.json();
+	}
+
+	let mergedProducts: ProductCardI[] = productsFromStrapi.map((item) => {
+		const opsProduct = productDataMap[item.SKU] || {
+			price: 0,
+			averageRating: 0,
+			reviewCount: 0
+		};
+		return {
+			...opsProduct,
+			SKU: item.SKU,
+			slug: item.slug,
+			images: item.images,
+			name: item.name
+		};
+	});
+
+	if (sort === "price-asc") {
+		mergedProducts.sort((a, b) => a.price - b.price);
+	} else if (sort === "price-desc") {
+		mergedProducts.sort((a, b) => b.price - a.price);
+	}
 
 	return {
 		totalProducts,
-		products: strapiResult.data.products as ProductCardI[]
+		products: mergedProducts
 	};
 };

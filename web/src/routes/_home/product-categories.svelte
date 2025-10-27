@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import gsap from 'gsap';
-	import Picture from '$lib/components/picture.svelte';
-	import ArrowButton from '$lib/components/arrow-button.svelte';
-	import type { CategoryI } from '$lib/interfaces';
+	import { onMount } from "svelte";
+	import gsap from "gsap";
+	import Picture from "$lib/components/picture.svelte";
+	import ArrowButton from "$lib/components/arrow-button.svelte";
+	import type { CategoryI } from "$lib/interfaces";
 
 	const { productCategoriesData } = $props();
 	const productsCategories = productCategoriesData as CategoryI;
@@ -30,7 +30,7 @@
 		const n = productsCategories.items.length;
 		if (n === 0) return;
 		const middleStart = n;
-		const normalized = ((index - middleStart) % n + n) % n + middleStart;
+		const normalized = ((((index - middleStart) % n) + n) % n) + middleStart;
 		if (normalized !== index) {
 			index = normalized;
 			const x = computeXForIndex(index);
@@ -45,8 +45,8 @@
 		gsap.to(track, {
 			x,
 			duration: 0.5,
-			ease: 'power1.out',
-			overwrite: 'auto',
+			ease: "power1.out",
+			overwrite: "auto",
 			force3D: true,
 			onComplete: normalizeIndex
 		});
@@ -62,7 +62,7 @@
 
 	function collectItems() {
 		if (!track) return;
-		items = Array.from(track.querySelectorAll(':scope > div')) as HTMLElement[];
+		items = Array.from(track.querySelectorAll(":scope > div")) as HTMLElement[];
 	}
 
 	function onResize() {
@@ -76,24 +76,26 @@
 		collectItems();
 		if (track) {
 			const x = computeXForIndex(index);
-			gsap.set(track, { x, willChange: 'transform', force3D: true });
+			gsap.set(track, { x, willChange: "transform", force3D: true });
 		}
 		const ro = new ResizeObserver(onResize);
 		if (container) ro.observe(container);
 		if (track) ro.observe(track);
-		window.addEventListener('resize', onResize);
+		window.addEventListener("resize", onResize);
 		return () => {
 			ro.disconnect();
-			window.removeEventListener('resize', onResize);
+			window.removeEventListener("resize", onResize);
 		};
 	});
 </script>
 
-
-<section bind:this={container} class="flex flex-col gap-6 g-mt overflow-x-clip">
+<section bind:this={container} class="g-mt flex flex-col gap-6 overflow-x-clip">
 	<!--	Category title and arrow buttons -->
-	<div class="flex items-center justify-between capitalize gap-4">
-		<span class="font-semibold text-2xl leading-8 md:text-3xl md:leading-10 lg:text-4xl lg:leading-12">product categories</span>
+	<div class="flex items-center justify-between gap-4 capitalize">
+		<span
+			class="text-2xl leading-8 font-semibold md:text-3xl md:leading-10 lg:text-4xl lg:leading-12"
+			>product categories</span
+		>
 
 		<!-- Arrow buttons -->
 		<div class="flex items-center gap-2">
@@ -103,13 +105,16 @@
 	</div>
 
 	<!--Images and labels-->
-	<div bind:this={track} class="flex items-center gap-4 lg:gap-6 w-max">
+	<div bind:this={track} class="flex w-max items-center gap-4 lg:gap-6">
 		{#each displayedProducts as product, idx (idx)}
 			<div class="flex flex-col items-center gap-6">
-				<Picture alt={product.title}
-								 class="transition-all ease-linear duration-500 rounded-lg w-[12.7rem] h-[12.7rem] md:h-[17.9rem] md:w-[17.9rem] lg:w-[22.6rem] lg:h-[22.6rem] object-cover"
-								 src={`${product.image.url}`} source={`${product.image.url}`} />
-				<span class="capitalize text-lg font-medium">{product.title}</span>
+				<Picture
+					alt={product.title}
+					class="h-[12.7rem] w-[12.7rem] rounded-lg object-cover transition-all duration-500 ease-linear md:h-[17.9rem] md:w-[17.9rem] lg:h-[22.6rem] lg:w-[22.6rem]"
+					src={`${product.image.url}`}
+					source={`${product.image.url}`}
+				/>
+				<span class="text-lg font-medium capitalize">{product.title}</span>
 			</div>
 		{/each}
 	</div>

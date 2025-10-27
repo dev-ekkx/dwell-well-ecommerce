@@ -1,5 +1,5 @@
-import type { HTMLButtonAttributes } from "svelte/elements";
-import type { ContentSectionT } from "$lib/types";
+import type {HTMLButtonAttributes} from "svelte/elements";
+import type {ContentSectionT} from "$lib/types";
 
 export interface ButtonI extends HTMLButtonAttributes {
 	direction: "left" | "right";
@@ -281,8 +281,9 @@ export interface FiltersI {
 
 // Product card interface
 export interface ProductCardI
-	extends Pick<ProductI, "slug" | "oldPrice" | "price" | "averageRating" | "reviewCount"> {
+	extends Pick<ProductI, "slug" | "price" | "averageRating" | "reviewCount"> {
 	name: string;
 	SKU: string;
+    oldPrice?: number;
 	images: StrapiImageI[];
 }

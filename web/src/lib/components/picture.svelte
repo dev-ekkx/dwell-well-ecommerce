@@ -4,5 +4,5 @@
 
 <picture>
 	<source srcset={source} type="image/webp" />
-	<img {...rest} alt={alt} src={src} />
+	<img {...rest} {alt} {src} />
 </picture>

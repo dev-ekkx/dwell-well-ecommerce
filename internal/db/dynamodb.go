@@ -44,7 +44,6 @@ func (d *DynamoDBClient) CreateProductWithDefaults(sku string) error {
 		SKU:           sku,
 		ProductStatus: "ACTIVE",
 		Price:         0,
-		OldPrice:      0,
 		Inventory:     0,
 		AverageRating: 0,
 		ReviewCount:   0,

@@ -1,24 +1,24 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import type { FlashSaleI } from '$lib/interfaces';
+	import { Button } from "$lib/components/ui/button";
+	import type { FlashSaleI } from "$lib/interfaces";
 
 	const { flashSalesData } = $props();
 	const flashSales = flashSalesData as FlashSaleI;
 
-	const imageUrl = (flashSales.product.images[0].url ?? '');
-	const imageAlt = flashSales.product.images[0].alternativeText ?? '';
-
-
+	const imageUrl = flashSales.product.images[0].url ?? "";
+	const imageAlt = flashSales.product.images[0].alternativeText ?? "";
 </script>
 
-<section class="grid grid-cols-1 md:grid-cols-2 md:max-h-[28rem] g-mt rounded-lg overflow-hidden">
-	<img alt={imageAlt} class=" object-cover h-full" src={imageUrl}>
+<section class="g-mt grid grid-cols-1 overflow-hidden rounded-lg md:max-h-[28rem] md:grid-cols-2">
+	<img alt={imageAlt} class=" h-full object-cover" src={imageUrl} />
 
-	<div class="bg-muted-foreground px-6 py-10 flex flex-col gap-10 lg:items-start lg:justify-center **:text-white">
+	<div
+		class="flex flex-col gap-10 bg-muted-foreground px-6 py-10 **:text-white lg:items-start lg:justify-center"
+	>
 		<div class="flex flex-col gap-2">
-			<span class="font-bold text-2xl">{flashSales.title}</span>
+			<span class="text-2xl font-bold">{flashSales.title}</span>
 			<p class="font-medium">{flashSales.description}</p>
 		</div>
-		<Button class="font-bold cursor-pointer">{flashSales.cta.text}</Button>
+		<Button class="cursor-pointer font-bold">{flashSales.cta.text}</Button>
 	</div>
 </section>

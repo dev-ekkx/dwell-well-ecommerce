@@ -51,6 +51,7 @@ export const GET_PRODUCTS = gql`
 		products(pagination: $pagination, sort: $sort, filters: $filters) {
 			SKU
 			name
+			slug
 			images(pagination: { limit: 1 }) {
 				alternativeText
 				url

@@ -1,23 +1,21 @@
 <script lang="ts">
-	import { Input } from '$lib/components/ui/input/index.js';
-	import { Button } from '$lib/components/ui/button';
-	import { resolve } from '$app/paths';
-	import type { RouteId } from '$app/types';
-	import type { FooterI } from '$lib/interfaces';
-	import { onMount } from 'svelte';
-	import { marked } from 'marked';
-	import DOMPurify from 'dompurify';
+    import {Input} from "$lib/components/ui/input/index.js";
+    import {Button} from "$lib/components/ui/button";
+    import {resolve} from "$app/paths";
+    import type {RouteId} from "$app/types";
+    import type {FooterI} from "$lib/interfaces";
+    import {onMount} from "svelte";
+    import {marked} from "marked";
+    import DOMPurify from "dompurify";
 
-	const { footer } = $props();
+    const { footer } = $props();
 	const footerData = footer as FooterI;
 	const socials = footerData.socialLinks;
 	const columnLinks = footerData.linkColumns;
 
-	let newsletterDisclaimer = $state('');
+	let newsletterDisclaimer = $state("");
 	const isExternal = (link: string) =>
-		link.startsWith('http') ||
-		link.startsWith('mailto:') ||
-		link.startsWith('tel:');
+		link.startsWith("http") || link.startsWith("mailto:") || link.startsWith("tel:");
 
 	const routeLink = (link: string) => link as RouteId;
 
@@ -26,47 +24,51 @@
 		// We no longer need the 'if (browser)' check because onMount guarantees it.
 		newsletterDisclaimer = DOMPurify.sanitize(rawHtml);
 	});
-
 </script>
 
-<footer class="flex flex-col bg-muted-foreground **:text-white pb-6 g-pt g-px gap-8 font-medium">
+<footer class="flex flex-col gap-8 bg-muted-foreground g-px g-pt pb-6 font-medium **:text-white">
 	<!--	Newsletter and footer links section-->
 	<section class="flex flex-col">
-		<div class="flex flex-col text-center md:text-left gap-2 lg:flex-row lg:justify-between lg:items-center">
+		<div
+			class="flex flex-col gap-2 text-center md:text-left lg:flex-row lg:items-center lg:justify-between"
+		>
 			<div class="flex flex-col gap-4">
-				<span class="font-semibold text-lg">{footerData.newsletterTitle}</span>
-				<p class="max-w-lg">{footerData.newsletterDescription}
-				</p>
+				<span class="text-lg font-semibold">{footerData.newsletterTitle}</span>
+				<p class="max-w-lg">{footerData.newsletterDescription}</p>
 			</div>
 
 			<div class="flex flex-col gap-2">
-				<div class="flex flex-col lg:flex-row gap-2 lg:items-center">
-					<Input class="bg-transparent border-border placeholder:text-white md:w-xs" name="subscribe"
-								 placeholder="Enter your email" />
-					<Button aria-label="subscribe"
-									class="w-full bg-white text-black! hover:bg-white font-semibold cursor-pointer md:w-xs lg:w-max">
+				<div class="flex flex-col gap-2 lg:flex-row lg:items-center">
+					<Input
+						class="border-border bg-transparent placeholder:text-white md:w-xs"
+						name="subscribe"
+						placeholder="Enter your email"
+					/>
+					<Button
+						aria-label="subscribe"
+						class="w-full cursor-pointer bg-white font-semibold text-black! hover:bg-white md:w-xs lg:w-max"
+					>
 						Subscribe
 					</Button>
 				</div>
 				<p class="text-sm">
 					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-					{@html newsletterDisclaimer}</p>
+					{@html newsletterDisclaimer}
+				</p>
 			</div>
 		</div>
 
 		<!--		Footer links-->
-		<div class="grid grid-cols-1 **:items-center sm:grid-cols-2 md:grid-cols-4 md:**:items-start mt-8 gap-8">
+		<div
+			class="mt-8 grid grid-cols-1 gap-8 **:items-center sm:grid-cols-2 md:grid-cols-4 md:**:items-start"
+		>
 			{#each columnLinks as item (item.title)}
 				<div class="flex flex-col gap-3">
-					<span class="capitalize font-semibold">{item.title}</span>
+					<span class="font-semibold capitalize">{item.title}</span>
 					<div class="flex flex-col">
 						{#each item.links as link (link.label)}
 							{#if isExternal(link.url)}
-								<a
-									target="_blank"
-									rel="noopener noreferrer"
-									href={link.url}
-								>
+								<a target="_blank" rel="noopener noreferrer" href={link.url}>
 									{link.label}
 								</a>
 							{:else}
@@ -75,7 +77,6 @@
 								</a>
 							{/if}
 						{/each}
-
 					</div>
 				</div>
 			{/each}
@@ -85,11 +86,11 @@
 	<hr />
 
 	<!--	Copyright and socials section-->
-	<section class="flex flex-col gap-4 items-center justify-center lg:flex-row lg:justify-between">
+	<section class="flex flex-col items-center justify-center gap-4 lg:flex-row lg:justify-between">
 		<span>&copy; {new Date().getFullYear()} {footerData.copyrightText}</span>
 		<div class="flex items-center gap-4">
 			{#each socials as social (social)}
-				<img class="w-5 h-5" src={`${social.icon.url}`} alt={social.icon.alternativeText}>
+				<img class="h-5 w-5" src={`${social.icon.url}`} alt={social.icon.alternativeText} />
 			{/each}
 		</div>
 	</section>
