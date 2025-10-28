@@ -26,7 +26,7 @@
 
     import CaretIcon from "$lib/assets/caret-up.svg";
     import FilterIcon from "$lib/assets/filter.svg";
-    import {MediaQuery} from "svelte/reactivity";
+    import {MediaQuery, SvelteURLSearchParams} from "svelte/reactivity";
     import {onMount} from "svelte";
     import type {ProductCardI} from "$lib/interfaces";
     import {goto} from "$app/navigation";
@@ -72,8 +72,15 @@
             reviewCount: product.reviewCount,
         }
 
-        goto(`/shop/${product.slug}?product=${JSON.stringify(opData)}`)
+        const params = new SvelteURLSearchParams()
+        for (const [key, value] of Object.entries(opData)) {
+            if (value !== undefined) {
+                params.append(key, value.toString());
+            }
+        }
+        goto(`/shop/${product.slug}?${params.toString()}`);
     };
+
 
 	onMount(() => {
 		setParams();
