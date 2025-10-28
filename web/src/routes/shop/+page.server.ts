@@ -76,12 +76,9 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	}
 
 	const strapiResult = await client.query(GET_PRODUCTS, variables).toPromise();
-	console.log(JSON.stringify(strapiResult.error?.graphQLErrors));
 	if (strapiResult.error) {
 		error(500, `GraphQL Error: ${strapiResult.error.message}`);
 	}
-
-    console.log(JSON.stringify(strapiResult.data))
 
 	const totalProducts = strapiResult.data.products_connection.pageInfo.total as number;
 	const productsFromStrapi = (strapiResult.data.products || []) as ProductCardI[];
@@ -102,14 +99,15 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 		const opsProduct = productDataMap[item.SKU] || {
 			price: 0,
 			averageRating: 0,
-			reviewCount: 0
+			reviewCount: 0,
+            inventory: 0
 		};
-		return {
+        return {
 			...opsProduct,
 			SKU: item.SKU,
 			slug: item.slug,
 			images: item.images,
-			name: item.name
+			name: item.name,
 		};
 	});
 
@@ -118,9 +116,6 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	} else if (sort === "price-desc") {
 		mergedProducts.sort((a, b) => b.price - a.price);
 	}
-
-    console.log(totalProducts)
-
 	return {
 		totalProducts,
 		products: mergedProducts

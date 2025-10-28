@@ -286,4 +286,5 @@ export interface ProductCardI
 	SKU: string;
     oldPrice?: number;
 	images: StrapiImageI[];
+    inventory: number;
 }

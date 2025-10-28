@@ -1,10 +1,11 @@
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
-import { SvelteURLSearchParams } from "svelte/reactivity";
-import { page } from "$app/state";
-import { goto } from "$app/navigation";
-import { resolve } from "$app/paths";
-import type { RouteId } from "$app/types";
+import {type ClassValue, clsx} from "clsx";
+import {twMerge} from "tailwind-merge";
+import {SvelteURLSearchParams} from "svelte/reactivity";
+import {page} from "$app/state";
+import {goto} from "$app/navigation";
+import {resolve} from "$app/paths";
+import type {RouteId} from "$app/types";
+
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -38,10 +39,10 @@ export const setRouteParams = async (
 
 	// Construct the new URL path with the updated parameters
 	const queryString = newParams.toString();
-	const newPath = queryString ? `${page.url.pathname}?${queryString}` : page.url.pathname;
+	const newPath = (queryString ? `${page.url.pathname}?${queryString}` : page.url.pathname) as RouteId
 
 	// Navigate to the new URL
-	await goto(resolve(newPath as RouteId), {
+	await goto(resolve(newPath), {
 		replaceState: true,
 		keepFocus: true,
 		noScroll
@@ -52,3 +53,9 @@ export type WithoutChild<T> = T extends { child?: unknown } ? Omit<T, "child"> :
 export type WithoutChildren<T> = T extends { children?: unknown } ? Omit<T, "children"> : T;
 export type WithoutChildrenOrChild<T> = WithoutChildren<WithoutChild<T>>;
 export type WithElementRef<T, U extends HTMLElement = HTMLElement> = T & { ref?: U | null };
+
+
+
+
+
+

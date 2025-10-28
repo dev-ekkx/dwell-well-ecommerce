@@ -26,5 +26,5 @@ export type ContentSectionT =
 
 export type ProductDataMap = Record<
 	string,
-	{ price: number; oldPrice?: number; averageRating: number; reviewCount: number }
+	{ price: number; oldPrice?: number; averageRating: number; reviewCount: number, inventory: number }
 >;

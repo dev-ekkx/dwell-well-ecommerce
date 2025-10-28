@@ -43,6 +43,7 @@ export const GET_PRODUCTS = gql`
             SKU
             description
             name
+            slug
             images(pagination: {limit: 1}) {
                 alternativeText
                 url

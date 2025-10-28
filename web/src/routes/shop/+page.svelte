@@ -28,11 +28,13 @@
     import FilterIcon from "$lib/assets/filter.svg";
     import {MediaQuery} from "svelte/reactivity";
     import {onMount} from "svelte";
+    import type {ProductCardI} from "$lib/interfaces";
+    import {goto} from "$app/navigation";
 
     const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const { data }: PageProps = $props();
-	const seoData = data.seo;
-	const filters = data.filters;
+	const seoData = $derived(data.seo);
+	const filters = $derived(data.filters);
 	const searchTerm = $derived(page.url.searchParams.get("q") || "");
 	const products = $derived(data.products);
 	const isMobile = $derived(mediaQuery.current);
@@ -60,6 +62,18 @@
 	const handlePageChange = () => {
 		setParams();
 	};
+
+    const viewProductDetails = (product: ProductCardI) => {
+        const opData = {
+            price: product.price,
+            oldPrice: product.oldPrice,
+            inventory: product.inventory,
+            averageRating: product.averageRating,
+            reviewCount: product.reviewCount,
+        }
+
+        goto(`/shop/${product.slug}?product=${JSON.stringify(opData)}`)
+    };
 
 	onMount(() => {
 		setParams();
@@ -115,7 +129,9 @@
 					class="grid grid-cols-2 gap-4 gap-y-8 sm:gap-6 md:grid-cols-3 md:gap-y-12 xl:grid-cols-4"
 				>
 					{#each products as product (product.SKU)}
+                        <button onclick={() => viewProductDetails(product)} class="cursor-pointer">
 						<ProductCard {...product} />
+                        </button>
 					{/each}
 				</div>
 
