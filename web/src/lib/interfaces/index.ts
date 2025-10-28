@@ -1,5 +1,5 @@
-import type {HTMLButtonAttributes} from "svelte/elements";
-import type {ContentSectionT} from "$lib/types";
+import type { HTMLButtonAttributes } from "svelte/elements";
+import type { ContentSectionT } from "$lib/types";
 
 export interface ButtonI extends HTMLButtonAttributes {
 	direction: "left" | "right";
@@ -46,11 +46,11 @@ export interface ProductI {
 	slug: string;
 	summary: string;
 	images: StrapiImageI[];
-	categories: CategoryI[];
+	categories: FilterI[];
 	regionalAvailability: RegionalAvailabilityI[];
-	sizes: string[];
-	availability: string;
-	style: string[];
+	sizes: FilterI[];
+	availability: FilterI;
+	styles: FilterI[];
 	oldPrice: number;
 	price: number;
 	averageRating: number;
@@ -117,15 +117,15 @@ export interface FooterI {
 	socialLinks: SocialLinkI[];
 }
 
-// Product interface
-export interface ProductI {
-	id: number;
-	name: string;
-	slug: string;
-	price: number;
-	description: string;
-	images: StrapiImageI[];
-}
+// // Product interface
+// export interface ProductI {
+// 	id: number;
+// 	name: string;
+// 	slug: string;
+// 	price: number;
+// 	description: string;
+// 	images: StrapiImageI[];
+// }
 
 // Interface for a standard Strapi media object
 export interface StrapiImageI {
@@ -284,7 +284,7 @@ export interface ProductCardI
 	extends Pick<ProductI, "slug" | "price" | "averageRating" | "reviewCount"> {
 	name: string;
 	SKU: string;
-    oldPrice?: number;
+	oldPrice?: number;
 	images: StrapiImageI[];
-    inventory: number;
+	inventory: number;
 }

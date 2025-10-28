@@ -1,4 +1,4 @@
-import {gql} from "@urql/svelte";
+import { gql } from "@urql/svelte";
 
 export const GET_SHOWROOMS_QUERY = gql`
 	query Showrooms {
@@ -38,24 +38,58 @@ export const GET_FILTERS = gql`
 `;
 
 export const GET_PRODUCTS = gql`
-    query GetPaginatedProducts($pagination: PaginationArg, $sort: [String], $filters: ProductFiltersInput, $productsConnectionFilters2: ProductFiltersInput) {
-        products(pagination: $pagination, sort: $sort, filters: $filters) {
-            SKU
-            description
-            name
-            slug
-            images(pagination: {limit: 1}) {
-                alternativeText
-                url
-            }
-            categories {
-                slug
-            }
-        }
-        products_connection(filters: $productsConnectionFilters2) {
-            pageInfo {
-                total
-            }
-        }
-    }
+	query GetPaginatedProducts(
+		$pagination: PaginationArg
+		$sort: [String]
+		$filters: ProductFiltersInput
+		$productsConnectionFilters2: ProductFiltersInput
+	) {
+		products(pagination: $pagination, sort: $sort, filters: $filters) {
+			SKU
+			description
+			name
+			slug
+			images(pagination: { limit: 1 }) {
+				alternativeText
+				url
+			}
+			categories {
+				slug
+			}
+		}
+		products_connection(filters: $productsConnectionFilters2) {
+			pageInfo {
+				total
+			}
+		}
+	}
+`;
+
+export const GET_PRODUCT_BY_SLUG = gql`
+	query Products(
+		$pagination: PaginationArg
+		$filters: ProductFiltersInput
+	) {
+		products(pagination: $pagination, filters: $filters) {
+			SKU
+			availability {
+				name
+			}
+			categories {
+				name
+			}
+			description
+			images(pagination: { limit: 6 })  {
+				alternativeText
+				url
+			}
+			name
+			sizes {
+				name
+			}
+			styles {
+				name
+			}
+		}
+	}
 `;
