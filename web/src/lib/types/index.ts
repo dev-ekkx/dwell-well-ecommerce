@@ -1,13 +1,13 @@
 import * as z from "zod";
-import {QuestionFormSchema} from "$lib/schema";
+import { QuestionFormSchema } from "$lib/schema";
 import type {
-    CategoryI,
-    GlobalPresenceI,
-    GlobalReachI,
-    HeroI,
-    LeadershipTeamI,
-    NewArrivalI,
-    WhyChooseUsI
+	CategoryI,
+	GlobalPresenceI,
+	GlobalReachI,
+	HeroI,
+	LeadershipTeamI,
+	NewArrivalI,
+	WhyChooseUsI
 } from "$lib/interfaces";
 
 export type QuestionT = z.infer<typeof QuestionFormSchema>;
@@ -26,5 +26,11 @@ export type ContentSectionT =
 
 export type ProductDataMap = Record<
 	string,
-	{ price: number; oldPrice?: number; averageRating: number; reviewCount: number, inventory: number }
+	{
+		price: number;
+		oldPrice?: number;
+		averageRating: number;
+		reviewCount: number;
+		inventory: number;
+	}
 >;

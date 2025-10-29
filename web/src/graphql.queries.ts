@@ -66,10 +66,7 @@ export const GET_PRODUCTS = gql`
 `;
 
 export const GET_PRODUCT_BY_SLUG = gql`
-	query Products(
-		$pagination: PaginationArg
-		$filters: ProductFiltersInput
-	) {
+	query Products($pagination: PaginationArg, $filters: ProductFiltersInput) {
 		products(pagination: $pagination, filters: $filters) {
 			SKU
 			availability {
@@ -79,7 +76,7 @@ export const GET_PRODUCT_BY_SLUG = gql`
 				name
 			}
 			description
-			images(pagination: { limit: 6 })  {
+			images(pagination: { limit: 6 }) {
 				alternativeText
 				url
 			}

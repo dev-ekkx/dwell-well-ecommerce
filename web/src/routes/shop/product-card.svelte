@@ -1,12 +1,12 @@
 <script lang="ts">
-    import {formatNumberWithCommas} from "$lib/utils";
-    import {type ConfigI, StarRating} from "@dev-ekkx/svelte-star-rating";
-    import CartIcon from "$lib/assets/cart.svg";
-    import {MediaQuery} from "svelte/reactivity";
-    import type {ProductCardI} from "$lib/interfaces";
-    import {Badge} from "$lib/components/ui/badge";
+	import { formatNumberWithCommas } from "$lib/utils";
+	import { type ConfigI, StarRating } from "@dev-ekkx/svelte-star-rating";
+	import CartIcon from "$lib/assets/cart.svg";
+	import { MediaQuery } from "svelte/reactivity";
+	import type { ProductCardI } from "$lib/interfaces";
+	import { Badge } from "$lib/components/ui/badge";
 
-    const product: ProductCardI = $props();
+	const product: ProductCardI = $props();
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const isMobile = $derived(mediaQuery.current);
@@ -34,13 +34,13 @@
 
 <div class="group relative flex flex-col gap-4">
 	<!--	add to cart button-->
-    {#if product.price > 0}
-	<button
-		class="absolute top-4 right-2 z-10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-primary"
-	>
-		<img alt="cart" class="scale-75" src={CartIcon} />
-	</button>
-        {/if}
+	{#if product.price > 0}
+		<button
+			class="absolute top-4 right-2 z-10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-primary"
+		>
+			<img alt="cart" class="scale-75" src={CartIcon} />
+		</button>
+	{/if}
 
 	<div class="h-[11rem] overflow-clip rounded-lg md:h-[12rem]">
 		<img
@@ -61,14 +61,16 @@
 			</span>
 		{/if}
 		<span class="flex items-center gap-1 text-xl leading-7 font-bold">
-            {#if (product?.oldPrice ?? 0) > 0}
-			<span class="text-muted-foreground line-through">${formatNumberWithCommas(product?.oldPrice ?? 0)}</span>
-                {/if}
-            {#if product.price > 0}
-			<span class="">${formatNumberWithCommas(299)} </span>
-                {:else}
-                <Badge variant="secondary">Coming soon</Badge>
-                {/if}
+			{#if (product?.oldPrice ?? 0) > 0}
+				<span class="text-muted-foreground line-through"
+					>${formatNumberWithCommas(product?.oldPrice ?? 0)}</span
+				>
+			{/if}
+			{#if product.price > 0}
+				<span class="">${formatNumberWithCommas(299)} </span>
+			{:else}
+				<Badge variant="secondary">Coming soon</Badge>
+			{/if}
 		</span>
 	</div>
 </div>

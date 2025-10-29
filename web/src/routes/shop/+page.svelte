@@ -1,37 +1,37 @@
 <script lang="ts">
-    import type {PageProps} from "./$types";
-    import {formatNumberWithCommas, setRouteParams} from "$lib/utils";
-    import FiltersAndSort from "./filter-and-sort.svelte";
-    import ProductCard from "./product-card.svelte";
-    import ContactUs from "$lib/components/contact-us.svelte";
-    import {page} from "$app/state";
-    import {ITEMS_PER_PAGE_OPTIONS} from "$lib/constants";
-    import {Content, Item, Root, Trigger} from "$lib/components/ui/select";
-    import {
-        Content as PaginationContent,
-        Ellipsis as PaginationEllipsis,
-        Item as PaginationItem,
-        Link as PaginationLink,
-        NextButton as PaginationNextButton,
-        PrevButton as PaginationPrevButton,
-        Root as PaginationRoot
-    } from "$lib/components/ui/pagination/index.js";
+	import type { PageProps } from "./$types";
+	import { formatNumberWithCommas, setRouteParams } from "$lib/utils";
+	import FiltersAndSort from "./filter-and-sort.svelte";
+	import ProductCard from "./product-card.svelte";
+	import ContactUs from "$lib/components/contact-us.svelte";
+	import { page } from "$app/state";
+	import { ITEMS_PER_PAGE_OPTIONS } from "$lib/constants";
+	import { Content, Item, Root, Trigger } from "$lib/components/ui/select";
+	import {
+		Content as PaginationContent,
+		Ellipsis as PaginationEllipsis,
+		Item as PaginationItem,
+		Link as PaginationLink,
+		NextButton as PaginationNextButton,
+		PrevButton as PaginationPrevButton,
+		Root as PaginationRoot
+	} from "$lib/components/ui/pagination/index.js";
 
-    import {
-        Content as SheetContent,
-        Overlay as SheetOverlay,
-        Root as SheetRoot,
-        Trigger as SheetTrigger
-    } from "$lib/components/ui/sheet/index.js";
+	import {
+		Content as SheetContent,
+		Overlay as SheetOverlay,
+		Root as SheetRoot,
+		Trigger as SheetTrigger
+	} from "$lib/components/ui/sheet/index.js";
 
-    import CaretIcon from "$lib/assets/caret-up.svg";
-    import FilterIcon from "$lib/assets/filter.svg";
-    import {MediaQuery, SvelteURLSearchParams} from "svelte/reactivity";
-    import {onMount} from "svelte";
-    import type {ProductCardI} from "$lib/interfaces";
-    import {goto} from "$app/navigation";
+	import CaretIcon from "$lib/assets/caret-up.svg";
+	import FilterIcon from "$lib/assets/filter.svg";
+	import { MediaQuery, SvelteURLSearchParams } from "svelte/reactivity";
+	import { onMount } from "svelte";
+	import type { ProductCardI } from "$lib/interfaces";
+	import { goto } from "$app/navigation";
 
-    const mediaQuery = new MediaQuery("max-width: 63.9rem");
+	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const { data }: PageProps = $props();
 	const seoData = $derived(data.seo);
 	const filters = $derived(data.filters);
@@ -63,24 +63,23 @@
 		setParams();
 	};
 
-    const viewProductDetails = (product: ProductCardI) => {
-        const opData = {
-            price: product.price,
-            oldPrice: product.oldPrice,
-            inventory: product.inventory,
-            averageRating: product.averageRating,
-            reviewCount: product.reviewCount,
-        }
+	const viewProductDetails = (product: ProductCardI) => {
+		const opData = {
+			price: product.price,
+			oldPrice: product.oldPrice,
+			inventory: product.inventory,
+			averageRating: product.averageRating,
+			reviewCount: product.reviewCount
+		};
 
-        const params = new SvelteURLSearchParams()
-        for (const [key, value] of Object.entries(opData)) {
-            if (value !== undefined) {
-                params.append(key, value.toString());
-            }
-        }
-        goto(`/shop/${product.slug}?${params.toString()}`);
-    };
-
+		const params = new SvelteURLSearchParams();
+		for (const [key, value] of Object.entries(opData)) {
+			if (value !== undefined) {
+				params.append(key, value.toString());
+			}
+		}
+		goto(`/shop/${product.slug}?${params.toString()}`);
+	};
 
 	onMount(() => {
 		setParams();
@@ -136,9 +135,9 @@
 					class="grid grid-cols-2 gap-4 gap-y-8 sm:gap-6 md:grid-cols-3 md:gap-y-12 xl:grid-cols-4"
 				>
 					{#each products as product (product.SKU)}
-                        <button onclick={() => viewProductDetails(product)} class="cursor-pointer">
-						<ProductCard {...product} />
-                        </button>
+						<button onclick={() => viewProductDetails(product)} class="cursor-pointer">
+							<ProductCard {...product} />
+						</button>
 					{/each}
 				</div>
 
