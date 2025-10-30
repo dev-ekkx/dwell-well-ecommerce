@@ -8,6 +8,7 @@
     import {Button} from "$lib/components/ui/button";
     import {MediaQuery} from "svelte/reactivity";
     import { Content, List, Root, Trigger } from "$lib/components/ui/tabs/index";
+import RelatedProducts from "$lib/components/related-products.svelte";
 
     const mediaQuery = new MediaQuery("max-width: 63.9rem");
     const buttonQuantityClass = "cursor-pointer disabled:opacity-50 disabled:pointer-events-none";
@@ -86,7 +87,7 @@
     });
 </script>
 
-<div class="flex flex-col gap-4 g-px">
+<div class="flex flex-col gap-4 g-px g-pb">
     <BreadcrumbRoot>
         <BreadcrumbList>
             <Item>
@@ -204,6 +205,8 @@
             </Root>
         </section>
     </div>
+<!-- Related products -->
+<RelatedProducts />
 </div>
 
 <style>
