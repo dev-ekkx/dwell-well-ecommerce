@@ -5,7 +5,7 @@
 	import ProductCard from "./product-card.svelte";
 	import ContactUs from "$lib/components/contact-us.svelte";
 	import { page } from "$app/state";
-	import { ITEMS_PER_PAGE_OPTIONS } from "$lib/constants/index.svelte";
+	import { ITEMS_PER_PAGE_OPTIONS } from "$lib/constants";
 	import { Content, Item, Root, Trigger } from "$lib/components/ui/select";
 	import {
 		Content as PaginationContent,

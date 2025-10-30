@@ -491,6 +491,34 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiColorColor extends Struct.CollectionTypeSchema {
+  collectionName: 'colors';
+  info: {
+    displayName: 'Color';
+    pluralName: 'colors';
+    singularName: 'color';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    hex_code: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::color.color'> &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiCountryCountry extends Struct.CollectionTypeSchema {
   collectionName: 'countries';
   info: {
@@ -688,10 +716,12 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
       'manyToMany',
       'api::category.category'
     >;
+    colors: Schema.Attribute.Relation<'oneToMany', 'api::color.color'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     description: Schema.Attribute.RichText;
+    details: Schema.Attribute.RichText;
     images: Schema.Attribute.Media<
       'images' | 'files' | 'videos' | 'audios',
       true
@@ -713,6 +743,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
       Schema.Attribute.Required &
       Schema.Attribute.Unique;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    specifications: Schema.Attribute.RichText;
     styles: Schema.Attribute.Relation<'manyToMany', 'api::style.style'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1387,6 +1418,7 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::availability.availability': ApiAvailabilityAvailability;
       'api::category.category': ApiCategoryCategory;
+      'api::color.color': ApiColorColor;
       'api::country.country': ApiCountryCountry;
       'api::footer.footer': ApiFooterFooter;
       'api::page.page': ApiPagePage;

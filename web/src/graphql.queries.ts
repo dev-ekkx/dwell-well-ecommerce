@@ -87,6 +87,11 @@ export const GET_PRODUCT_BY_SLUG = gql`
 			styles {
 				name
 			}
+			colors {
+				hex_code
+			}
+			details
+			specifications
 		}
 	}
 `;

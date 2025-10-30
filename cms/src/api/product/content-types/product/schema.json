@@ -66,6 +66,17 @@
       "relation": "manyToOne",
       "target": "api::availability.availability",
       "inversedBy": "products"
+    },
+    "colors": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::color.color"
+    },
+    "details": {
+      "type": "richtext"
+    },
+    "specifications": {
+      "type": "richtext"
     }
   }
 }

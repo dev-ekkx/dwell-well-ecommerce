@@ -62,7 +62,7 @@
 				<span class="flex items-center text-5xl leading-14 font-medium text-primary">
 					<span
 						use:countTo={{
-							value: item.value,
+							value: +item.value,
 							format: item.label.toLowerCase() === "clients" ? formatNumberWithCommas : undefined
 						}}
 					></span>

@@ -134,6 +134,9 @@
 @utility g-pt {
 	@apply pt-12 lg:pt-16;
 }
+@utility g-pb {
+	@apply pb-12 lg:pb-16;
+}
 @utility g-py {
 	@apply py-12 lg:py-16;
 }

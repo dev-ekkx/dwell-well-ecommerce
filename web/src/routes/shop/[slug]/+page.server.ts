@@ -13,6 +13,7 @@ export const load: PageServerLoad = async ({ params, url }) => {
 			}
 		}
 	};
+
 	const strapiResult = await client.query(GET_PRODUCT_BY_SLUG, variables).toPromise();
 	if (strapiResult.error) {
 		error(500, `GraphQL Error: ${strapiResult.error.message}`);

@@ -12,7 +12,7 @@
 	import { goto } from "$app/navigation";
 	import { Input } from "$lib/components/ui/input";
 	import { MediaQuery } from "svelte/reactivity";
-	import { ROUTE_NAVS } from "$lib/constants/index.svelte";
+	import { ROUTE_NAVS } from "$lib/constants";
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const isMobile = $derived(mediaQuery.current);
@@ -190,8 +190,9 @@
 		{:else}
 			<Button
 				onclick={loginAndResetDropdown}
-				class="hidden h-full cursor-pointer px-6 lg:inline-flex">Login</Button
-			>
+				class="hidden h-full cursor-pointer px-6 lg:inline-flex"
+				>Login
+			</Button>
 		{/if}
 	</div>
 </header>
