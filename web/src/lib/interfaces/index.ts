@@ -45,17 +45,20 @@ export interface ProductI {
 	name: string;
 	slug: string;
 	description: string;
-	images: StrapiImageI[];
-	categories: FilterI[];
-	regionalAvailability: RegionalAvailabilityI[];
-	sizes: FilterI[];
-	availability: FilterI;
-	styles: FilterI[];
-	oldPrice?: number;
-	price: number;
+	details: string;
+	specifications: string;
 	averageRating: number;
 	reviewCount: number;
 	inventory: number;
+	price: number;
+	oldPrice?: number;
+	images: StrapiImageI[];
+	categories: FilterI[];
+	colors: FilterI[];
+	sizes: FilterI[];
+	availability: FilterI;
+	styles: FilterI[];
+	regionalAvailability: RegionalAvailabilityI[];
 }
 
 // Interface for a region (continent)
@@ -270,6 +273,7 @@ export interface PageI {
 export interface FilterI {
 	name: string;
 	slug: string;
+	hex_code?: string;
 }
 
 // Interface for all filter categories
