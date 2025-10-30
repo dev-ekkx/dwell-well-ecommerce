@@ -38,10 +38,12 @@ export const setRouteParams = async (
 
 	// Construct the new URL path with the updated parameters
 	const queryString = newParams.toString();
-	const newPath = queryString ? `${page.url.pathname}?${queryString}` : page.url.pathname;
+	const newPath = (
+		queryString ? `${page.url.pathname}?${queryString}` : page.url.pathname
+	) as RouteId;
 
 	// Navigate to the new URL
-	await goto(resolve(newPath as RouteId), {
+	await goto(resolve(newPath), {
 		replaceState: true,
 		keepFocus: true,
 		noScroll

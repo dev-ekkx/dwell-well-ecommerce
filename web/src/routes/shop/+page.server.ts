@@ -1,9 +1,9 @@
-import type {PageServerLoad} from "./$types";
-import {GET_PRODUCTS} from "../../graphql.queries";
-import {client} from "../../graphql.config";
-import {error} from "@sveltejs/kit";
-import type {ProductCardI} from "$lib/interfaces";
-import type {ProductDataMap} from "$lib/types";
+import type { PageServerLoad } from "./$types";
+import { GET_PRODUCTS } from "../../graphql.queries";
+import { client } from "../../graphql.config";
+import { error } from "@sveltejs/kit";
+import type { ProductI } from "$lib/interfaces";
+import type { ProductDataMap } from "$lib/types";
 
 export const load: PageServerLoad = async ({ fetch, url }) => {
 	const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -36,15 +36,20 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	const variables: {
 		pagination: { page: number; pageSize: number };
 		filters: Record<string, unknown>;
+		productsConnectionFilters2: Record<string, unknown>;
 		sort?: string[];
 	} = {
 		pagination: { page, pageSize },
-		filters: {}
+		filters: {},
+		productsConnectionFilters2: {}
 	};
 
 	// Build query variables
 	if (strapiSort) variables.sort = [strapiSort];
-	if (searchTerm) variables.filters.name = { containsi: searchTerm };
+	if (searchTerm) {
+		variables.filters.name = { containsi: searchTerm };
+		variables.productsConnectionFilters2.name = { containsi: searchTerm };
+	}
 	if (categoriesFilter?.length) variables.filters.categories = { slug: { in: categoriesFilter } };
 	if (sizesFilter?.length) variables.filters.sizes = { slug: { in: sizesFilter } };
 	if (stylesFilter?.length) variables.filters.styles = { slug: { in: stylesFilter } };
@@ -71,31 +76,37 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	}
 
 	const strapiResult = await client.query(GET_PRODUCTS, variables).toPromise();
-	console.log(JSON.stringify(strapiResult.error?.graphQLErrors));
+
 	if (strapiResult.error) {
 		error(500, `GraphQL Error: ${strapiResult.error.message}`);
 	}
 
 	const totalProducts = strapiResult.data.products_connection.pageInfo.total as number;
-	const productsFromStrapi = (strapiResult.data.products || []) as ProductCardI[];
+	const productsFromStrapi = (strapiResult.data.products || []) as ProductI[];
 	const skusToFetch = productsFromStrapi.map((product) => product.SKU);
 	let productDataMap: ProductDataMap = {};
 	if (skusToFetch.length > 0) {
-		const operationalDataResponse = await fetch(`${backendUrl}/products`, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ skus: skusToFetch })
-		});
+		try {
+			const operationalDataResponse = await fetch(`${backendUrl}/products`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ skus: skusToFetch })
+			});
 
-		if (!operationalDataResponse.ok) error(502, "Failed to fetch operational product data");
-		productDataMap = await operationalDataResponse.json();
+			if (!operationalDataResponse.ok) error(502, "Failed to fetch operational product data");
+			productDataMap = await operationalDataResponse.json();
+		} catch {
+			console.error("Error fetching operational product data");
+			// error(502, "Failed to fetch operational product data");
+		}
 	}
 
-	let mergedProducts: ProductCardI[] = productsFromStrapi.map((item) => {
+	let mergedProducts = productsFromStrapi.map((item) => {
 		const opsProduct = productDataMap[item.SKU] || {
 			price: 0,
 			averageRating: 0,
-			reviewCount: 0
+			reviewCount: 0,
+			inventory: 0
 		};
 		return {
 			...opsProduct,
@@ -104,7 +115,7 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 			images: item.images,
 			name: item.name
 		};
-	});
+	}) as ProductI[];
 
 	if (sort === "price-asc") {
 		mergedProducts.sort((a, b) => a.price - b.price);

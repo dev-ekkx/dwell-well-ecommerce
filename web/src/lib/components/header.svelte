@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { ROUTE_NAVS } from "$lib/constants";
 	import { resolve } from "$app/paths";
 	import { cn, setRouteParams } from "$lib/utils";
 	import { page } from "$app/state";
@@ -13,10 +12,16 @@
 	import { goto } from "$app/navigation";
 	import { Input } from "$lib/components/ui/input";
 	import { MediaQuery } from "svelte/reactivity";
+	import { ROUTE_NAVS } from "$lib/constants/index.svelte";
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const isMobile = $derived(mediaQuery.current);
-	const isActiveRoute = (path: string) => page.route.id === path;
+	const isActiveRoute = (path: string) => {
+		if (path === "/") {
+			return page.route.id === "/";
+		}
+		return (page.route?.id ?? "").includes(path);
+	};
 	let isMenuOpen = $state(false);
 	let showMenuOverlay = $state(false);
 	let isSearchOpen = $state(false);
