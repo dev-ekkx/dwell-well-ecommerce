@@ -1,11 +1,11 @@
 <script lang="ts">
-    import {formatNumberWithCommas} from "$lib/utils";
-    import {StarRating} from "@dev-ekkx/svelte-star-rating";
-    import CartIcon from "$lib/assets/cart.svg";
-    import type {ProductCardI} from "$lib/interfaces";
-    import {Badge} from "$lib/components/ui/badge";
+	import { formatNumberWithCommas } from "$lib/utils";
+	import { StarRating } from "@dev-ekkx/svelte-star-rating";
+	import CartIcon from "$lib/assets/cart.svg";
+	import type { ProductCardI } from "$lib/interfaces";
+	import { Badge } from "$lib/components/ui/badge";
 
-    const product: ProductCardI = $props();
+	const product: ProductCardI = $props();
 	const productImage = $derived(`${product.images[0].url}`);
 
 	let value = $state(4.8);

@@ -21,7 +21,6 @@
 
 	onMount(() => {
 		const rawHtml = marked(footerData.newsletterDisclaimer).toString();
-		// We no longer need the 'if (browser)' check because onMount guarantees it.
 		newsletterDisclaimer = DOMPurify.sanitize(rawHtml);
 	});
 </script>

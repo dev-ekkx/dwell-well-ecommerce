@@ -44,7 +44,7 @@ export interface ProductI {
 	SKU: string;
 	name: string;
 	slug: string;
-	summary: string;
+	description: string;
 	images: StrapiImageI[];
 	categories: FilterI[];
 	regionalAvailability: RegionalAvailabilityI[];
