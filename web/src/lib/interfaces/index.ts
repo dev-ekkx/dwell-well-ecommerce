@@ -41,7 +41,7 @@ export interface RegionalAvailabilityI {
 //Product interface
 export interface ProductI {
 	id: number;
-	sku: string;
+	SKU: string;
 	name: string;
 	slug: string;
 	summary: string;
@@ -51,10 +51,11 @@ export interface ProductI {
 	sizes: FilterI[];
 	availability: FilterI;
 	styles: FilterI[];
-	oldPrice: number;
+	oldPrice?: number;
 	price: number;
 	averageRating: number;
 	reviewCount: number;
+	inventory: number;
 }
 
 // Interface for a region (continent)
@@ -277,14 +278,4 @@ export interface FiltersI {
 	styles: FilterI[];
 	sizes: FilterI[];
 	availabilities: FilterI[];
-}
-
-// Product card interface
-export interface ProductCardI
-	extends Pick<ProductI, "slug" | "price" | "averageRating" | "reviewCount"> {
-	name: string;
-	SKU: string;
-	oldPrice?: number;
-	images: StrapiImageI[];
-	inventory: number;
 }

@@ -2,7 +2,7 @@ import type { PageServerLoad } from "./$types";
 import { GET_PRODUCTS } from "../../graphql.queries";
 import { client } from "../../graphql.config";
 import { error } from "@sveltejs/kit";
-import type { ProductCardI } from "$lib/interfaces";
+import type { ProductI } from "$lib/interfaces";
 import type { ProductDataMap } from "$lib/types";
 
 export const load: PageServerLoad = async ({ fetch, url }) => {
@@ -82,7 +82,7 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	}
 
 	const totalProducts = strapiResult.data.products_connection.pageInfo.total as number;
-	const productsFromStrapi = (strapiResult.data.products || []) as ProductCardI[];
+	const productsFromStrapi = (strapiResult.data.products || []) as ProductI[];
 	const skusToFetch = productsFromStrapi.map((product) => product.SKU);
 	let productDataMap: ProductDataMap = {};
 	if (skusToFetch.length > 0) {
@@ -101,7 +101,7 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 		}
 	}
 
-	let mergedProducts: ProductCardI[] = productsFromStrapi.map((item) => {
+	let mergedProducts = productsFromStrapi.map((item) => {
 		const opsProduct = productDataMap[item.SKU] || {
 			price: 0,
 			averageRating: 0,
@@ -115,7 +115,7 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 			images: item.images,
 			name: item.name
 		};
-	});
+	}) as ProductI[];
 
 	if (sort === "price-asc") {
 		mergedProducts.sort((a, b) => a.price - b.price);
