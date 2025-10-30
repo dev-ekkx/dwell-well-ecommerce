@@ -1,20 +1,48 @@
 <script lang="ts">
     import type {PageProps} from "./$types";
-    import {Item, Link, List, Page, Root, Separator} from "$lib/components/ui/breadcrumb/index.js";
+    import {Item, Link, List as BreadcrumbList, Page, Root as BreadcrumbRoot, Separator} from "$lib/components/ui/breadcrumb/index.js";
     import {type ConfigI, StarRating} from "@dev-ekkx/svelte-star-rating";
     import {marked} from "marked";
     import DOMPurify from "dompurify";
     import {onMount} from "svelte";
     import {Button} from "$lib/components/ui/button";
     import {MediaQuery} from "svelte/reactivity";
+    import { Content, List, Root, Trigger } from "$lib/components/ui/tabs/index";
+
+    const mediaQuery = new MediaQuery("max-width: 63.9rem");
+    const buttonQuantityClass = "cursor-pointer disabled:opacity-50 disabled:pointer-events-none";
+    marked.setOptions({
+        gfm: true,
+        breaks: true,
+        pedantic: false,
+    })
+
 
     let {data}: PageProps = $props();
     const product = $derived(data.product);
     let productDescription = $state("");
+    let productDetails = $state("");
+    let productSpecifications = $state("");
     let productQuantity = $state(1);
-    const mediaQuery = new MediaQuery("max-width: 63.9rem");
     const isMobile = $derived(mediaQuery.current);
-    const buttonQuantityClass = "cursor-pointer disabled:opacity-50 disabled:pointer-events-none";
+
+    const tabTitles = $state([
+        "Product details",
+        "Specifications",
+        "Reviews",
+    ]);
+
+    const groupedTabs = $derived(() => {
+        return tabTitles.map(title => {
+            return {
+                title,
+                content: title === "Product details" ? productDetails :
+                    title === "Specifications" ? productSpecifications :
+                        "Reviews content goes here."
+            };
+        });
+    });
+
     $inspect(product);
 
     function increaseQuantity() {
@@ -37,26 +65,30 @@
         step: 0.1,
         numOfStars: 5,
         starConfig: {
-            size: isMobile ? 11 : 14,
+            size: isMobile ? 16 : 20,
             filledColor: "#F98416",
             unfilledColor: "#5D5D5D"
         },
         styles: {
             containerStyles: "width: max-content; pointer-events: none;",
-            starStyles: "gap: 0.1rem"
+            starStyles: "gap: 0.2rem"
         }
     });
 
 
     onMount(() => {
-        const rawHtml = marked(product.description).toString();
-        productDescription = DOMPurify.sanitize(rawHtml);
+        const rawDescriptionHtml = marked(product.description).toString();
+        const rawDetailsHtml = marked(product.details).toString();
+        const rawSpecificationsHtml = marked(product.specifications).toString();
+        productDescription = DOMPurify.sanitize(rawDescriptionHtml);
+        productDetails = DOMPurify.sanitize(rawDetailsHtml);
+        productSpecifications = DOMPurify.sanitize(rawSpecificationsHtml);
     });
 </script>
 
 <div class="flex flex-col gap-4 g-px">
-    <Root>
-        <List>
+    <BreadcrumbRoot>
+        <BreadcrumbList>
             <Item>
                 <Link href="/shop">Shop</Link>
             </Item>
@@ -64,8 +96,8 @@
             <Item>
                 <Page class="font-bold">{product.name}</Page>
             </Item>
-        </List>
-    </Root>
+        </BreadcrumbList>
+    </BreadcrumbRoot>
     <div class="g-py">
         <!-- Product Details -->
         <section class="grid gap-10 xl:grid-cols-2">
@@ -93,7 +125,7 @@
                         class="line-clamp-1 flex flex-col gap-4 text-2xl leading-8 font-semibold sm:text-3xl sm:leading-10 xl:text-4xl xl:leading-12"
                 >
                     <h3>{product.name}</h3>
-                    <span>$ {Number(product.price).toFixed(2)}</span>
+                    <span>${Number(product.price).toFixed(2)}</span>
                 </div>
 
                 <!-- Rating and reviews -->
@@ -105,12 +137,20 @@
                         <span>{product.reviewCount} reviews</span>
                     </div>
                 </div>
-                <span class="font-semibold">{product.inventory} available products</span>
+                <span class="font-semibold">{product.inventory} Available products</span>
                 <p class="text-sm text-muted-foreground md:text-base">{@html productDescription}</p>
                 <!-- Colors -->
-                <div class="flex flex-col">
+                <div class="flex flex-col gap-2">
                     <span class="font-semibold">Available colors</span>
-                    <div class="flex items-center gap-4"></div>
+                    <div class="flex items-center gap-4">
+                        {#each product.colors as color}
+                            <button
+                                    class="h-8 w-8 cursor-pointer rounded-full border-2 border-muted-foreground transition-all duration-200 ease-linear hover:scale-105"
+                                    style="background-color: {`#${color.hex_code}`};"
+                                    aria-label={color.name}
+                            ></button>
+                        {/each}
+                    </div>
                 </div>
                 <!-- Quantity -->
                 <div class="flex flex-col gap-2">
@@ -129,11 +169,92 @@
                 </div>
 
                 <!-- Order or add to cart -->
-                <div class="flex flex-col gap-2 md:flex-row mt-6 md:gap-6">
+                <div class="flex flex-col gap-2 md:flex-row mt-6 md:gap-4 **:cursor-pointer">
                     <Button>Order now</Button>
                     <Button class="text-primary border-primary" variant="outline">Add to cart</Button>
                 </div>
             </section>
         </section>
+
+<!-- Details, Specifications, and Reviews Tabs -->
+        <section class="mt-10 xl:mt-0">
+            <Root class="mt-4 w-full" value={tabTitles[0]}>
+                <!--Showroom (tab) list and triggers-->
+                <List
+                        class="flex gap-2 h-max w-full max-w-2xl justify-baseline overflow-x-auto scrollbar-hidden"
+                >
+                    {#each tabTitles as tab (tab)}
+                        <Trigger
+                                value={tab}
+                                class="border-b-2 rounded-none hover:border-b-primary py-2 capitalize transition-colors data-[state=active]:bg-transparent data-[state=active]:border-b-primary max-w-max"
+                        >
+                            {tab}
+                        </Trigger>
+                    {/each}
+                </List>
+
+                <!--Showroom (tab) content-->
+                {#each groupedTabs() as group (group.title)}
+                    <Content value={group.title} class="py-4">
+                        <div class=" cms-content **:text-muted-foreground">
+                            {@html group.content}
+                        </div>
+                    </Content>
+                {/each}
+            </Root>
+        </section>
     </div>
 </div>
+
+<style>
+    .cms-content :global(h2),
+
+    /* --- Title style --- */
+    .cms-content :global(h3) {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 0.5rem;
+    }
+
+    /* --- List Styles --- */
+    .cms-content :global(ul) {
+        list-style-type: disc;
+        margin-left: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .cms-content :global(li) {
+        margin-bottom: 0.5rem;
+    }
+
+    .cms-content :global(li p) {
+        margin-bottom: 0;
+    }
+
+    /* --- Table Styles --- */
+    .cms-content :global(table) {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+
+    .cms-content :global(th),
+    .cms-content :global(td) {
+        border: 1px solid #cbd5e1;
+        padding: 0.75rem;
+        text-align: left;
+    }
+
+    .cms-content :global(th) {
+        background-color: #f8fafc;
+        font-weight: 600;
+    }
+
+    .cms-content :global(tr:nth-child(even)) {
+        background-color: #f8fafc;
+    }
+</style>

@@ -23,7 +23,6 @@ export const load: PageServerLoad = async ({ params, url }) => {
 		categories: data.categories?.map((item) => item.name),
 		sizes: data.sizes?.map((item) => item.name),
 		styles: data.styles?.map((item) => item.name),
-		colors: data.colors?.map((item) => item?.hex_code),
 		availability: data.availability.name
 	};
 	return {
