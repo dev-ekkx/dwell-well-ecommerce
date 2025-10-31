@@ -16,7 +16,7 @@
 	import { MediaQuery } from "svelte/reactivity";
 	import { Content, List, Root, Trigger } from "$lib/components/ui/tabs/index";
 	import RelatedProducts from "$lib/components/related-products.svelte";
-    import {Badge} from "$lib/components/ui/badge";
+	import { Badge } from "$lib/components/ui/badge";
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const buttonQuantityClass = "cursor-pointer disabled:opacity-50 disabled:pointer-events-none";
@@ -33,8 +33,7 @@
 	let productDetails = $state("");
 	let productSpecifications = $state("");
 	let productQuantity = $state(1);
-    let selectedImageIndex = $state(0);
-
+	let selectedImageIndex = $state(0);
 
 	const tabTitles = $state(["Product details", "Specifications", "Reviews"]);
 
@@ -66,10 +65,9 @@
 		}
 	}
 
-    function handlePreviewImage(index: number) {
-        selectedImageIndex = index;
-    }
-
+	function handlePreviewImage(index: number) {
+		selectedImageIndex = index;
+	}
 
 	const config = $derived<ConfigI>({
 		readonly: true,
@@ -89,9 +87,15 @@
 	});
 
 	onMount(() => {
-		const rawDescriptionHtml = product.description ? marked(product.description).toString() : "No product description";
-		const rawDetailsHtml = product.details ? marked(product.details).toString() : "No product details";
-		const rawSpecificationsHtml = product.specifications ? marked(product.specifications).toString() : "No product specifications";
+		const rawDescriptionHtml = product.description
+			? marked(product.description).toString()
+			: "No product description";
+		const rawDetailsHtml = product.details
+			? marked(product.details).toString()
+			: "No product details";
+		const rawSpecificationsHtml = product.specifications
+			? marked(product.specifications).toString()
+			: "No product specifications";
 		productDescription = DOMPurify.sanitize(rawDescriptionHtml);
 		productDetails = DOMPurify.sanitize(rawDetailsHtml);
 		productSpecifications = DOMPurify.sanitize(rawSpecificationsHtml);
@@ -115,24 +119,24 @@
 		<section class="grid gap-10 xl:grid-cols-2">
 			<!-- images -->
 			<div class="grid grid-cols-1 gap-6 md:grid-cols-5 md:gap-10 xl:gap-8">
-                <!--- Preview image -->
-                <img
-                        alt={product.images[selectedImageIndex].alternativeText}
-                        class="aspect-square max-w-full rounded-lg object-cover md:col-span-4"
-                        src={product.images[selectedImageIndex].url}
-                />
+				<!--- Preview image -->
+				<img
+					alt={product.images[selectedImageIndex].alternativeText}
+					class="aspect-square max-w-full rounded-lg object-cover md:col-span-4"
+					src={product.images[selectedImageIndex].url}
+				/>
 
-                <!--- Images list --->
+				<!--- Images list --->
 				<div class="flex flex-row gap-6 md:flex-col">
-					{#each product.images.slice(0, 4) as image, index(image.url)}
-                        {#if index !== selectedImageIndex}
-						<img
-							alt={image.alternativeText}
-							class="aspect-square h-auto w-[4.5rem] rounded-lg object-cover md:w-[5.8rem] cursor-pointer"
-							src={image.url}
-                            onclick={() => handlePreviewImage(index)}
-						/>
-                            {/if}
+					{#each product.images.slice(0, 4) as image, index (image.url)}
+						{#if index !== selectedImageIndex}
+							<img
+								alt={image.alternativeText}
+								class="aspect-square h-auto w-[4.5rem] cursor-pointer rounded-lg object-cover md:w-[5.8rem]"
+								src={image.url}
+								onclick={() => handlePreviewImage(index)}
+							/>
+						{/if}
 					{/each}
 				</div>
 			</div>
@@ -142,13 +146,13 @@
 				<div
 					class="line-clamp-1 flex flex-col gap-4 text-2xl leading-8 font-semibold sm:text-3xl sm:leading-10 xl:text-4xl xl:leading-12"
 				>
-<!-- Product name and coming soon tag -->
-	<div class="flex items-center gap-4">
-					<h3>{product.name}</h3>
-        {#if product.inventory < 1}
-            <Badge variant="secondary">Coming soon</Badge>
-            {/if}
-    </div>
+					<!-- Product name and coming soon tag -->
+					<div class="flex items-center gap-4">
+						<h3>{product.name}</h3>
+						{#if product.inventory < 1}
+							<Badge variant="secondary">Coming soon</Badge>
+						{/if}
+					</div>
 					<span>${Number(product.price).toFixed(2)}</span>
 				</div>
 
@@ -176,36 +180,37 @@
 						{/each}
 					</div>
 				</div>
-				<!-- Quantity -->
-				<div class="flex flex-col gap-2">
-					<span class="font-semibold">Quantity</span>
-					<div
-						class="flex w-max items-center gap-2 rounded-md border **:px-3 **:py-1 **:text-center **:text-lg **:font-semibold"
-					>
-						<button
-							class={buttonQuantityClass}
-							disabled={productQuantity <= 1}
-							onclick={decreaseQuantity}
-						>
-							-
-						</button>
-						<span class="w-10">{productQuantity}</span>
-						<button
-							class={buttonQuantityClass}
-							disabled={productQuantity >= product.inventory}
-							onclick={increaseQuantity}
-							>+
-						</button>
-					</div>
-				</div>
 
-				<!-- Order or add to cart -->
-                {#if product.inventory > 0}
-				<div class="mt-6 flex flex-col gap-2 **:cursor-pointer md:flex-row md:gap-4">
-					<Button>Order now</Button>
-					<Button class="border-primary text-primary" variant="outline">Add to cart</Button>
-				</div>
-                    {/if}
+				{#if product.inventory > 0}
+					<!-- Quantity -->
+					<div class="flex flex-col gap-2">
+						<span class="font-semibold">Quantity</span>
+						<div
+							class="flex w-max items-center gap-2 rounded-md border **:px-3 **:py-1 **:text-center **:text-lg **:font-semibold"
+						>
+							<button
+								class={buttonQuantityClass}
+								disabled={productQuantity <= 1}
+								onclick={decreaseQuantity}
+							>
+								-
+							</button>
+							<span class="w-10">{productQuantity}</span>
+							<button
+								class={buttonQuantityClass}
+								disabled={productQuantity >= product.inventory}
+								onclick={increaseQuantity}
+								>+
+							</button>
+						</div>
+					</div>
+
+					<!-- Order or add to cart -->
+					<div class="mt-6 flex flex-col gap-2 **:cursor-pointer md:flex-row md:gap-4">
+						<Button>Order now</Button>
+						<Button class="border-primary text-primary" variant="outline">Add to cart</Button>
+					</div>
+				{/if}
 			</section>
 		</section>
 
