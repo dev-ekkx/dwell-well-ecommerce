@@ -4,10 +4,9 @@ import { client } from "../../graphql.config";
 import { error } from "@sveltejs/kit";
 import type { ProductI } from "$lib/interfaces";
 import type { ProductDataMap } from "$lib/types";
+import { BACKEND_URL } from "$lib/constants";
 
 export const load: PageServerLoad = async ({ fetch, url }) => {
-	const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
 	const searchTerm = url.searchParams.get("q");
 	const page = Number(url.searchParams.get("page") ?? "1");
 	const pageSize = Number(url.searchParams.get("perPage") ?? "5");
@@ -50,40 +49,12 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	const allProductFilters: Record<string, unknown>[] = [];
 	const searchFilters: Record<string, unknown>[] = [];
 	if (searchTerm) {
-		// variables.filters.name = { containsi: searchTerm };
-		// variables.productsConnectionFilters2.name = { containsi: searchTerm };
-
 		const searchBlock = {
 			or: [{ name: { containsi: searchTerm } }, { categories: { name: { containsi: searchTerm } } }]
 		};
-		// Add search to BOTH filter groups
 		searchFilters.push(searchBlock);
 		allProductFilters.push(searchBlock);
 	}
-	// if (categoriesFilter?.length) variables.filters.categories = { slug: { in: categoriesFilter } };
-	// if (sizesFilter?.length) variables.filters.sizes = { slug: { in: sizesFilter } };
-	// if (stylesFilter?.length) variables.filters.styles = { slug: { in: stylesFilter } };
-	// if (availabilitiesFilter?.length) {
-	// 	variables.filters.availability = { in: availabilitiesFilter };
-	// }
-	// if (priceRangeFilter) {
-	// 	const [min, max] = priceRangeFilter.split(",").map(Number);
-	// 	if (!Number.isNaN(min) && !Number.isNaN(max)) {
-	// 		try {
-	// 			const skuResponse = await fetch(
-	// 				`${backendUrl}/products/skus-by-price?minPrice=${min}&maxPrice=${max}`
-	// 			);
-	// 			if (!skuResponse.ok) error(502, "Could not fetch price-filtered SKUs");
-	// 			const priceFilteredSkus: string[] = await skuResponse.json();
-	// 			if (priceFilteredSkus.length === 0) {
-	// 				return { products: [], pagination: { total: 0 } };
-	// 			}
-	// 			variables.filters.SKU = { in: priceFilteredSkus };
-	// 		} catch {
-	// 			error(502, "Failed to apply price filter");
-	// 		}
-	// 	}
-	// }
 
 	// Add all other filters as separate "and" conditions
 	if (categoriesFilter?.length) {
@@ -105,7 +76,7 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 		if (!isNaN(min) && !isNaN(max)) {
 			try {
 				const skuResponse = await fetch(
-					`${backendUrl}/products/skus-by-price?minPrice=${min}&maxPrice=${max}`
+					`${BACKEND_URL}/products/skus-by-price?minPrice=${min}&maxPrice=${max}`
 				);
 				if (!skuResponse.ok) error(502, "Could not fetch price-filtered SKUs");
 				const priceFilteredSkus: string[] = await skuResponse.json();
@@ -141,7 +112,7 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	let productDataMap: ProductDataMap = {};
 	if (skusToFetch.length > 0) {
 		try {
-			const operationalDataResponse = await fetch(`${backendUrl}/products`, {
+			const operationalDataResponse = await fetch(`${BACKEND_URL}/products`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ skus: skusToFetch })
