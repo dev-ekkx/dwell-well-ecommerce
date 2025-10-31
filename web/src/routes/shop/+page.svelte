@@ -28,8 +28,9 @@
     import FilterIcon from "$lib/assets/filter.svg";
     import {MediaQuery, SvelteURLSearchParams} from "svelte/reactivity";
     import {onMount} from "svelte";
-    import type {ProductCardI} from "$lib/interfaces";
+    import type {PageI, ProductCardI} from "$lib/interfaces";
     import {goto} from "$app/navigation";
+    import ProductCategories from "../_home/product-categories.svelte";
 
     const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const { data }: PageProps = $props();
@@ -46,6 +47,11 @@
 	let itemsPerPage = $state(page.url.searchParams.get("perPage") || "10");
 	let totalProducts = $derived(data.totalProducts ?? 0);
 	const moreThanAPage = $derived(totalProducts / +itemsPerPage > 1);
+
+    const homePageData = data.homepage as PageI;
+    const productCategoriesData = homePageData.contentSections.find(
+        (item) => item.sectionId === "categories"
+    );
 
 	const setParams = () => {
 		setRouteParams({
@@ -92,7 +98,14 @@
 </svelte:head>
 
 <div class="flex flex-col gap-10">
+    {#if !searchTerm}
+    <div class="g-px g-mb -mt-12">
+    <ProductCategories {productCategoriesData} />
+    </div>
+        {/if}
+
 	<section class="flex gap-6 g-px">
+
 		<!-- Desktop Filter and Sort -->
 		<div class="hidden lg:block">
 			<FiltersAndSort {filters} />
@@ -148,6 +161,7 @@
                 <EmptySearch />
                 </div>
             {/if}
+
 
             <!--	Product items -->
 			<section class="flex flex-col gap-5 md:gap-7 xl:gap-10">
