@@ -27,12 +27,14 @@
 	});
 
 	let { data }: PageProps = $props();
+	const isMobile = $derived(mediaQuery.current);
 	const product = $derived(data.product);
 	let productDescription = $state("");
 	let productDetails = $state("");
 	let productSpecifications = $state("");
 	let productQuantity = $state(1);
-	const isMobile = $derived(mediaQuery.current);
+    let selectedImageIndex = $state(0);
+
 
 	const tabTitles = $state(["Product details", "Specifications", "Reviews"]);
 
@@ -63,6 +65,11 @@
 			productQuantity -= 1;
 		}
 	}
+
+    function handlePreviewImage(index: number) {
+        selectedImageIndex = index;
+    }
+
 
 	const config = $derived<ConfigI>({
 		readonly: true,
@@ -108,18 +115,24 @@
 		<section class="grid gap-10 xl:grid-cols-2">
 			<!-- images -->
 			<div class="grid grid-cols-1 gap-6 md:grid-cols-5 md:gap-10 xl:gap-8">
-				<img
-					alt={product.images[0].alternativeText}
-					class="aspect-square max-w-full rounded-lg object-cover md:col-span-4"
-					src={product.images[0].url}
-				/>
+                <!--- Preview image -->
+                <img
+                        alt={product.images[selectedImageIndex].alternativeText}
+                        class="aspect-square max-w-full rounded-lg object-cover md:col-span-4"
+                        src={product.images[selectedImageIndex].url}
+                />
+
+                <!--- Images list --->
 				<div class="flex flex-row gap-6 md:flex-col">
-					{#each product.images.slice(1, 4) as image}
+					{#each product.images.slice(0, 4) as image, index(image.url)}
+                        {#if index !== selectedImageIndex}
 						<img
 							alt={image.alternativeText}
-							class="aspect-square h-auto w-[4.5rem] rounded-lg object-cover md:w-[5.8rem]"
+							class="aspect-square h-auto w-[4.5rem] rounded-lg object-cover md:w-[5.8rem] cursor-pointer"
 							src={image.url}
+                            onclick={() => handlePreviewImage(index)}
 						/>
+                            {/if}
 					{/each}
 				</div>
 			</div>
