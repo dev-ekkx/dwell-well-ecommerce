@@ -15,7 +15,9 @@
 	import { Button } from "$lib/components/ui/button";
 	import { MediaQuery } from "svelte/reactivity";
 	import { Content, List, Root, Trigger } from "$lib/components/ui/tabs/index";
-	import RelatedProducts from "$lib/components/related-products.svelte";
+	import RelatedProducts from "./related-products.svelte";
+	import { Badge } from "$lib/components/ui/badge";
+	import { cn } from "$lib/utils";
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const buttonQuantityClass = "cursor-pointer disabled:opacity-50 disabled:pointer-events-none";
@@ -26,12 +28,13 @@
 	});
 
 	let { data }: PageProps = $props();
+	const isMobile = $derived(mediaQuery.current);
 	const product = $derived(data.product);
 	let productDescription = $state("");
 	let productDetails = $state("");
 	let productSpecifications = $state("");
 	let productQuantity = $state(1);
-	const isMobile = $derived(mediaQuery.current);
+	let selectedImageIndex = $state(0);
 
 	const tabTitles = $state(["Product details", "Specifications", "Reviews"]);
 
@@ -44,12 +47,10 @@
 						? productDetails
 						: title === "Specifications"
 							? productSpecifications
-							: "Reviews content goes here."
+							: "No Reviews content"
 			};
 		});
 	});
-
-	$inspect(product);
 
 	function increaseQuantity() {
 		if (productQuantity < product.inventory) {
@@ -61,6 +62,10 @@
 		if (productQuantity > 1) {
 			productQuantity -= 1;
 		}
+	}
+
+	function handlePreviewImage(index: number) {
+		selectedImageIndex = index;
 	}
 
 	const config = $derived<ConfigI>({
@@ -81,9 +86,15 @@
 	});
 
 	onMount(() => {
-		const rawDescriptionHtml = marked(product.description).toString();
-		const rawDetailsHtml = marked(product.details).toString();
-		const rawSpecificationsHtml = marked(product.specifications).toString();
+		const rawDescriptionHtml = product.description
+			? marked(product.description).toString()
+			: "No product description";
+		const rawDetailsHtml = product.details
+			? marked(product.details).toString()
+			: "No product details";
+		const rawSpecificationsHtml = product.specifications
+			? marked(product.specifications).toString()
+			: "No product specifications";
 		productDescription = DOMPurify.sanitize(rawDescriptionHtml);
 		productDetails = DOMPurify.sanitize(rawDetailsHtml);
 		productSpecifications = DOMPurify.sanitize(rawSpecificationsHtml);
@@ -106,19 +117,26 @@
 		<!-- Product Details -->
 		<section class="grid gap-10 xl:grid-cols-2">
 			<!-- images -->
-			<div class="grid grid-cols-1 gap-6 md:grid-cols-5 md:gap-10 xl:gap-8">
+			<div class="grid grid-cols-1 gap-6 md:grid-cols-5 md:gap-10 xl:gap-6">
+				<!--- Preview image -->
 				<img
-					alt={product.images[0].alternativeText}
+					alt={product.images[selectedImageIndex].alternativeText}
 					class="aspect-square max-w-full rounded-lg object-cover md:col-span-4"
-					src={product.images[0].url}
+					src={product.images[selectedImageIndex].url}
 				/>
+
+				<!--- Images list --->
 				<div class="flex flex-row gap-6 md:flex-col">
-					{#each product.images.slice(1, 4) as image}
-						<img
-							alt={image.alternativeText}
-							class="aspect-square h-auto w-[4.5rem] rounded-lg object-cover md:w-[5.8rem]"
-							src={image.url}
-						/>
+					{#each product.images.slice(0, 4) as image, index (image.url)}
+						{#if index !== selectedImageIndex}
+							<button class=" cursor-pointer" onclick={() => handlePreviewImage(index)}>
+								<img
+									alt={image.alternativeText}
+									class="aspect-square h-auto w-[4.5rem] rounded-lg object-cover md:w-full"
+									src={image.url}
+								/>
+							</button>
+						{/if}
 					{/each}
 				</div>
 			</div>
@@ -128,8 +146,16 @@
 				<div
 					class="line-clamp-1 flex flex-col gap-4 text-2xl leading-8 font-semibold sm:text-3xl sm:leading-10 xl:text-4xl xl:leading-12"
 				>
-					<h3>{product.name}</h3>
-					<span>${Number(product.price).toFixed(2)}</span>
+					<!-- Product name and coming soon tag -->
+					<div class="flex items-center gap-4">
+						<h3>{product.name}</h3>
+						{#if product.inventory < 1}
+							<Badge variant="secondary">Coming soon</Badge>
+						{/if}
+					</div>
+					{#if product.price > 0}
+						<span>${Number(product.price).toFixed(2)}</span>
+					{/if}
 				</div>
 
 				<!-- Rating and reviews -->
@@ -141,12 +167,18 @@
 						<span>{product.reviewCount} reviews</span>
 					</div>
 				</div>
-				<span class="font-semibold">{product.inventory} Available products</span>
+				{#if product.inventory > 0}
+					<span class="font-semibold">{product.inventory} Available products</span>
+				{/if}
 				<p class="text-sm text-muted-foreground md:text-base">{@html productDescription}</p>
 				<!-- Colors -->
 				<div class="flex flex-col gap-2">
 					<span class="font-semibold">Available colors</span>
-					<div class="flex items-center gap-4">
+					<div
+						class={cn("flex items-center gap-4", {
+							"pointer-events-none": product.inventory < 1
+						})}
+					>
 						{#each product.colors as color}
 							<button
 								class="h-8 w-8 cursor-pointer rounded-full border-2 border-muted-foreground transition-all duration-200 ease-linear hover:scale-105"
@@ -156,34 +188,37 @@
 						{/each}
 					</div>
 				</div>
-				<!-- Quantity -->
-				<div class="flex flex-col gap-2">
-					<span class="font-semibold">Quantity</span>
-					<div
-						class="flex w-max items-center gap-2 rounded-md border **:px-3 **:py-1 **:text-center **:text-lg **:font-semibold"
-					>
-						<button
-							class={buttonQuantityClass}
-							disabled={productQuantity <= 1}
-							onclick={decreaseQuantity}
-						>
-							-
-						</button>
-						<span class="w-10">{productQuantity}</span>
-						<button
-							class={buttonQuantityClass}
-							disabled={productQuantity >= product.inventory}
-							onclick={increaseQuantity}
-							>+
-						</button>
-					</div>
-				</div>
 
-				<!-- Order or add to cart -->
-				<div class="mt-6 flex flex-col gap-2 **:cursor-pointer md:flex-row md:gap-4">
-					<Button>Order now</Button>
-					<Button class="border-primary text-primary" variant="outline">Add to cart</Button>
-				</div>
+				{#if product.inventory > 0}
+					<!-- Quantity -->
+					<div class="flex flex-col gap-2">
+						<span class="font-semibold">Quantity</span>
+						<div
+							class="flex w-max items-center gap-2 rounded-md border **:px-3 **:py-1 **:text-center **:text-lg **:font-semibold"
+						>
+							<button
+								class={buttonQuantityClass}
+								disabled={productQuantity <= 1}
+								onclick={decreaseQuantity}
+							>
+								-
+							</button>
+							<span class="w-10">{productQuantity}</span>
+							<button
+								class={buttonQuantityClass}
+								disabled={productQuantity >= product.inventory}
+								onclick={increaseQuantity}
+								>+
+							</button>
+						</div>
+					</div>
+
+					<!-- Order or add to cart -->
+					<div class="mt-6 flex flex-col gap-2 **:cursor-pointer md:flex-row md:gap-4">
+						<Button>Order now</Button>
+						<Button class="border-primary text-primary" variant="outline">Add to cart</Button>
+					</div>
+				{/if}
 			</section>
 		</section>
 
@@ -216,7 +251,7 @@
 		</section>
 	</div>
 	<!-- Related products -->
-	<RelatedProducts />
+	<RelatedProducts {...data.relatedProducts} />
 </div>
 
 <style>

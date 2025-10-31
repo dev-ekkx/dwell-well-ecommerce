@@ -66,7 +66,7 @@
 			{#if product.price > 0}
 				<span class="">${formatNumberWithCommas(299)} </span>
 			{:else}
-				<Badge variant="secondary">Coming soon</Badge>
+				<Badge variant="primary">Coming soon</Badge>
 			{/if}
 		</span>
 	</div>

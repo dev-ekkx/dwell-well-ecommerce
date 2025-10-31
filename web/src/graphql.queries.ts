@@ -46,7 +46,6 @@ export const GET_PRODUCTS = gql`
 	) {
 		products(pagination: $pagination, sort: $sort, filters: $filters) {
 			SKU
-			description
 			name
 			slug
 			images(pagination: { limit: 1 }) {
@@ -74,6 +73,7 @@ export const GET_PRODUCT_BY_SLUG = gql`
 			}
 			categories {
 				name
+				slug
 			}
 			description
 			images(pagination: { limit: 6 }) {
@@ -92,6 +92,23 @@ export const GET_PRODUCT_BY_SLUG = gql`
 			}
 			details
 			specifications
+		}
+	}
+`;
+
+export const GET_RELATED_PRODUCTS = gql`
+	query GetRelatedProducts($filters: ProductFiltersInput) {
+		products(filters: $filters, pagination: { limit: 5 }, sort: "publishedAt:desc") {
+			slug
+			name
+			SKU
+			images(pagination: { limit: 1 }) {
+				alternativeText
+				url
+			}
+			categories {
+				slug
+			}
 		}
 	}
 `;
