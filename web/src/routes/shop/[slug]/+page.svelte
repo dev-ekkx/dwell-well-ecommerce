@@ -17,7 +17,7 @@
 	import { Content, List, Root, Trigger } from "$lib/components/ui/tabs/index";
 	import RelatedProducts from "./related-products.svelte";
 	import { Badge } from "$lib/components/ui/badge";
-    import {cn} from "$lib/utils";
+	import { cn } from "$lib/utils";
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const buttonQuantityClass = "cursor-pointer disabled:opacity-50 disabled:pointer-events-none";
@@ -129,15 +129,13 @@
 				<div class="flex flex-row gap-6 md:flex-col">
 					{#each product.images.slice(0, 4) as image, index (image.url)}
 						{#if index !== selectedImageIndex}
-                            <button class=" cursor-pointer"
-								onclick={() => handlePreviewImage(index)}
-                            >
-							<img
-								alt={image.alternativeText}
-								class="aspect-square h-auto w-[4.5rem] rounded-lg object-cover md:w-full"
-								src={image.url}
-							/>
-                            </button>
+							<button class=" cursor-pointer" onclick={() => handlePreviewImage(index)}>
+								<img
+									alt={image.alternativeText}
+									class="aspect-square h-auto w-[4.5rem] rounded-lg object-cover md:w-full"
+									src={image.url}
+								/>
+							</button>
 						{/if}
 					{/each}
 				</div>
@@ -155,9 +153,9 @@
 							<Badge variant="secondary">Coming soon</Badge>
 						{/if}
 					</div>
-                    {#if product.price > 0}
-					<span>${Number(product.price).toFixed(2)}</span>
-                        {/if}
+					{#if product.price > 0}
+						<span>${Number(product.price).toFixed(2)}</span>
+					{/if}
 				</div>
 
 				<!-- Rating and reviews -->
@@ -169,16 +167,18 @@
 						<span>{product.reviewCount} reviews</span>
 					</div>
 				</div>
-                {#if product.inventory > 0}
-				<span class="font-semibold">{product.inventory} Available products</span>
-                    {/if}
+				{#if product.inventory > 0}
+					<span class="font-semibold">{product.inventory} Available products</span>
+				{/if}
 				<p class="text-sm text-muted-foreground md:text-base">{@html productDescription}</p>
 				<!-- Colors -->
 				<div class="flex flex-col gap-2">
 					<span class="font-semibold">Available colors</span>
-					<div class={cn("flex items-center gap-4", {
-                        "pointer-events-none": product.inventory < 1
-					})}>
+					<div
+						class={cn("flex items-center gap-4", {
+							"pointer-events-none": product.inventory < 1
+						})}
+					>
 						{#each product.colors as color}
 							<button
 								class="h-8 w-8 cursor-pointer rounded-full border-2 border-muted-foreground transition-all duration-200 ease-linear hover:scale-105"
