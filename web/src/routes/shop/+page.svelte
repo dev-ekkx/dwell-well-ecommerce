@@ -43,7 +43,8 @@
 	// Page state
 	let openFilters = $state(false);
 	const itemsPerPageOptions = $state([...ITEMS_PER_PAGE_OPTIONS]);
-	let currentPage = $state(parseInt(page.url.searchParams.get("page") || "1"));
+    const currentPageFromParams = $derived(page.url.searchParams.get("page"))
+	let currentPage = $state(parseInt(currentPageFromParams || "1"));
 	let itemsPerPage = $state(page.url.searchParams.get("perPage") || "10");
 	let totalProducts = $derived(data.totalProducts ?? 0);
 	const moreThanAPage = $derived(totalProducts / +itemsPerPage > 1);

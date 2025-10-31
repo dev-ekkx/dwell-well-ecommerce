@@ -13,7 +13,7 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	const sort = url.searchParams.get("sort");
 	const categoriesFilter = url.searchParams.get("categories")?.split(",").filter(Boolean);
 	const sizesFilter = url.searchParams.get("sizes")?.split(",").filter(Boolean);
-	const stylesFilter = url.searchParams.get("style")?.split(",").filter(Boolean);
+	const stylesFilter = url.searchParams.get("styles")?.split(",").filter(Boolean);
 	const availabilitiesFilter = url.searchParams.get("availabilities")?.split(",").filter(Boolean);
 	const priceRangeFilter = url.searchParams.get("priceRange");
 
@@ -47,12 +47,10 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	if (strapiSort) variables.sort = [strapiSort];
 
 	const allProductFilters: Record<string, unknown>[] = [];
-	const searchFilters: Record<string, unknown>[] = [];
 	if (searchTerm) {
 		const searchBlock = {
 			or: [{ name: { containsi: searchTerm } }, { categories: { name: { containsi: searchTerm } } }]
 		};
-		searchFilters.push(searchBlock);
 		allProductFilters.push(searchBlock);
 	}
 
@@ -61,13 +59,13 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 		allProductFilters.push({ categories: { slug: { in: categoriesFilter } } });
 	}
 	if (sizesFilter?.length) {
-		allProductFilters.push({ size: { in: sizesFilter } });
+		allProductFilters.push({ sizes: { slug: { in: sizesFilter } } });
 	}
 	if (stylesFilter?.length) {
-		allProductFilters.push({ style: { in: stylesFilter } });
+		allProductFilters.push({ styles: { slug: { in: stylesFilter } } });
 	}
 	if (availabilitiesFilter?.length) {
-		allProductFilters.push({ availability: { in: availabilitiesFilter } });
+		allProductFilters.push({ availability: { slug: { in: availabilitiesFilter } } });
 	}
 
 	// 4. Orchestrate Price Filter
@@ -95,9 +93,7 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	// Set the final filters object
 	if (allProductFilters.length > 0) {
 		variables.filters = { and: allProductFilters };
-	}
-	if (searchFilters.length > 0) {
-		variables.productsConnectionFilters2 = { and: searchFilters };
+		variables.productsConnectionFilters2 = { and: allProductFilters };
 	}
 
 	const strapiResult = await client.query(GET_PRODUCTS, variables).toPromise();
