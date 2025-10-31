@@ -47,15 +47,18 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	// Build query variables
 	if (strapiSort) variables.sort = [strapiSort];
 
-	const allFilters: Record<string, unknown>[] = [];
-
+	const allProductFilters: Record<string, unknown>[] = [];
+	const searchFilters: Record<string, unknown>[] = [];
 	if (searchTerm) {
 		// variables.filters.name = { containsi: searchTerm };
 		// variables.productsConnectionFilters2.name = { containsi: searchTerm };
 
-		allFilters.push({
+		const searchBlock = {
 			or: [{ name: { containsi: searchTerm } }, { categories: { name: { containsi: searchTerm } } }]
-		});
+		};
+		// Add search to BOTH filter groups
+		searchFilters.push(searchBlock);
+		allProductFilters.push(searchBlock);
 	}
 	// if (categoriesFilter?.length) variables.filters.categories = { slug: { in: categoriesFilter } };
 	// if (sizesFilter?.length) variables.filters.sizes = { slug: { in: sizesFilter } };
@@ -84,18 +87,17 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 
 	// Add all other filters as separate "and" conditions
 	if (categoriesFilter?.length) {
-		allFilters.push({ categories: { slug: { in: categoriesFilter } } });
+		allProductFilters.push({ categories: { slug: { in: categoriesFilter } } });
 	}
 	if (sizesFilter?.length) {
-		allFilters.push({ size: { in: sizesFilter } });
+		allProductFilters.push({ size: { in: sizesFilter } });
 	}
 	if (stylesFilter?.length) {
-		allFilters.push({ style: { in: stylesFilter } });
+		allProductFilters.push({ style: { in: stylesFilter } });
 	}
 	if (availabilitiesFilter?.length) {
-		allFilters.push({ availability: { in: availabilitiesFilter } });
+		allProductFilters.push({ availability: { in: availabilitiesFilter } });
 	}
-	// --- END OF NEW LOGIC ---
 
 	// 4. Orchestrate Price Filter
 	if (priceRangeFilter) {
@@ -111,7 +113,7 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 					return { products: [], pagination: { total: 0 } };
 				}
 				// Add the SKU filter to the main list of filters
-				allFilters.push({ sku: { in: priceFilteredSkus } });
+				allProductFilters.push({ sku: { in: priceFilteredSkus } });
 			} catch (e) {
 				console.error("Price filter fetch failed:", e);
 				error(500, "Failed to apply price filter");
@@ -120,8 +122,11 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	}
 
 	// Set the final filters object
-	if (allFilters.length > 0) {
-		variables.filters = { and: allFilters };
+	if (allProductFilters.length > 0) {
+		variables.filters = { and: allProductFilters };
+	}
+	if (searchFilters.length > 0) {
+		variables.productsConnectionFilters2 = { and: searchFilters };
 	}
 
 	const strapiResult = await client.query(GET_PRODUCTS, variables).toPromise();
