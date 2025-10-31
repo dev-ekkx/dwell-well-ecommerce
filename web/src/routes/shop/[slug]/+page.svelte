@@ -16,6 +16,7 @@
 	import { MediaQuery } from "svelte/reactivity";
 	import { Content, List, Root, Trigger } from "$lib/components/ui/tabs/index";
 	import RelatedProducts from "$lib/components/related-products.svelte";
+    import {Badge} from "$lib/components/ui/badge";
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const buttonQuantityClass = "cursor-pointer disabled:opacity-50 disabled:pointer-events-none";
@@ -44,7 +45,7 @@
 						? productDetails
 						: title === "Specifications"
 							? productSpecifications
-							: "Reviews content goes here."
+							: "No Reviews content"
 			};
 		});
 	});
@@ -81,9 +82,9 @@
 	});
 
 	onMount(() => {
-		const rawDescriptionHtml = marked(product.description).toString();
-		const rawDetailsHtml = marked(product.details).toString();
-		const rawSpecificationsHtml = marked(product.specifications).toString();
+		const rawDescriptionHtml = product.description ? marked(product.description).toString() : "No product description";
+		const rawDetailsHtml = product.details ? marked(product.details).toString() : "No product details";
+		const rawSpecificationsHtml = product.specifications ? marked(product.specifications).toString() : "No product specifications";
 		productDescription = DOMPurify.sanitize(rawDescriptionHtml);
 		productDetails = DOMPurify.sanitize(rawDetailsHtml);
 		productSpecifications = DOMPurify.sanitize(rawSpecificationsHtml);
@@ -128,7 +129,13 @@
 				<div
 					class="line-clamp-1 flex flex-col gap-4 text-2xl leading-8 font-semibold sm:text-3xl sm:leading-10 xl:text-4xl xl:leading-12"
 				>
+<!-- Product name and coming soon tag -->
+	<div class="flex items-center gap-4">
 					<h3>{product.name}</h3>
+        {#if product.inventory < 1}
+            <Badge variant="secondary">Coming soon</Badge>
+            {/if}
+    </div>
 					<span>${Number(product.price).toFixed(2)}</span>
 				</div>
 
@@ -180,10 +187,12 @@
 				</div>
 
 				<!-- Order or add to cart -->
+                {#if product.inventory > 0}
 				<div class="mt-6 flex flex-col gap-2 **:cursor-pointer md:flex-row md:gap-4">
 					<Button>Order now</Button>
 					<Button class="border-primary text-primary" variant="outline">Add to cart</Button>
 				</div>
+                    {/if}
 			</section>
 		</section>
 
