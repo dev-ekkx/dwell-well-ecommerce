@@ -73,6 +73,7 @@ export const GET_PRODUCT_BY_SLUG = gql`
 			}
 			categories {
 				name
+				slug
 			}
 			description
 			images(pagination: { limit: 6 }) {
@@ -97,7 +98,7 @@ export const GET_PRODUCT_BY_SLUG = gql`
 
 export const GET_RELATED_PRODUCTS = gql`
 	query GetRelatedProducts($filters: ProductFiltersInput) {
-		products(filters: $filters, pagination: { limit: 5 }) {
+		products(filters: $filters, pagination: { limit: 5 }, sort: "publishedAt:desc") {
 			slug
 			name
 			SKU

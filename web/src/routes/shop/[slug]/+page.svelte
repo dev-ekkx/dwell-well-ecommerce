@@ -51,8 +51,6 @@
 		});
 	});
 
-	$inspect(product);
-
 	function increaseQuantity() {
 		if (productQuantity < product.inventory) {
 			productQuantity += 1;
