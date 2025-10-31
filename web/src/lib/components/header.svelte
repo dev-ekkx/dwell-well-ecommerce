@@ -75,21 +75,22 @@
 	}
 
 	const getSearchValue = async (e: Event) => {
-		const target = e.target as HTMLInputElement;
-		const newSearchTerm = target.value;
-
 		if (e instanceof KeyboardEvent && e.key === "Enter") {
 			e.preventDefault();
 
-			if (!newSearchTerm) {
-				return;
-			}
-			await setRouteParams({ q: newSearchTerm }, false, "/shop");
-			if (isSearchOpen) {
-				await toggleSearch();
-			}
+           await handleSearch()
 		}
 	};
+
+    const handleSearch = async () => {
+        if (!searchTerm) {
+            return;
+        }
+        await setRouteParams({ q: searchTerm }, false, "/shop");
+        if (isSearchOpen) {
+            await toggleSearch();
+        }
+    }
 
 	const handleInput = async () => {
 		if (page.url.pathname === "/shop" && !searchTerm.length) {
@@ -212,6 +213,9 @@
 				placeholder="Search..."
 				type="search"
 			/>
+            {#if searchTerm.length > 0}
+            <Button onclick={handleSearch} class="ml-2 cursor-pointer">Search</Button>
+                {/if}
 		</div>
 	</div>
 {/if}

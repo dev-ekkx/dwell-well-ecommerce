@@ -16,7 +16,7 @@
         PrevButton as PaginationPrevButton,
         Root as PaginationRoot
     } from "$lib/components/ui/pagination/index.js";
-
+    import EmptySearch from "$lib/components/empty-search.svelte";
     import {
         Content as SheetContent,
         Overlay as SheetOverlay,
@@ -123,18 +123,38 @@
 				<div class="flex items-center gap-2">
 					<h4 class="leading-8 font-bold md:text-2xl">Search results for {searchTerm}</h4>
 					<span class="text-xs text-muted-foreground sm:text-sm md:text-base"
-						>{formatNumberWithCommas(totalProducts)}
+						>
                         {#if totalProducts > 1}
+                        {formatNumberWithCommas(totalProducts-1)}
 						+ items found
+                            {:else if totalProducts === 0}
+                            No items found
                             {:else}
-                            item found
+                            1 item found
                             {/if}
                     </span
 					>
 				</div>
 			{/if}
 
-			<!--	Product items -->
+            <!--- Empty products --->
+            {#if !searchTerm && products.length === 0}
+                <div class="h-[70vh] flex flex-col items-center justify-center gap-4 py-20">
+                    <h3 class="text-2xl font-bold">No products found</h3>
+                    <p class="text-center text-muted-foreground">
+                        We couldn't find any products matching your search. Please try adjusting your filters or search terms.
+                    </p>
+                </div>
+            {/if}
+
+            <!--- Empty products for search --->
+            {#if searchTerm && products.length === 0}
+                <div class="flex h-[70vh] items-center justify-center">
+                <EmptySearch />
+                </div>
+            {/if}
+
+            <!--	Product items -->
 			<section class="flex flex-col gap-5 md:gap-7 xl:gap-10">
 				<div
 					class="grid grid-cols-2 gap-4 gap-y-8 sm:gap-6 md:grid-cols-3 md:gap-y-12 xl:grid-cols-4"
@@ -149,6 +169,7 @@
 				<!-- Items per page and pagination -->
 				<div class="mt-6 flex items-center justify-between gap-4 md:mt-8 xl:mt-10">
 					<!--	Items per page select -->
+                    {#if products.length >0}
 					<div class="flex items-center gap-4">
 						<span class="w-max">Products per page:</span>
 						<Root bind:value={itemsPerPage} onValueChange={handleItemsPerPage} type="single">
@@ -160,6 +181,7 @@
 							</Content>
 						</Root>
 					</div>
+                        {/if}
 
 					<!-- Pagination -->
 					{#if moreThanAPage}
