@@ -46,19 +46,61 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 
 	// Build query variables
 	if (strapiSort) variables.sort = [strapiSort];
+
+	const allFilters: Record<string, unknown>[] = [];
+
 	if (searchTerm) {
-		variables.filters.name = { containsi: searchTerm };
-		variables.productsConnectionFilters2.name = { containsi: searchTerm };
+		// variables.filters.name = { containsi: searchTerm };
+		// variables.productsConnectionFilters2.name = { containsi: searchTerm };
+
+		allFilters.push({
+			or: [{ name: { containsi: searchTerm } }, { categories: { name: { containsi: searchTerm } } }]
+		});
 	}
-	if (categoriesFilter?.length) variables.filters.categories = { slug: { in: categoriesFilter } };
-	if (sizesFilter?.length) variables.filters.sizes = { slug: { in: sizesFilter } };
-	if (stylesFilter?.length) variables.filters.styles = { slug: { in: stylesFilter } };
+	// if (categoriesFilter?.length) variables.filters.categories = { slug: { in: categoriesFilter } };
+	// if (sizesFilter?.length) variables.filters.sizes = { slug: { in: sizesFilter } };
+	// if (stylesFilter?.length) variables.filters.styles = { slug: { in: stylesFilter } };
+	// if (availabilitiesFilter?.length) {
+	// 	variables.filters.availability = { in: availabilitiesFilter };
+	// }
+	// if (priceRangeFilter) {
+	// 	const [min, max] = priceRangeFilter.split(",").map(Number);
+	// 	if (!Number.isNaN(min) && !Number.isNaN(max)) {
+	// 		try {
+	// 			const skuResponse = await fetch(
+	// 				`${backendUrl}/products/skus-by-price?minPrice=${min}&maxPrice=${max}`
+	// 			);
+	// 			if (!skuResponse.ok) error(502, "Could not fetch price-filtered SKUs");
+	// 			const priceFilteredSkus: string[] = await skuResponse.json();
+	// 			if (priceFilteredSkus.length === 0) {
+	// 				return { products: [], pagination: { total: 0 } };
+	// 			}
+	// 			variables.filters.SKU = { in: priceFilteredSkus };
+	// 		} catch {
+	// 			error(502, "Failed to apply price filter");
+	// 		}
+	// 	}
+	// }
+
+	// Add all other filters as separate "and" conditions
+	if (categoriesFilter?.length) {
+		allFilters.push({ categories: { slug: { in: categoriesFilter } } });
+	}
+	if (sizesFilter?.length) {
+		allFilters.push({ size: { in: sizesFilter } });
+	}
+	if (stylesFilter?.length) {
+		allFilters.push({ style: { in: stylesFilter } });
+	}
 	if (availabilitiesFilter?.length) {
-		variables.filters.availability = { in: availabilitiesFilter };
+		allFilters.push({ availability: { in: availabilitiesFilter } });
 	}
+	// --- END OF NEW LOGIC ---
+
+	// 4. Orchestrate Price Filter
 	if (priceRangeFilter) {
-		const [min, max] = priceRangeFilter.split(",").map(Number);
-		if (!Number.isNaN(min) && !Number.isNaN(max)) {
+		const [min, max] = priceRangeFilter.split("-").map(Number);
+		if (!isNaN(min) && !isNaN(max)) {
 			try {
 				const skuResponse = await fetch(
 					`${backendUrl}/products/skus-by-price?minPrice=${min}&maxPrice=${max}`
@@ -68,11 +110,18 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 				if (priceFilteredSkus.length === 0) {
 					return { products: [], pagination: { total: 0 } };
 				}
-				variables.filters.SKU = { in: priceFilteredSkus };
-			} catch {
-				error(502, "Failed to apply price filter");
+				// Add the SKU filter to the main list of filters
+				allFilters.push({ sku: { in: priceFilteredSkus } });
+			} catch (e) {
+				console.error("Price filter fetch failed:", e);
+				error(500, "Failed to apply price filter");
 			}
 		}
+	}
+
+	// Set the final filters object
+	if (allFilters.length > 0) {
+		variables.filters = { and: allFilters };
 	}
 
 	const strapiResult = await client.query(GET_PRODUCTS, variables).toPromise();
