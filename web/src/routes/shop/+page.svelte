@@ -23,7 +23,7 @@
         Root as SheetRoot,
         Trigger as SheetTrigger
     } from "$lib/components/ui/sheet/index.js";
-
+    import EmptyProduct from "$lib/components/empty-product.svelte";
     import CaretIcon from "$lib/assets/caret-up.svg";
     import FilterIcon from "$lib/assets/filter.svg";
     import {MediaQuery, SvelteURLSearchParams} from "svelte/reactivity";
@@ -139,12 +139,7 @@
 
             <!--- Empty products --->
             {#if !searchTerm && products.length === 0}
-                <div class="h-[70vh] flex flex-col items-center justify-center gap-4 py-20">
-                    <h3 class="text-2xl font-bold">No products found</h3>
-                    <p class="text-center text-muted-foreground">
-                        We couldn't find any products matching your search. Please try adjusting your filters or search terms.
-                    </p>
-                </div>
+    <EmptyProduct />
             {/if}
 
             <!--- Empty products for search --->

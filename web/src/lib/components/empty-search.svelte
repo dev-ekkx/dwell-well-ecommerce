@@ -5,7 +5,9 @@
 
 <div class="flex flex-col justify-between items-center gap-4">
     <img alt="binoculars" src={Binoculars}>
+    <h3 class="text-2xl font-bold">
     We couldn't find any products matching your search.
+    </h3>
     <ul class="flex flex-col gap-1 items-center text-muted-foreground">
         <li>
     - Check your spelling for typing errors
