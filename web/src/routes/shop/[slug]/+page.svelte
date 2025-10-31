@@ -15,7 +15,7 @@
 	import { Button } from "$lib/components/ui/button";
 	import { MediaQuery } from "svelte/reactivity";
 	import { Content, List, Root, Trigger } from "$lib/components/ui/tabs/index";
-	import RelatedProducts from "$lib/components/related-products.svelte";
+	import RelatedProducts from "./related-products.svelte";
 	import { Badge } from "$lib/components/ui/badge";
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
@@ -128,12 +128,15 @@
 				<div class="flex flex-row gap-6 md:flex-col">
 					{#each product.images.slice(0, 4) as image, index (image.url)}
 						{#if index !== selectedImageIndex}
+                            <button class=" cursor-pointer"
+								onclick={() => handlePreviewImage(index)}
+                            >
 							<img
 								alt={image.alternativeText}
-								class="aspect-square h-auto w-[4.5rem] cursor-pointer rounded-lg object-cover md:w-[5.8rem]"
+								class="aspect-square h-auto w-[4.5rem] rounded-lg object-cover md:w-[5.8rem]"
 								src={image.url}
-								onclick={() => handlePreviewImage(index)}
 							/>
+                            </button>
 						{/if}
 					{/each}
 				</div>
@@ -241,7 +244,7 @@
 		</section>
 	</div>
 	<!-- Related products -->
-	<RelatedProducts />
+	<RelatedProducts {...data.relatedProducts} />
 </div>
 
 <style>

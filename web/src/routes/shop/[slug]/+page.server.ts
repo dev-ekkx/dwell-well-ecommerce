@@ -51,7 +51,7 @@ export const load: PageServerLoad = async ({ params, url }) => {
 	const skusToFetch = relatedProducts.map((prod) => prod.SKU);
 	if (skusToFetch.length > 0) {
 		try {
-			const response = await fetch(`${backendUrl}/api/products/prices`, {
+			const response = await fetch(`${backendUrl}/products`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json"
