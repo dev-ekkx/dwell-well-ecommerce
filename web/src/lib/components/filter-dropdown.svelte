@@ -1,14 +1,14 @@
 <script lang="ts">
-	import CaretUp from "$lib/assets/caret-up.svg";
-	import { cn, formatNumberWithCommas } from "$lib/utils";
-	import { Label } from "$lib/components/ui/label";
-	import { Checkbox } from "$lib/components/ui/checkbox";
-	import type { FilterDropdownI } from "$lib/interfaces";
-	import gsap from "gsap";
-	import { tick } from "svelte";
-	import { Slider } from "$lib/components/ui/slider";
+    import CaretUp from "$lib/assets/caret-up.svg";
+    import {cn, formatNumberWithCommas} from "$lib/utils";
+    import {Label} from "$lib/components/ui/label";
+    import {Checkbox} from "$lib/components/ui/checkbox";
+    import type {FilterDropdownI} from "$lib/interfaces";
+    import gsap from "gsap";
+    import {tick} from "svelte";
+    import {Slider} from "$lib/components/ui/slider";
 
-	let {
+    let {
 		title,
 		options,
 		onValueChange,
@@ -85,7 +85,7 @@
 					bind:value={selectedSlides}
 					max={maxSlideValue}
 					step={1}
-					type="multiple"
+-+					type="multiple"
 				/>
 				<div class="flex items-center justify-between gap-4">
 					<span>${formatNumberWithCommas(Math.min(...selectedSlides))}</span>

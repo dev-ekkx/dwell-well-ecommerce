@@ -29,7 +29,15 @@
 	let searchMenu = $state<HTMLElement | null>(null);
 	let menuButton = $state<HTMLElement | null>(null);
 	let searchButton = $state<HTMLElement | null>(null);
+	let searchInput = $state<HTMLInputElement | null>(null);
 	let searchTerm = $state("");
+
+    // $effect(() => {
+    //     if (isSearchOpen && searchInput) {
+    //
+    //         searchInput().focus({preventScroll: true});
+    //     }
+    // })
 
 	async function toggleMenu() {
 		showMenuOverlay = !showMenuOverlay;
@@ -105,6 +113,7 @@
 	});
 
 	onMount(() => {
+        console.log(searchInput)
 		// Set search term on page mount
 		searchTerm = page.url.searchParams.get("q") ?? "";
 
@@ -204,6 +213,7 @@
 		<div class="flex">
 			<img alt="search" class="z-20 -mr-8" src={SearchIcon} />
 			<Input
+                    bind:this={searchInput}
 				onkeydown={getSearchValue}
 				bind:value={searchTerm}
 				oninput={handleInput}
