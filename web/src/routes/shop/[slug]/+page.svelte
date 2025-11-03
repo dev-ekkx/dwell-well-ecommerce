@@ -102,8 +102,7 @@
 </script>
 
 <div class="flex flex-col gap-4 g-px g-pb">
-
-    <!-- Breadcrumbs -->
+	<!-- Breadcrumbs -->
 	<BreadcrumbRoot>
 		<BreadcrumbList>
 			<Item>
