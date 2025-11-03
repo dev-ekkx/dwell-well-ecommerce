@@ -102,6 +102,8 @@
 </script>
 
 <div class="flex flex-col gap-4 g-px g-pb">
+
+    <!-- Breadcrumbs -->
 	<BreadcrumbRoot>
 		<BreadcrumbList>
 			<Item>
@@ -113,6 +115,7 @@
 			</Item>
 		</BreadcrumbList>
 	</BreadcrumbRoot>
+
 	<div class="g-py">
 		<!-- Product Details -->
 		<section class="grid gap-10 xl:grid-cols-2">

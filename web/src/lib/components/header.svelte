@@ -20,6 +20,9 @@
 		if (path === "/") {
 			return page.route.id === "/";
 		}
+
+        if (searchTerm.length > 0) return false
+
 		return (page.route?.id ?? "").includes(path);
 	};
 	let isMenuOpen = $state(false);
@@ -93,7 +96,7 @@
         if (!searchTerm) {
             return;
         }
-        await setRouteParams({ q: searchTerm }, false, "/shop");
+        await setRouteParams({ q: searchTerm, route: page.route.id ?? "" }, false, "/shop");
         if (isSearchOpen) {
             await toggleSearch();
         }

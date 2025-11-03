@@ -28,9 +28,16 @@
     import FilterIcon from "$lib/assets/filter.svg";
     import {MediaQuery, SvelteURLSearchParams} from "svelte/reactivity";
     import {onMount} from "svelte";
-    import type {PageI, ProductCardI} from "$lib/interfaces";
+    import type {PageI, ProductI} from "$lib/interfaces";
     import {goto} from "$app/navigation";
     import ProductCategories from "../_home/product-categories.svelte";
+    import {Link, Page} from "$lib/components/ui/breadcrumb";
+    import {
+        Item as BreadcrumbItem,
+        List as BreadcrumbList,
+        Root as BreadcrumbRoot,
+        Separator as BreadcrumbSeparator
+    } from "$lib/components/ui/breadcrumb/index.js";
 
     const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const { data }: PageProps = $props();
@@ -48,11 +55,31 @@
 	let totalProducts = $derived(data.totalProducts ?? 0);
 	const moreThanAPage = $derived(totalProducts / +itemsPerPage > 1);
 
-
     const homePageData = data.homepage as PageI;
     const productCategoriesData = homePageData.contentSections.find(
         (item) => item.sectionId === "categories"
     );
+
+    const getPreviousRoute = $derived(() => {
+        const routeName = page.url.searchParams.get("route") ?? "";
+       let name = "";
+       let route =  "";
+
+       if (routeName === "/") {
+              name = "Home";
+              route = "/";
+         } else  {
+           name = routeName?.split("/")[1]
+           route = routeName
+       }
+
+       return {
+           name,
+           route
+       }
+    })
+
+    $inspect(getPreviousRoute())
 
 	const setParams = (page?: number) => {
 		setRouteParams({
@@ -69,7 +96,7 @@
 		setParams();
 	};
 
-	const viewProductDetails = (product: ProductCardI) => {
+	const viewProductDetails = (product: ProductI) => {
 		const opData = {
 			price: product.price,
 			oldPrice: product.oldPrice,
@@ -98,6 +125,20 @@
 </svelte:head>
 
 <div class="flex flex-col gap-10">
+    <!-- Breadcrumbs -->
+    <BreadcrumbRoot class="g-px mb-6">
+        <BreadcrumbList>
+            <BreadcrumbItem>
+                <Link class="capitalize" href={getPreviousRoute().route}>{getPreviousRoute().name}</Link>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+                <Page class="font-bold">Search results</Page>
+            </BreadcrumbItem>
+        </BreadcrumbList>
+    </BreadcrumbRoot>
+
+
     {#if !searchTerm}
     <div class="g-px g-mb -mt-12">
     <ProductCategories {productCategoriesData} />
