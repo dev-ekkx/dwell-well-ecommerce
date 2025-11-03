@@ -61,23 +61,19 @@
     );
 
     const getPreviousRoute = $derived(() => {
-        const routeName = page.url.searchParams.get("route") ?? "";
-       let name = "";
-       let route =  "";
+        const route = page.url.searchParams.get("route") ?? "";
 
-       if (routeName === "/") {
-              name = "Home";
-              route = "/";
-         } else  {
-           name = routeName?.split("/")[1]
-           route = routeName
-       }
+        const name = route === "/"
+            ? "Home"
+            : route === "/faqs"
+                ? "FAQs"
+                : (route.split("/")[1] ?? route);
 
-       return {
-           name,
-           route
-       }
-    })
+        return {
+            name,
+            route
+        };
+    });
 
     $inspect(getPreviousRoute())
 
