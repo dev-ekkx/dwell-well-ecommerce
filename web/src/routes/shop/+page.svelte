@@ -43,27 +43,26 @@
 	// Page state
 	let openFilters = $state(false);
 	const itemsPerPageOptions = $state([...ITEMS_PER_PAGE_OPTIONS]);
-    const currentPageFromParams = $derived(page.url.searchParams.get("page"))
-	let currentPage = $state(parseInt(currentPageFromParams || "1"));
 	let itemsPerPage = $state(page.url.searchParams.get("perPage") || "10");
+	let currentPage = $derived(parseInt(page.url.searchParams.get("page") ?? "1"));
 	let totalProducts = $derived(data.totalProducts ?? 0);
 	const moreThanAPage = $derived(totalProducts / +itemsPerPage > 1);
+
 
     const homePageData = data.homepage as PageI;
     const productCategoriesData = homePageData.contentSections.find(
         (item) => item.sectionId === "categories"
     );
 
-	const setParams = () => {
+	const setParams = (page?: number) => {
 		setRouteParams({
-			page: currentPage,
+			page: page ? page : currentPage,
 			perPage: itemsPerPage
 		});
 	};
 
 	const handleItemsPerPage = () => {
-		currentPage = 1;
-		setParams();
+		setParams(1);
 	};
 
 	const handlePageChange = () => {

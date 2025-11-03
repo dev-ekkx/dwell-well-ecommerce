@@ -85,7 +85,7 @@
 					bind:value={selectedSlides}
 					max={maxSlideValue}
 					step={1}
--+					type="multiple"
+				type="multiple"
 				/>
 				<div class="flex items-center justify-between gap-4">
 					<span>${formatNumberWithCommas(Math.min(...selectedSlides))}</span>
