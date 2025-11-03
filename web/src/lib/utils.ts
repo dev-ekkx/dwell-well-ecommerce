@@ -21,7 +21,8 @@ export function formatNumberWithCommas(num: number): string {
 
 export const setRouteParams = async (
 	paramsToSet: Record<string, string | number>,
-	noScroll = false
+	noScroll = false,
+	path?: string
 ) => {
 	const currentUrl = page.url.searchParams;
 	// Create a new URLSearchParams object based on the current URL's params
@@ -37,10 +38,9 @@ export const setRouteParams = async (
 	}
 
 	// Construct the new URL path with the updated parameters
+	const pathname = path ?? page.url.pathname;
 	const queryString = newParams.toString();
-	const newPath = (
-		queryString ? `${page.url.pathname}?${queryString}` : page.url.pathname
-	) as RouteId;
+	const newPath = (queryString ? `${pathname}?${queryString}` : page.url.pathname) as RouteId;
 
 	// Navigate to the new URL
 	await goto(resolve(newPath), {

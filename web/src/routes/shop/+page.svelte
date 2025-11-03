@@ -1,37 +1,38 @@
 <script lang="ts">
-	import type { PageProps } from "./$types";
-	import { formatNumberWithCommas, setRouteParams } from "$lib/utils";
-	import FiltersAndSort from "./filter-and-sort.svelte";
-	import ProductCard from "./product-card.svelte";
-	import ContactUs from "$lib/components/contact-us.svelte";
-	import { page } from "$app/state";
-	import { ITEMS_PER_PAGE_OPTIONS } from "$lib/constants";
-	import { Content, Item, Root, Trigger } from "$lib/components/ui/select";
-	import {
-		Content as PaginationContent,
-		Ellipsis as PaginationEllipsis,
-		Item as PaginationItem,
-		Link as PaginationLink,
-		NextButton as PaginationNextButton,
-		PrevButton as PaginationPrevButton,
-		Root as PaginationRoot
-	} from "$lib/components/ui/pagination/index.js";
+    import type {PageProps} from "./$types";
+    import {formatNumberWithCommas, setRouteParams} from "$lib/utils";
+    import FiltersAndSort from "./filter-and-sort.svelte";
+    import ProductCard from "./product-card.svelte";
+    import ContactUs from "$lib/components/contact-us.svelte";
+    import {page} from "$app/state";
+    import {ITEMS_PER_PAGE_OPTIONS} from "$lib/constants";
+    import {Content, Item, Root, Trigger} from "$lib/components/ui/select";
+    import {
+        Content as PaginationContent,
+        Ellipsis as PaginationEllipsis,
+        Item as PaginationItem,
+        Link as PaginationLink,
+        NextButton as PaginationNextButton,
+        PrevButton as PaginationPrevButton,
+        Root as PaginationRoot
+    } from "$lib/components/ui/pagination/index.js";
+    import EmptySearch from "$lib/components/empty-search.svelte";
+    import {
+        Content as SheetContent,
+        Overlay as SheetOverlay,
+        Root as SheetRoot,
+        Trigger as SheetTrigger
+    } from "$lib/components/ui/sheet/index.js";
+    import EmptyProduct from "$lib/components/empty-product.svelte";
+    import CaretIcon from "$lib/assets/caret-up.svg";
+    import FilterIcon from "$lib/assets/filter.svg";
+    import {MediaQuery, SvelteURLSearchParams} from "svelte/reactivity";
+    import {onMount} from "svelte";
+    import type {PageI, ProductCardI} from "$lib/interfaces";
+    import {goto} from "$app/navigation";
+    import ProductCategories from "../_home/product-categories.svelte";
 
-	import {
-		Content as SheetContent,
-		Overlay as SheetOverlay,
-		Root as SheetRoot,
-		Trigger as SheetTrigger
-	} from "$lib/components/ui/sheet/index.js";
-
-	import CaretIcon from "$lib/assets/caret-up.svg";
-	import FilterIcon from "$lib/assets/filter.svg";
-	import { MediaQuery, SvelteURLSearchParams } from "svelte/reactivity";
-	import { onMount } from "svelte";
-	import type { ProductCardI } from "$lib/interfaces";
-	import { goto } from "$app/navigation";
-
-	const mediaQuery = new MediaQuery("max-width: 63.9rem");
+    const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const { data }: PageProps = $props();
 	const seoData = $derived(data.seo);
 	const filters = $derived(data.filters);
@@ -42,10 +43,16 @@
 	// Page state
 	let openFilters = $state(false);
 	const itemsPerPageOptions = $state([...ITEMS_PER_PAGE_OPTIONS]);
-	let currentPage = $state(parseInt(page.url.searchParams.get("page") || "1"));
+    const currentPageFromParams = $derived(page.url.searchParams.get("page"))
+	let currentPage = $state(parseInt(currentPageFromParams || "1"));
 	let itemsPerPage = $state(page.url.searchParams.get("perPage") || "10");
 	let totalProducts = $derived(data.totalProducts ?? 0);
 	const moreThanAPage = $derived(totalProducts / +itemsPerPage > 1);
+
+    const homePageData = data.homepage as PageI;
+    const productCategoriesData = homePageData.contentSections.find(
+        (item) => item.sectionId === "categories"
+    );
 
 	const setParams = () => {
 		setRouteParams({
@@ -92,7 +99,14 @@
 </svelte:head>
 
 <div class="flex flex-col gap-10">
+    {#if !searchTerm}
+    <div class="g-px g-mb -mt-12">
+    <ProductCategories {productCategoriesData} />
+    </div>
+        {/if}
+
 	<section class="flex gap-6 g-px">
+
 		<!-- Desktop Filter and Sort -->
 		<div class="hidden lg:block">
 			<FiltersAndSort {filters} />
@@ -123,13 +137,34 @@
 				<div class="flex items-center gap-2">
 					<h4 class="leading-8 font-bold md:text-2xl">Search results for {searchTerm}</h4>
 					<span class="text-xs text-muted-foreground sm:text-sm md:text-base"
-						>{formatNumberWithCommas(1500)}
-						+ items found</span
+						>
+                        {#if totalProducts > 1}
+                        {formatNumberWithCommas(totalProducts-1)}
+						+ items found
+                            {:else if totalProducts === 0}
+                            No items found
+                            {:else}
+                            1 item found
+                            {/if}
+                    </span
 					>
 				</div>
 			{/if}
 
-			<!--	Product items -->
+            <!--- Empty products --->
+            {#if !searchTerm && products.length === 0}
+    <EmptyProduct />
+            {/if}
+
+            <!--- Empty products for search --->
+            {#if searchTerm && products.length === 0}
+                <div class="flex h-[70vh] items-center justify-center">
+                <EmptySearch />
+                </div>
+            {/if}
+
+
+            <!--	Product items -->
 			<section class="flex flex-col gap-5 md:gap-7 xl:gap-10">
 				<div
 					class="grid grid-cols-2 gap-4 gap-y-8 sm:gap-6 md:grid-cols-3 md:gap-y-12 xl:grid-cols-4"
@@ -144,6 +179,7 @@
 				<!-- Items per page and pagination -->
 				<div class="mt-6 flex items-center justify-between gap-4 md:mt-8 xl:mt-10">
 					<!--	Items per page select -->
+                    {#if products.length >0}
 					<div class="flex items-center gap-4">
 						<span class="w-max">Products per page:</span>
 						<Root bind:value={itemsPerPage} onValueChange={handleItemsPerPage} type="single">
@@ -155,6 +191,7 @@
 							</Content>
 						</Root>
 					</div>
+                        {/if}
 
 					<!-- Pagination -->
 					{#if moreThanAPage}

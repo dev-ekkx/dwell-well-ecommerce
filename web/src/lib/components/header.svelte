@@ -1,20 +1,20 @@
 <script lang="ts">
-	import { resolve } from "$app/paths";
-	import { cn, setRouteParams } from "$lib/utils";
-	import { page } from "$app/state";
-	import SearchIcon from "$lib/assets/search.svg";
-	import { Button } from "$lib/components/ui/button";
-	import LogoComponent from "$lib/components/logo.svelte";
-	import HamburgerIcon from "$lib/assets/menu.svg";
-	import CloseIcon from "$lib/assets/close.svg";
-	import { gsap } from "gsap";
-	import { onMount, tick } from "svelte";
-	import { goto } from "$app/navigation";
-	import { Input } from "$lib/components/ui/input";
-	import { MediaQuery } from "svelte/reactivity";
-	import { ROUTE_NAVS } from "$lib/constants";
+    import {resolve} from "$app/paths";
+    import {cn, setRouteParams} from "$lib/utils";
+    import {page} from "$app/state";
+    import SearchIcon from "$lib/assets/search.svg";
+    import {Button} from "$lib/components/ui/button";
+    import LogoComponent from "$lib/components/logo.svelte";
+    import HamburgerIcon from "$lib/assets/menu.svg";
+    import CloseIcon from "$lib/assets/close.svg";
+    import {gsap} from "gsap";
+    import {onMount, tick} from "svelte";
+    import {goto} from "$app/navigation";
+    import {Input} from "$lib/components/ui/input";
+    import {MediaQuery} from "svelte/reactivity";
+    import {ROUTE_NAVS} from "$lib/constants";
 
-	const mediaQuery = new MediaQuery("max-width: 63.9rem");
+    const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const isMobile = $derived(mediaQuery.current);
 	const isActiveRoute = (path: string) => {
 		if (path === "/") {
@@ -29,7 +29,15 @@
 	let searchMenu = $state<HTMLElement | null>(null);
 	let menuButton = $state<HTMLElement | null>(null);
 	let searchButton = $state<HTMLElement | null>(null);
+	let searchInput = $state<HTMLInputElement | null>(null);
 	let searchTerm = $state("");
+
+    // $effect(() => {
+    //     if (isSearchOpen && searchInput) {
+    //
+    //         searchInput().focus({preventScroll: true});
+    //     }
+    // })
 
 	async function toggleMenu() {
 		showMenuOverlay = !showMenuOverlay;
@@ -75,21 +83,22 @@
 	}
 
 	const getSearchValue = async (e: Event) => {
-		const target = e.target as HTMLInputElement;
-		const newSearchTerm = target.value;
-
 		if (e instanceof KeyboardEvent && e.key === "Enter") {
 			e.preventDefault();
 
-			if (!newSearchTerm) {
-				return;
-			}
-			await setRouteParams({ q: newSearchTerm });
-			if (isSearchOpen) {
-				await toggleSearch();
-			}
+           await handleSearch()
 		}
 	};
+
+    const handleSearch = async () => {
+        if (!searchTerm) {
+            return;
+        }
+        await setRouteParams({ q: searchTerm }, false, "/shop");
+        if (isSearchOpen) {
+            await toggleSearch();
+        }
+    }
 
 	const handleInput = async () => {
 		if (page.url.pathname === "/shop" && !searchTerm.length) {
@@ -104,6 +113,7 @@
 	});
 
 	onMount(() => {
+        console.log(searchInput)
 		// Set search term on page mount
 		searchTerm = page.url.searchParams.get("q") ?? "";
 
@@ -203,6 +213,7 @@
 		<div class="flex">
 			<img alt="search" class="z-20 -mr-8" src={SearchIcon} />
 			<Input
+                    bind:this={searchInput}
 				onkeydown={getSearchValue}
 				bind:value={searchTerm}
 				oninput={handleInput}
@@ -212,6 +223,9 @@
 				placeholder="Search..."
 				type="search"
 			/>
+            {#if searchTerm.length > 0}
+            <Button onclick={handleSearch} class="ml-2 cursor-pointer">Search</Button>
+                {/if}
 		</div>
 	</div>
 {/if}

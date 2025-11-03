@@ -4,6 +4,7 @@ import { GET_PRODUCT_BY_SLUG, GET_RELATED_PRODUCTS } from "../../../graphql.quer
 import { error } from "@sveltejs/kit";
 import type { ProductI } from "$lib/interfaces";
 import type { ProductDataMap } from "$lib/types";
+import { BACKEND_URL } from "$lib/constants";
 
 export const load: PageServerLoad = async ({ params, url }) => {
 	const opsData = Object.fromEntries(url.searchParams);
@@ -31,7 +32,6 @@ export const load: PageServerLoad = async ({ params, url }) => {
 	const categorySlugs = data.categories?.map((cat) => cat.slug) || [];
 
 	// Fetch related products
-	const backendUrl = import.meta.env.VITE_BACKEND_URL;
 	let relatedProducts: ProductI[] = [];
 	if (categorySlugs.length > 0) {
 		const relatedVariables = {
@@ -51,7 +51,7 @@ export const load: PageServerLoad = async ({ params, url }) => {
 	const skusToFetch = relatedProducts.map((prod) => prod.SKU);
 	if (skusToFetch.length > 0) {
 		try {
-			const response = await fetch(`${backendUrl}/products`, {
+			const response = await fetch(`${BACKEND_URL}/products`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json"
