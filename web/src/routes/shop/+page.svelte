@@ -267,13 +267,19 @@
 				<!-- #################### END OF PRODUCT & PAGINATION CONTENT #################### -->
 			{:else}
 				<!-- Product category sections -->
+                <div class="flex flex-col gap-10 md:gap-12 lg:gap-16">
 				<ProductCategorySection title="New Arrival" {products} />
+				<ProductCategorySection title="Top Sellers" {products} />
+                </div>
 			{/if}
 		</div>
 	</section>
 
-	<!--{#if !searchTerm}-->
-	<!--    {/if}-->
+	{#if !searchTerm}
+        <div class="g-px g-mt">
+				<ProductCategorySection title="Flash Sales" {products} isDynamicWidth={false} />
+        </div>
+	    {/if}
 	<!-- Contact us -->
 	<ContactUs />
 </div>

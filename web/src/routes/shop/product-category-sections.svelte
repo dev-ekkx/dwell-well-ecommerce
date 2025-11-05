@@ -12,11 +12,13 @@
     const {
 		title,
 		products,
-		description = "Shop now for exclusive discounts on stylish furniture—before the deals are gone"
-	}: {
+		description = "Shop now for exclusive discounts on stylish furniture—before the deals are gone",
+	    isDynamicWidth = true
+    }: {
 		title: string;
 		products: ProductI[];
 		description?: string;
+        isDynamicWidth?: boolean;
 	} = $props();
 
     const carousel = useCarousel({ items: products });
@@ -38,7 +40,7 @@
 <section
         bind:this={carousel.carouselState.container}
         class={cn("relative flex flex-col gap-4 max-w-full overflow-x-clip", {
-            'max-w-[67vw] xl:max-w-[71vw]': !isMobile
+            'max-w-[67vw] xl:max-w-[71vw]': (isDynamicWidth && !isMobile)
         })}>
 	<div class="flex items-center justify-between gap-4">
 		<!-- Title and Description -->
@@ -52,7 +54,7 @@
 	</div>
 
     <!-- Arrow Buttons -->
-    <div class="w-full flex absolute left-0 z-10  top-2/4 -translate-y-1/2 items-center justify-between">
+    <div class="w-full flex absolute left-0 z-10 top-2/4 items-center justify-between">
         <ArrowButton direction="left" onclick={carousel.prev} />
         <ArrowButton direction="right" onclick={carousel.next} />
     </div>
