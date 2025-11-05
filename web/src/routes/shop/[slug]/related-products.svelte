@@ -1,10 +1,8 @@
 <script lang="ts">
-	import type { ProductI } from "$lib/interfaces";
-	import ProductCard from "../product-card.svelte";
+    import type {ProductI} from "$lib/interfaces";
+    import ProductCard from "../product-card.svelte";
 
-	const relatedProducts: ProductI[] = $props();
-
-	$inspect(relatedProducts);
+    const relatedProducts: ProductI[] = $props();
 </script>
 
 <div class="flex flex-col gap-10">

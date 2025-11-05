@@ -138,9 +138,7 @@
             isPriceRangeFiltered
         );
     });
-
-    $inspect(isFilterOrSearch())
-
+    
 	onMount(() => {
 		setParams();
 	});
@@ -305,8 +303,8 @@
 				<!-- Product category sections -->
                 <div class="flex flex-col gap-10 md:gap-12 lg:gap-16">
 				<ProductCategorySection title="New Arrivals" {products} />
-				<ProductCategorySection title="Best Sellers" products={products.slice(3)} />
-				<ProductCategorySection title="Top Picks" products={products.slice(5)} />
+				<ProductCategorySection title="Best Sellers" products={products.slice(2)} />
+				<ProductCategorySection title="Top Picks" products={products.slice(4)} />
                 </div>
 			{/if}
 				<!-- #################### END OF PRODUCT & PAGINATION CONTENT #################### -->

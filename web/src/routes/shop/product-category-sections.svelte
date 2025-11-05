@@ -32,7 +32,7 @@
     }
 
 	const viewProductDetails = (product: ProductI) => {
-		console.log(product);
+        goto(`/shop?category=${product.slug}`);
 	};
 
 	onMount(() => {
