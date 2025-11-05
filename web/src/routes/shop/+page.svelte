@@ -38,13 +38,14 @@
         Root as BreadcrumbRoot,
         Separator as BreadcrumbSeparator
     } from "$lib/components/ui/breadcrumb/index.js";
+    import ProductCategorySection from "./product-category-sections.svelte"
 
     const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const { data }: PageProps = $props();
 	const seoData = $derived(data.seo);
 	const filters = $derived(data.filters);
 	const searchTerm = $derived(page.url.searchParams.get("q") || "");
-	const products = $derived(data.products);
+	const products = $derived(data.products as ProductI[]);
 	const isMobile = $derived(mediaQuery.current);
 
 	// Page state
@@ -71,8 +72,6 @@
 			route
 		};
 	});
-
-	$inspect(getPreviousRoute());
 
 	const setParams = (page?: number) => {
 		setRouteParams({
@@ -194,6 +193,9 @@
 				</div>
 			{/if}
 
+
+<!-- #################### PRODUCT & PAGINATION CONTENT #################### -->
+            {#if searchTerm}
 			<!--	Product items -->
 			<section class="flex flex-col gap-5 md:gap-7 xl:gap-10">
 				<div
@@ -263,8 +265,17 @@
 					{/if}
 				</div>
 			</section>
+            <!-- #################### END OF PRODUCT & PAGINATION CONTENT #################### -->
+                {:else}
+<!-- Product category sections -->
+<ProductCategorySection title="New Arrival" products={products} />
+            {/if}
+
 		</div>
 	</section>
-	<!--	Contact us -->
+
+    <!--{#if !searchTerm}-->
+    <!--    {/if}-->
+	<!-- Contact us -->
 	<ContactUs />
 </div>
