@@ -28,7 +28,7 @@ export function useCarousel<T>(options: CarouselOptions<T>): CarouselState<T> {
 		container: null,
 		track: null
 	});
-	const REPEAT = options.repeat ?? 5;
+	const REPEAT = Math.max(options.repeat ?? 5, 2);
 	const itemsData = options.items;
 	let index = options.initialIndex ?? itemsData.length;
 
@@ -79,7 +79,7 @@ export function useCarousel<T>(options: CarouselOptions<T>): CarouselState<T> {
 
 	function collectItems() {
 		if (!carouselState.track) return;
-		itemsElements = Array.from(carouselState.track.querySelectorAll(":scope > div"));
+		itemsElements = Array.from(carouselState.track.children) as HTMLElement[];
 	}
 
 	function onResize() {

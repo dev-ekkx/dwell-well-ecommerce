@@ -1,46 +1,46 @@
 <script lang="ts">
-	import type { PageProps } from "./$types";
-	import { formatNumberWithCommas, setRouteParams } from "$lib/utils";
-	import FiltersAndSort from "./filter-and-sort.svelte";
-	import ProductCard from "./product-card.svelte";
-	import ContactUs from "$lib/components/contact-us.svelte";
-	import { page } from "$app/state";
-	import { ITEMS_PER_PAGE_OPTIONS } from "$lib/constants";
-	import { Content, Item, Root, Trigger } from "$lib/components/ui/select";
-	import {
-		Content as PaginationContent,
-		Ellipsis as PaginationEllipsis,
-		Item as PaginationItem,
-		Link as PaginationLink,
-		NextButton as PaginationNextButton,
-		PrevButton as PaginationPrevButton,
-		Root as PaginationRoot
-	} from "$lib/components/ui/pagination/index.js";
-	import EmptySearch from "$lib/components/empty-search.svelte";
-	import {
-		Content as SheetContent,
-		Overlay as SheetOverlay,
-		Root as SheetRoot,
-		Trigger as SheetTrigger
-	} from "$lib/components/ui/sheet/index.js";
-	import EmptyProduct from "$lib/components/empty-product.svelte";
-	import CaretIcon from "$lib/assets/caret-up.svg";
-	import FilterIcon from "$lib/assets/filter.svg";
-	import { MediaQuery, SvelteURLSearchParams } from "svelte/reactivity";
-	import { onMount } from "svelte";
-	import type { PageI, ProductI } from "$lib/interfaces";
-	import { goto } from "$app/navigation";
-	import ProductCategories from "../_home/product-categories.svelte";
-	import { Link, Page } from "$lib/components/ui/breadcrumb";
-	import {
-		Item as BreadcrumbItem,
-		List as BreadcrumbList,
-		Root as BreadcrumbRoot,
-		Separator as BreadcrumbSeparator
-	} from "$lib/components/ui/breadcrumb/index.js";
-	import ProductCategorySection from "./product-category-sections.svelte";
+    import type {PageProps} from "./$types";
+    import {formatNumberWithCommas, setRouteParams} from "$lib/utils";
+    import FiltersAndSort from "./filter-and-sort.svelte";
+    import ProductCard from "./product-card.svelte";
+    import ContactUs from "$lib/components/contact-us.svelte";
+    import {page} from "$app/state";
+    import {ITEMS_PER_PAGE_OPTIONS} from "$lib/constants";
+    import {Content, Item, Root, Trigger} from "$lib/components/ui/select";
+    import {
+        Content as PaginationContent,
+        Ellipsis as PaginationEllipsis,
+        Item as PaginationItem,
+        Link as PaginationLink,
+        NextButton as PaginationNextButton,
+        PrevButton as PaginationPrevButton,
+        Root as PaginationRoot
+    } from "$lib/components/ui/pagination/index.js";
+    import EmptySearch from "$lib/components/empty-search.svelte";
+    import {
+        Content as SheetContent,
+        Overlay as SheetOverlay,
+        Root as SheetRoot,
+        Trigger as SheetTrigger
+    } from "$lib/components/ui/sheet/index.js";
+    import EmptyProduct from "$lib/components/empty-product.svelte";
+    import CaretIcon from "$lib/assets/caret-up.svg";
+    import FilterIcon from "$lib/assets/filter.svg";
+    import {MediaQuery, SvelteURLSearchParams} from "svelte/reactivity";
+    import {onMount} from "svelte";
+    import type {PageI, ProductI} from "$lib/interfaces";
+    import {goto} from "$app/navigation";
+    import ProductCategories from "../_home/product-categories.svelte";
+    import {Link, Page} from "$lib/components/ui/breadcrumb";
+    import {
+        Item as BreadcrumbItem,
+        List as BreadcrumbList,
+        Root as BreadcrumbRoot,
+        Separator as BreadcrumbSeparator
+    } from "$lib/components/ui/breadcrumb/index.js";
+    import ProductCategorySection from "./product-category-sections.svelte";
 
-	const mediaQuery = new MediaQuery("max-width: 63.9rem");
+    const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const { data }: PageProps = $props();
 	const seoData = $derived(data.seo);
 	const filters = $derived(data.filters);
@@ -116,7 +116,7 @@
 	<meta content={seoData.metaDescription} name="description" />
 </svelte:head>
 
-<div class="flex flex-col gap-10">
+<div class="flex flex-col gap-10 ">
 	{#if searchTerm}
 		<!-- Breadcrumbs -->
 		<BreadcrumbRoot class="mb-6 g-px">
@@ -133,7 +133,7 @@
 	{/if}
 
 	{#if !searchTerm}
-		<div class="-mt-12 g-mb g-px">
+		<div class="-mt-12 g-mb g-px max-w-full">
 			<ProductCategories {productCategoriesData} />
 		</div>
 	{/if}
@@ -145,7 +145,7 @@
 		</div>
 
 		<!--	main content -->
-		<div class="flex flex-1 flex-col gap-6">
+		<div class="flex flex-col gap-6 max-w-full">
 			<!--	Mobile Filter and Sort sheet -->
 			<SheetRoot bind:open={openFilters}>
 				{#if isMobile}

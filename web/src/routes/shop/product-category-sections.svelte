@@ -1,11 +1,15 @@
 <script lang="ts">
-	import type { ProductI } from "$lib/interfaces";
-	import { Button } from "$lib/components/ui/button";
-	import ProductCard from "./product-card.svelte";
-	import { CarouselController } from "$lib/utils";
-	import { onMount } from "svelte";
+    import type {ProductI} from "$lib/interfaces";
+    import {Button} from "$lib/components/ui/button";
+    import {onMount} from "svelte";
+    import {useCarousel} from "$lib/helpers/carousel.svelte";
+    import ProductCard from "./product-card.svelte";
+    import {cn} from "$lib/utils";
+    import {MediaQuery} from "svelte/reactivity";
+    import ArrowButton from "$lib/components/arrow-button.svelte";
+    // import Picture from "$lib/components/picture.svelte";
 
-	const {
+    const {
 		title,
 		products,
 		description = "Shop now for exclusive discounts on stylish furniture—before the deals are gone"
@@ -15,35 +19,27 @@
 		description?: string;
 	} = $props();
 
-	let trackEl: HTMLElement;
-	let carousel: CarouselController;
+    const carousel = useCarousel({ items: products });
+    const mediaQuery = new MediaQuery("max-width: 63.9rem");
+    const isMobile = $derived(mediaQuery.current);
 
 	const viewProductDetails = (product: ProductI) => {
-		// Navigate to product details page
 		console.log(product);
 	};
 
 	onMount(() => {
-		carousel = new CarouselController(trackEl);
-
-		// Example usage
-		carousel.handleNext();
-
-		return () => {
-			carousel.destroy(); // clean up resize listener
-		};
+        carousel.collectItems();
 	});
 
-	function prev() {
-		carousel.handlePrev();
-	}
 
-	function next() {
-		carousel.handleNext();
-	}
+
 </script>
 
-<section class="flex flex-col gap-4">
+<section
+        bind:this={carousel.carouselState.container}
+        class={cn("relative flex flex-col gap-4 max-w-full overflow-x-clip", {
+            'max-w-[67vw] xl:max-w-[71vw]': !isMobile
+        })}>
 	<div class="flex items-center justify-between gap-4">
 		<!-- Title and Description -->
 		<div class="flex flex-col gap-2">
@@ -55,12 +51,19 @@
 		<Button class="cursor-pointer text-primary hover:text-primary" variant="ghost">View all</Button>
 	</div>
 
+    <!-- Arrow Buttons -->
+    <div class="w-full flex absolute left-0 z-10  top-2/4 -translate-y-1/2 items-center justify-between">
+        <ArrowButton direction="left" onclick={carousel.prev} />
+        <ArrowButton direction="right" onclick={carousel.next} />
+    </div>
+
+<!-- Image carousel -->
 	<div
-		bind:this={trackEl}
-		class="flex items-center gap-4 transition-transform duration-300 lg:gap-6"
+		bind:this={carousel.carouselState.track}
+		class="flex items-center gap-4 w-max"
 	>
-		{#each products as product (product.SKU)}
-			<button onclick={() => viewProductDetails(product)} class="cursor-pointer">
+        {#each carousel.displayedItems as product, idx(idx)}
+            <button onclick={() => viewProductDetails(product)} class="cursor-pointer">
 				<ProductCard {...product} />
 			</button>
 		{/each}
