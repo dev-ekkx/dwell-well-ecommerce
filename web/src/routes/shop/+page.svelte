@@ -1,54 +1,55 @@
 <script lang="ts">
-    import type {PageProps} from "./$types";
-    import {formatNumberWithCommas, setRouteParams} from "$lib/utils";
-    import FiltersAndSort from "./filter-and-sort.svelte";
-    import ProductCard from "./product-card.svelte";
-    import ContactUs from "$lib/components/contact-us.svelte";
-    import {page} from "$app/state";
-    import {ITEMS_PER_PAGE_OPTIONS} from "$lib/constants";
-    import {Content, Item, Root, Trigger} from "$lib/components/ui/select";
-    import {
-        Content as PaginationContent,
-        Ellipsis as PaginationEllipsis,
-        Item as PaginationItem,
-        Link as PaginationLink,
-        NextButton as PaginationNextButton,
-        PrevButton as PaginationPrevButton,
-        Root as PaginationRoot
-    } from "$lib/components/ui/pagination/index.js";
-    import EmptySearch from "$lib/components/empty-search.svelte";
-    import {
-        Content as SheetContent,
-        Overlay as SheetOverlay,
-        Root as SheetRoot,
-        Trigger as SheetTrigger
-    } from "$lib/components/ui/sheet/index.js";
-    import EmptyProduct from "$lib/components/empty-product.svelte";
-    import CaretIcon from "$lib/assets/caret-up.svg";
-    import FilterIcon from "$lib/assets/filter.svg";
-    import {MediaQuery, SvelteURLSearchParams} from "svelte/reactivity";
-    import {onMount} from "svelte";
-    import type {PageI, ProductI} from "$lib/interfaces";
-    import {goto} from "$app/navigation";
-    import ProductCategories from "../_home/product-categories.svelte";
-    import {Link, Page} from "$lib/components/ui/breadcrumb";
-    import {
-        Item as BreadcrumbItem,
-        List as BreadcrumbList,
-        Root as BreadcrumbRoot,
-        Separator as BreadcrumbSeparator
-    } from "$lib/components/ui/breadcrumb/index.js";
-    import ProductCategorySection from "./product-category-sections.svelte";
+	import type { PageProps } from "./$types";
+	import { formatNumberWithCommas, setRouteParams } from "$lib/utils";
+	import FiltersAndSort from "./filter-and-sort.svelte";
+	import ProductCard from "./product-card.svelte";
+	import ContactUs from "$lib/components/contact-us.svelte";
+	import { page } from "$app/state";
+	import { ITEMS_PER_PAGE_OPTIONS } from "$lib/constants";
+	import { Content, Item, Root, Trigger } from "$lib/components/ui/select";
+	import {
+		Content as PaginationContent,
+		Ellipsis as PaginationEllipsis,
+		Item as PaginationItem,
+		Link as PaginationLink,
+		NextButton as PaginationNextButton,
+		PrevButton as PaginationPrevButton,
+		Root as PaginationRoot
+	} from "$lib/components/ui/pagination/index.js";
+	import EmptySearch from "$lib/components/empty-search.svelte";
+	import {
+		Content as SheetContent,
+		Overlay as SheetOverlay,
+		Root as SheetRoot,
+		Trigger as SheetTrigger
+	} from "$lib/components/ui/sheet/index.js";
+	import EmptyProduct from "$lib/components/empty-product.svelte";
+	import CaretIcon from "$lib/assets/caret-up.svg";
+	import FilterIcon from "$lib/assets/filter.svg";
+	import { MediaQuery, SvelteURLSearchParams } from "svelte/reactivity";
+	import { onMount } from "svelte";
+	import type { PageI, ProductI } from "$lib/interfaces";
+	import { goto } from "$app/navigation";
+	import ProductCategories from "../_home/product-categories.svelte";
+	import { Link, Page } from "$lib/components/ui/breadcrumb";
+	import {
+		Item as BreadcrumbItem,
+		List as BreadcrumbList,
+		Root as BreadcrumbRoot,
+		Separator as BreadcrumbSeparator
+	} from "$lib/components/ui/breadcrumb/index.js";
+	import ProductCategorySection from "./product-category-sections.svelte";
 
-    const mediaQuery = new MediaQuery("max-width: 63.9rem");
+	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const { data }: PageProps = $props();
 	const seoData = $derived(data.seo);
-	const filters = $derived({...data.filters,
-    priceRange: {
-        min: 0,
-        max: 10000
-    }
-    });
+	const filters = $derived({
+		...data.filters,
+		priceRange: {
+			min: 0,
+			max: 10000
+		}
+	});
 	const searchTerm = $derived(page.url.searchParams.get("q") || "");
 	const products = $derived(data.products as ProductI[]);
 	const isMobile = $derived(mediaQuery.current);
@@ -66,20 +67,25 @@
 		(item) => item.sectionId === "categories"
 	);
 
-    const isViewingCategory = $derived(() => {
-        return !!page.url.searchParams.get("category");
-    });
+	const isViewingCategory = $derived(() => {
+		return !!page.url.searchParams.get("category");
+	});
 
-    const categoryName = $derived(() => {
-        const categoryParam = page.url.searchParams.get("category") || "";
-        return categoryParam.split("_").join(" ");
-    });
+	const categoryName = $derived(() => {
+		const categoryParam = page.url.searchParams.get("category") || "";
+		return categoryParam.split("_").join(" ");
+	});
 
 	const getPreviousRoute = $derived(() => {
 		const route = isViewingCategory() ? "/shop" : (page.url.searchParams.get("route") ?? "");
 
-		const name = isViewingCategory() ? "Shop" : (
-			route === "/" ? "Home" : route === "/faqs" ? "FAQs" : (route.split("/")[1] ?? route));
+		const name = isViewingCategory()
+			? "Shop"
+			: route === "/"
+				? "Home"
+				: route === "/faqs"
+					? "FAQs"
+					: (route.split("/")[1] ?? route);
 
 		return {
 			name,
@@ -120,25 +126,30 @@
 		goto(`/shop/${product.slug}?${params.toString()}`);
 	};
 
-    const isFilterOrSearch = $derived(() => {
-        const priceRangeFilter = (page.url.searchParams.get("priceRange") ?? "").split(",");
-      const  isPriceRangeFiltered = priceRangeFilter.length === 2 && (priceRangeFilter[0] !== "0" || priceRangeFilter[1] !== "10000");
-        const sort = page.url.searchParams.get("sort");
-        const categoriesFilter = page.url.searchParams.get("categories")?.split(",").filter(Boolean);
-        const sizesFilter = page.url.searchParams.get("sizes")?.split(",").filter(Boolean);
-        const stylesFilter = page.url.searchParams.get("styles")?.split(",").filter(Boolean);
-        const availabilitiesFilter = page.url.searchParams.get("availabilities")?.split(",").filter(Boolean);
-        return Boolean(
-            searchTerm ||
-            sort ||
-            (categoriesFilter && categoriesFilter.length > 0) ||
-            (sizesFilter && sizesFilter.length > 0) ||
-            (stylesFilter && stylesFilter.length > 0) ||
-            (availabilitiesFilter && availabilitiesFilter.length > 0) ||
-            isPriceRangeFiltered
-        );
-    });
-    
+	const isFilterOrSearch = $derived(() => {
+		const priceRangeFilter = (page.url.searchParams.get("priceRange") ?? "").split(",");
+		const isPriceRangeFiltered =
+			priceRangeFilter.length === 2 &&
+			(priceRangeFilter[0] !== "0" || priceRangeFilter[1] !== "10000");
+		const sort = page.url.searchParams.get("sort");
+		const categoriesFilter = page.url.searchParams.get("categories")?.split(",").filter(Boolean);
+		const sizesFilter = page.url.searchParams.get("sizes")?.split(",").filter(Boolean);
+		const stylesFilter = page.url.searchParams.get("styles")?.split(",").filter(Boolean);
+		const availabilitiesFilter = page.url.searchParams
+			.get("availabilities")
+			?.split(",")
+			.filter(Boolean);
+		return Boolean(
+			searchTerm ||
+				sort ||
+				(categoriesFilter && categoriesFilter.length > 0) ||
+				(sizesFilter && sizesFilter.length > 0) ||
+				(stylesFilter && stylesFilter.length > 0) ||
+				(availabilitiesFilter && availabilitiesFilter.length > 0) ||
+				isPriceRangeFiltered
+		);
+	});
+
 	onMount(() => {
 		setParams();
 	});
@@ -149,7 +160,7 @@
 	<meta content={seoData.metaDescription} name="description" />
 </svelte:head>
 
-<div class="flex flex-col gap-10 ">
+<div class="flex flex-col gap-10">
 	{#if isViewingCategory() || searchTerm}
 		<!-- Breadcrumbs -->
 		<BreadcrumbRoot class="mb-6 g-px">
@@ -159,14 +170,16 @@
 				</BreadcrumbItem>
 				<BreadcrumbSeparator />
 				<BreadcrumbItem>
-					<Page class="font-bold capitalize">{isViewingCategory() ? categoryName() : "Search results"}</Page>
+					<Page class="font-bold capitalize"
+						>{isViewingCategory() ? categoryName() : "Search results"}</Page
+					>
 				</BreadcrumbItem>
 			</BreadcrumbList>
 		</BreadcrumbRoot>
 	{/if}
 
 	{#if !(isFilterOrSearch() || isViewingCategory())}
-		<div class="-mt-12 g-mb g-px max-w-full">
+		<div class="-mt-12 g-mb max-w-full g-px">
 			<ProductCategories {productCategoriesData} />
 		</div>
 	{/if}
@@ -178,13 +191,11 @@
 		</div>
 
 		<!--	main content -->
-		<div class="flex flex-col gap-6 max-w-full">
+		<div class="flex max-w-full flex-col gap-6">
 			<!--	Mobile Filter and Sort sheet -->
 			<SheetRoot bind:open={openFilters}>
 				{#if isMobile}
-					<SheetTrigger
-						class="flex cursor-pointer items-center gap-1 font-semibold text-primary"
-					>
+					<SheetTrigger class="flex cursor-pointer items-center gap-1 font-semibold text-primary">
 						<img alt="filter" src={FilterIcon} />
 						<span>Toggle filters</span>
 					</SheetTrigger>
@@ -200,7 +211,10 @@
 			<!-- Page heading -->
 			{#if isViewingCategory() || searchTerm}
 				<div class="flex items-center gap-2">
-					<h4 class="leading-8 font-bold md:text-2xl capitalize">{isViewingCategory() ? categoryName() : "Search results for"} {searchTerm}</h4>
+					<h4 class="leading-8 font-bold capitalize md:text-2xl">
+						{isViewingCategory() ? categoryName() : "Search results for"}
+						{searchTerm}
+					</h4>
 					<span class="text-xs text-muted-foreground sm:text-sm md:text-base">
 						{#if totalProducts > 1}
 							{formatNumberWithCommas(totalProducts - 1)}
@@ -227,7 +241,6 @@
 			{/if}
 
 			<!-- #################### PRODUCT & PAGINATION CONTENT #################### -->
-
 
 			{#if isFilterOrSearch() || isViewingCategory()}
 				<!--	Product items -->
@@ -301,25 +314,23 @@
 				</section>
 			{:else}
 				<!-- Product category sections -->
-                <div class="flex flex-col gap-10 md:gap-12 lg:gap-16">
-				<ProductCategorySection title="New Arrivals" {products} />
-				<ProductCategorySection title="Best Sellers" products={products.slice(2)} />
-				<ProductCategorySection title="Top Picks" products={products.slice(4)} />
-                </div>
+				<div class="flex flex-col gap-10 md:gap-12 lg:gap-16">
+					<ProductCategorySection title="New Arrivals" {products} />
+					<ProductCategorySection title="Best Sellers" products={products.slice(2)} />
+					<ProductCategorySection title="Top Picks" products={products.slice(4)} />
+				</div>
 			{/if}
-				<!-- #################### END OF PRODUCT & PAGINATION CONTENT #################### -->
+			<!-- #################### END OF PRODUCT & PAGINATION CONTENT #################### -->
 		</div>
+	</section>
 
-
-    </section>
-
-        <div class="g-px g-mt">
-	{#if searchTerm}
-				<ProductCategorySection title="Flash Sales" {products} isDynamicWidth={false} />
-        {:else}
-				<ProductCategorySection title="Recommended Items" {products} isDynamicWidth={false} />
-	    {/if}
-        </div>
+	<div class="g-mt g-px">
+		{#if searchTerm}
+			<ProductCategorySection title="Flash Sales" {products} isDynamicWidth={false} />
+		{:else}
+			<ProductCategorySection title="Recommended Items" {products} isDynamicWidth={false} />
+		{/if}
+	</div>
 	<!-- Contact us -->
 	<ContactUs />
 </div>
