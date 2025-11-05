@@ -17,22 +17,18 @@
 	import { Content, List, Root, Trigger } from "$lib/components/ui/tabs/index";
 	import RelatedProducts from "./related-products.svelte";
 	import { Badge } from "$lib/components/ui/badge";
-	import { cn } from "$lib/utils";
+    import {cn, renderMarkdown} from "$lib/utils";
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const buttonQuantityClass = "cursor-pointer disabled:opacity-50 disabled:pointer-events-none";
-	marked.setOptions({
-		gfm: true,
-		breaks: true,
-		pedantic: false
-	});
+
 
 	let { data }: PageProps = $props();
 	const isMobile = $derived(mediaQuery.current);
 	const product = $derived(data.product);
-	let productDescription = $state("");
-	let productDetails = $state("");
-	let productSpecifications = $state("");
+	let productDescription = $derived(renderMarkdown(product.description));
+	let productDetails = $derived(renderMarkdown(product.details));
+	let productSpecifications = $derived(renderMarkdown(product.specifications));
 	let productQuantity = $state(1);
 	let selectedImageIndex = $state(0);
 
@@ -85,20 +81,6 @@
 		}
 	});
 
-	onMount(() => {
-		const rawDescriptionHtml = product.description
-			? marked(product.description).toString()
-			: "No product description";
-		const rawDetailsHtml = product.details
-			? marked(product.details).toString()
-			: "No product details";
-		const rawSpecificationsHtml = product.specifications
-			? marked(product.specifications).toString()
-			: "No product specifications";
-		productDescription = DOMPurify.sanitize(rawDescriptionHtml);
-		productDetails = DOMPurify.sanitize(rawDetailsHtml);
-		productSpecifications = DOMPurify.sanitize(rawSpecificationsHtml);
-	});
 </script>
 
 <div class="flex flex-col gap-4 g-px g-pb">

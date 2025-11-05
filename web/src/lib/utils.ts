@@ -5,6 +5,8 @@ import { page } from "$app/state";
 import { goto } from "$app/navigation";
 import { resolve } from "$app/paths";
 import type { RouteId } from "$app/types";
+import { marked } from "marked";
+import DOMPurify from "dompurify";
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -50,6 +52,18 @@ export const setRouteParams = async (
 		noScroll
 	});
 };
+
+marked.setOptions({
+	gfm: true,
+	breaks: true,
+	pedantic: false
+});
+
+export function renderMarkdown(text: string) {
+	if (!text) return "No content";
+	const markdown = text.replace(/\\n/g, "\n");
+	return DOMPurify.sanitize(marked(markdown).toString());
+}
 
 export type WithoutChild<T> = T extends { child?: unknown } ? Omit<T, "child"> : T;
 export type WithoutChildren<T> = T extends { children?: unknown } ? Omit<T, "children"> : T;
