@@ -10,8 +10,8 @@
 
     const { footer } = $props();
 	const footerData = footer as FooterI;
-	const socials = footerData.socialLinks;
-	const columnLinks = footerData.linkColumns;
+	const socials = footerData?.socialLinks ?? [];
+	const columnLinks = footerData?.linkColumns ?? [];
 
 	let newsletterDisclaimer = $state("");
 	const isExternal = (link: string) =>
@@ -41,7 +41,7 @@
 					<Input
 						autofocus={false}
 						class="border-border bg-transparent placeholder:text-white md:w-xs"
-                        name="subscribe"
+						name="subscribe"
 						placeholder="Enter your email"
 					/>
 					<Button

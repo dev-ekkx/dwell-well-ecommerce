@@ -6,7 +6,8 @@ export const client = new Client({
 	fetchOptions: () => ({
 		headers: {
 			"Content-Type": "application/json"
-		}
+		},
+		priority: "high"
 	}),
 	requestPolicy: "cache-first"
 });

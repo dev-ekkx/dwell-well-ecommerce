@@ -1,15 +1,15 @@
 <script lang="ts">
-    import {cn, setRouteParams} from "$lib/utils.js";
-    import CaretUp from "$lib/assets/caret-up.svg";
-    import {Item, Root} from "$lib/components/ui/radio-group/index.js";
-    import FilterDropdown from "$lib/components/filter-dropdown.svelte";
-    import {Button} from "$lib/components/ui/button/index.js";
-    import {Label} from "$lib/components/ui/label/index.js";
-    import gsap from "gsap";
-    import {onMount, tick} from "svelte";
-    import {page} from "$app/state";
+	import { cn, setRouteParams } from "$lib/utils.js";
+	import CaretUp from "$lib/assets/caret-up.svg";
+	import { Item, Root } from "$lib/components/ui/radio-group/index.js";
+	import FilterDropdown from "$lib/components/filter-dropdown.svelte";
+	import { Button } from "$lib/components/ui/button/index.js";
+	import { Label } from "$lib/components/ui/label/index.js";
+	import gsap from "gsap";
+	import { onMount, tick } from "svelte";
+	import { page } from "$app/state";
 
-    const { filters: filterOptions } = $props();
+	const { filters: filterOptions } = $props();
 
 	let isFiltersOpen = $state(true);
 	let isSortingOpen = $state(true);
@@ -25,14 +25,14 @@
 	];
 
 	// Initial filter and sort states
-	let maxSlideValue = $state(5000);
+	let maxSlideValue = $state(filterOptions.priceRange.max);
 	let sort = $state("");
 	let filters = $state({
 		categories: [""],
 		sizes: [""],
 		styles: [""],
 		availabilities: [""],
-		priceRange: [0, 5000]
+		priceRange: [filterOptions.priceRange.min, filterOptions.priceRange.max]
 	});
 
 	const toggleContainer = async (
@@ -88,15 +88,17 @@
 			sizes: [""],
 			styles: [""],
 			availabilities: [""],
-			priceRange: [0, 5000]
+			priceRange: [filterOptions.priceRange.min, filterOptions.priceRange.max]
 		};
 		const params = buildFilterParams();
-		await setRouteParams({ ...params, sort, q: "" }, true);
+		await setRouteParams({ ...params, sort, q: "", priceRange: "" }, true);
 	};
 
 	const getNumberArrayParam = (params: URLSearchParams, key: string): number[] => {
 		const value = params.get(key);
-		return value ? value.split(",").map(Number) : [0, 5000];
+		return value
+			? value.split(",").map(Number)
+			: [filterOptions.priceRange.min, filterOptions.priceRange.max];
 	};
 
 	onMount(() => {

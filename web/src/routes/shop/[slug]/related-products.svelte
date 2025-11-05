@@ -3,8 +3,6 @@
 	import ProductCard from "../product-card.svelte";
 
 	const relatedProducts: ProductI[] = $props();
-
-	$inspect(relatedProducts);
 </script>
 
 <div class="flex flex-col gap-10">

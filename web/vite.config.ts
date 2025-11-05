@@ -44,7 +44,7 @@ export default defineConfig({
 		]
 	},
 	optimizeDeps: {
-		exclude: ["@urlql/svelte"]
+		exclude: ["@urql/svelte"]
 	},
 	server: {
 		host: "0.0.0.0"
