@@ -7,6 +7,7 @@
     import {cn} from "$lib/utils";
     import {MediaQuery} from "svelte/reactivity";
     import ArrowButton from "$lib/components/arrow-button.svelte";
+    import {goto} from "$app/navigation";
     // import Picture from "$lib/components/picture.svelte";
 
     const {
@@ -24,6 +25,11 @@
     const carousel = useCarousel({ items: products });
     const mediaQuery = new MediaQuery("max-width: 63.9rem");
     const isMobile = $derived(mediaQuery.current);
+
+    const viewCategory = () => {
+        const categoryName = title.toLowerCase().split(" ").join("_");
+        goto(`/shop?category=${categoryName}`);
+    }
 
 	const viewProductDetails = (product: ProductI) => {
 		console.log(product);
@@ -50,7 +56,7 @@
 		</div>
 
 		<!-- View all button -->
-		<Button class="cursor-pointer text-primary hover:text-primary" variant="ghost">View all</Button>
+		<Button class="cursor-pointer text-primary hover:text-primary" onclick={viewCategory} variant="ghost">View all</Button>
 	</div>
 
     <!-- Arrow Buttons -->

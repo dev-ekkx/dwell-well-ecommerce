@@ -43,7 +43,12 @@
     const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const { data }: PageProps = $props();
 	const seoData = $derived(data.seo);
-	const filters = $derived(data.filters);
+	const filters = $derived({...data.filters,
+    priceRange: {
+        min: 0,
+        max: 10000
+    }
+    });
 	const searchTerm = $derived(page.url.searchParams.get("q") || "");
 	const products = $derived(data.products as ProductI[]);
 	const isMobile = $derived(mediaQuery.current);
@@ -61,11 +66,20 @@
 		(item) => item.sectionId === "categories"
 	);
 
-	const getPreviousRoute = $derived(() => {
-		const route = page.url.searchParams.get("route") ?? "";
+    const isViewingCategory = $derived(() => {
+        return !!page.url.searchParams.get("category");
+    });
 
-		const name =
-			route === "/" ? "Home" : route === "/faqs" ? "FAQs" : (route.split("/")[1] ?? route);
+    const categoryName = $derived(() => {
+        const categoryParam = page.url.searchParams.get("category") || "";
+        return categoryParam.split("_").join(" ");
+    });
+
+	const getPreviousRoute = $derived(() => {
+		const route = isViewingCategory() ? "/shop" : (page.url.searchParams.get("route") ?? "");
+
+		const name = isViewingCategory() ? "Shop" : (
+			route === "/" ? "Home" : route === "/faqs" ? "FAQs" : (route.split("/")[1] ?? route));
 
 		return {
 			name,
@@ -106,6 +120,27 @@
 		goto(`/shop/${product.slug}?${params.toString()}`);
 	};
 
+    const isFilterOrSearch = $derived(() => {
+        const priceRangeFilter = (page.url.searchParams.get("priceRange") ?? "").split(",");
+      const  isPriceRangeFiltered = priceRangeFilter.length === 2 && (priceRangeFilter[0] !== "0" || priceRangeFilter[1] !== "10000");
+        const sort = page.url.searchParams.get("sort");
+        const categoriesFilter = page.url.searchParams.get("categories")?.split(",").filter(Boolean);
+        const sizesFilter = page.url.searchParams.get("sizes")?.split(",").filter(Boolean);
+        const stylesFilter = page.url.searchParams.get("styles")?.split(",").filter(Boolean);
+        const availabilitiesFilter = page.url.searchParams.get("availabilities")?.split(",").filter(Boolean);
+        return Boolean(
+            searchTerm ||
+            sort ||
+            (categoriesFilter && categoriesFilter.length > 0) ||
+            (sizesFilter && sizesFilter.length > 0) ||
+            (stylesFilter && stylesFilter.length > 0) ||
+            (availabilitiesFilter && availabilitiesFilter.length > 0) ||
+            isPriceRangeFiltered
+        );
+    });
+
+    $inspect(isFilterOrSearch())
+
 	onMount(() => {
 		setParams();
 	});
@@ -117,7 +152,7 @@
 </svelte:head>
 
 <div class="flex flex-col gap-10 ">
-	{#if searchTerm}
+	{#if isViewingCategory() || searchTerm}
 		<!-- Breadcrumbs -->
 		<BreadcrumbRoot class="mb-6 g-px">
 			<BreadcrumbList>
@@ -126,13 +161,13 @@
 				</BreadcrumbItem>
 				<BreadcrumbSeparator />
 				<BreadcrumbItem>
-					<Page class="font-bold">Search results</Page>
+					<Page class="font-bold capitalize">{isViewingCategory() ? categoryName() : "Search results"}</Page>
 				</BreadcrumbItem>
 			</BreadcrumbList>
 		</BreadcrumbRoot>
 	{/if}
 
-	{#if !searchTerm}
+	{#if !(isFilterOrSearch() || isViewingCategory())}
 		<div class="-mt-12 g-mb g-px max-w-full">
 			<ProductCategories {productCategoriesData} />
 		</div>
@@ -150,7 +185,7 @@
 			<SheetRoot bind:open={openFilters}>
 				{#if isMobile}
 					<SheetTrigger
-						class="-mb-4 flex cursor-pointer items-center gap-1 font-semibold text-primary"
+						class="flex cursor-pointer items-center gap-1 font-semibold text-primary"
 					>
 						<img alt="filter" src={FilterIcon} />
 						<span>Toggle filters</span>
@@ -165,17 +200,17 @@
 			</SheetRoot>
 
 			<!-- Page heading -->
-			{#if searchTerm}
+			{#if isViewingCategory() || searchTerm}
 				<div class="flex items-center gap-2">
-					<h4 class="leading-8 font-bold md:text-2xl">Search results for {searchTerm}</h4>
+					<h4 class="leading-8 font-bold md:text-2xl capitalize">{isViewingCategory() ? categoryName() : "Search results for"} {searchTerm}</h4>
 					<span class="text-xs text-muted-foreground sm:text-sm md:text-base">
 						{#if totalProducts > 1}
 							{formatNumberWithCommas(totalProducts - 1)}
-							+ items found
+							+ items {isViewingCategory() ? null : "found"}
 						{:else if totalProducts === 0}
-							No items found
+							No items {isViewingCategory() ? null : "found"}
 						{:else}
-							1 item found
+							1 item {isViewingCategory() ? null : "found"}
 						{/if}
 					</span>
 				</div>
@@ -194,7 +229,9 @@
 			{/if}
 
 			<!-- #################### PRODUCT & PAGINATION CONTENT #################### -->
-			{#if searchTerm}
+
+
+			{#if isFilterOrSearch() || isViewingCategory()}
 				<!--	Product items -->
 				<section class="flex flex-col gap-5 md:gap-7 xl:gap-10">
 					<div
@@ -264,22 +301,27 @@
 						{/if}
 					</div>
 				</section>
-				<!-- #################### END OF PRODUCT & PAGINATION CONTENT #################### -->
 			{:else}
 				<!-- Product category sections -->
                 <div class="flex flex-col gap-10 md:gap-12 lg:gap-16">
-				<ProductCategorySection title="New Arrival" {products} />
-				<ProductCategorySection title="Top Sellers" {products} />
+				<ProductCategorySection title="New Arrivals" {products} />
+				<ProductCategorySection title="Best Sellers" products={products.slice(3)} />
+				<ProductCategorySection title="Top Picks" products={products.slice(5)} />
                 </div>
 			{/if}
+				<!-- #################### END OF PRODUCT & PAGINATION CONTENT #################### -->
 		</div>
-	</section>
 
-	{#if !searchTerm}
+
+    </section>
+
         <div class="g-px g-mt">
+	{#if searchTerm}
 				<ProductCategorySection title="Flash Sales" {products} isDynamicWidth={false} />
-        </div>
+        {:else}
+				<ProductCategorySection title="Recommended Items" {products} isDynamicWidth={false} />
 	    {/if}
+        </div>
 	<!-- Contact us -->
 	<ContactUs />
 </div>
