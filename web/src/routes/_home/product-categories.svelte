@@ -1,103 +1,23 @@
 <script lang="ts">
-    import {onMount} from "svelte";
-    import Picture from "$lib/components/picture.svelte";
-    import ArrowButton from "$lib/components/arrow-button.svelte";
-    import type {CategoryI} from "$lib/interfaces";
-    import {useCarousel} from "$lib/helpers/carousel.svelte";
+	import { onMount } from "svelte";
+	import Picture from "$lib/components/picture.svelte";
+	import ArrowButton from "$lib/components/arrow-button.svelte";
+	import type { CategoryI } from "$lib/interfaces";
+	import { useCarousel } from "$lib/helpers/carousel.svelte";
 
-    const { productCategoriesData } = $props();
+	const { productCategoriesData } = $props();
 	const productsCategories = productCategoriesData as CategoryI;
-
-	// Build a repeated list to loop seamlessly by starting in the middle block
-	const REPEAT = 5;
-	const displayedProducts = Array.from({ length: REPEAT }, (_, r) =>
-		productsCategories.items.map((p) => ({ ...p, _r: r }))
-	).flat();
-
-    const carousel = useCarousel({ items: productsCategories.items });
-
-	let container = $state<HTMLElement | null>(null);
-	let track = $state<HTMLElement | null>(null);
-	let items = $state<HTMLElement[]>([]);
-	let index = productsCategories.items.length;
-
-
-
-    // function computeXForIndex(i: number) {
-	// 	if (!track || items.length === 0 || !items[i]) return 0;
-	// 	const targetOffset = items[i]?.offsetLeft ?? 0;
-	// 	return -targetOffset;
-	// }
-    //
-	// function normalizeIndex() {
-	// 	// Keep the visual the same but move the index back into the middle block
-	// 	const n = productsCategories.items.length;
-	// 	if (n === 0) return;
-	// 	const middleStart = n;
-	// 	const normalized = ((((index - middleStart) % n) + n) % n) + middleStart;
-	// 	if (normalized !== index) {
-	// 		index = normalized;
-	// 		const x = computeXForIndex(index);
-	// 		if (track) gsap.set(track, { x });
-	// 	}
-	// }
-    //
-	// function scrollToIndex(i: number) {
-	// 	if (!track || items.length === 0) return;
-	// 	index = i;
-	// 	const x = computeXForIndex(index);
-	// 	gsap.to(track, {
-	// 		x,
-	// 		duration: 0.5,
-	// 		ease: "power1.out",
-	// 		overwrite: "auto",
-	// 		force3D: true,
-	// 		onComplete: normalizeIndex
-	// 	});
-	// }
-    //
-	// function handlePrev() {
-	// 	scrollToIndex(index - 1);
-	// }
-    //
-	// function handleNext() {
-	// 	scrollToIndex(index + 1);
-	// }
-    //
-	// function collectItems() {
-	// 	if (!track) return;
-	// 	items = Array.from(track.querySelectorAll(":scope > div")) as HTMLElement[];
-	// }
-    //
-	// function onResize() {
-	// 	if (!track) return;
-	// 	// Keep alignment on resize without animating or resetting to 0 (prevents jumpiness)
-	// 	const x = computeXForIndex(index);
-	// 	gsap.set(track, { x });
-	// }
+	const carousel = useCarousel({ items: productsCategories.items });
 
 	onMount(() => {
-		// collectItems();
-		// if (track) {
-		// 	const x = computeXForIndex(index);
-		// 	gsap.set(track, { x, willChange: "transform", force3D: true });
-		// }
-		// const ro = new ResizeObserver(onResize);
-		// if (container) ro.observe(container);
-		// if (track) ro.observe(track);
-		// window.addEventListener("resize", onResize);
-		// return () => {
-		// 	ro.disconnect();
-		// 	window.removeEventListener("resize", onResize);
-		// };
-
-        carousel.collectItems();
-        // if (carousel.carouselState.carouselTrack) {
-        // }
+		carousel.collectItems();
 	});
 </script>
 
-<section bind:this={carousel.carouselState.container} class="g-mt flex flex-col gap-6 overflow-x-clip">
+<section
+	bind:this={carousel.carouselState.container}
+	class="g-mt flex flex-col gap-6 overflow-x-clip"
+>
 	<!--	Category title and arrow buttons -->
 	<div class="flex items-center justify-between gap-4 capitalize">
 		<span
@@ -114,7 +34,7 @@
 
 	<!--Images and labels-->
 	<div bind:this={carousel.carouselState.track} class="flex w-max items-center gap-4 lg:gap-6">
-		{#each displayedProducts as product, idx (idx)}
+		{#each carousel.displayedItems as product, idx (idx)}
 			<div class="flex flex-col items-center gap-6">
 				<Picture
 					alt={product.title}

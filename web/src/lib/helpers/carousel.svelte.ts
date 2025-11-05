@@ -15,10 +15,8 @@ export type CarouselState<T> = {
 		container: HTMLElement | null;
 		track: HTMLElement | null;
 	};
-	itemsElements: HTMLElement[];
 	prev: () => void;
 	next: () => void;
-	scrollToIndex: (i: number) => void;
 	collectItems: () => void;
 };
 
@@ -96,10 +94,9 @@ export function useCarousel<T>(options: CarouselOptions<T>): CarouselState<T> {
 			const x = computeXForIndex(index);
 			gsap.set(carouselState.track, { x, willChange: "transform", force3D: true });
 
-			// Setup listeners and cleanup, similar to onMount
 			const ro = new ResizeObserver(onResize);
 			if (carouselState.container) ro.observe(carouselState.container);
-			ro.observe(carouselState.track); // track is guaranteed to be non-null here
+			ro.observe(carouselState.track);
 			window.addEventListener("resize", onResize);
 
 			return () => {
@@ -113,10 +110,8 @@ export function useCarousel<T>(options: CarouselOptions<T>): CarouselState<T> {
 		displayedItems,
 		index,
 		carouselState,
-		itemsElements,
 		prev,
 		next,
-		scrollToIndex,
 		collectItems
 	};
 }
