@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { Button } from "$lib/components/ui/button";
-	import EmptyCartIcon from "$lib/assets/empty-cart.svg";
-	import { goto } from "$app/navigation";
-	import { cn, formatNumberWithCommas } from "$lib/utils";
-	import { MediaQuery } from "svelte/reactivity";
-	import TrashIcon from "$lib/assets/trash.svg";
-	import MinusIcon from "$lib/assets/minus.svg";
-	import PlusIcon from "$lib/assets/plus.svg";
-	import WarningCircleIcon from "$lib/assets/warning-circle.svg";
+    import {Button} from "$lib/components/ui/button";
+    import EmptyCartIcon from "$lib/assets/empty-cart.svg";
+    import {goto} from "$app/navigation";
+    import {cn, formatNumberWithCommas} from "$lib/utils";
+    import {MediaQuery} from "svelte/reactivity";
+    import TrashIcon from "$lib/assets/trash.svg";
+    import MinusIcon from "$lib/assets/minus.svg";
+    import PlusIcon from "$lib/assets/plus.svg";
+    import WarningCircleIcon from "$lib/assets/warning-circle.svg";
 
-	const mediaQuery = new MediaQuery("max-width: 47.9rem");
+    const mediaQuery = new MediaQuery("max-width: 47.9rem");
 	const newMediaQuery = new MediaQuery("min-width: 64rem");
 	const isMobile = $derived(mediaQuery.current);
 	const isBiggerDevice = $derived(newMediaQuery.current);
@@ -78,12 +78,12 @@
 						{/if}
 					</div>
 					<div class="flex flex-col gap-1">
-						<span
+						<span   `
 							>Asano 32" - 32DF2 Smart Android TV - Frameless Screen - USB - HDMI - Black+12 Months
 							Warranty</span
 						>
 						{#if isMobile}
-							<div class="flex items-center gap-2 font-medium">
+							<div class="flex items-center gap-2 flex-wrap font-medium">
 								<span class=" text-xl">${formatNumberWithCommas(12_240.96)}</span>
 								<span class="text-muted-foreground line-through"
 									>${formatNumberWithCommas(15_680.82)}</span
