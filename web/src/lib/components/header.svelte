@@ -13,6 +13,12 @@
     import {Input} from "$lib/components/ui/input";
     import {MediaQuery} from "svelte/reactivity";
     import {ROUTE_NAVS} from "$lib/constants";
+    import MenuCartIcon from "$lib/assets/menu-cart.svg";
+    import {
+        Fallback as AvatarFallback,
+        Image as AvatarImage,
+        Root as AvatarRoot
+    } from "$lib/components/ui/avatar/index.js";
 
     const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const isMobile = $derived(mediaQuery.current);
@@ -175,7 +181,7 @@
 	{/if}
 
 	<!-- Search and Login buttons -->
-	<div class="flex items-center gap-6">
+	<div class="flex items-center gap-4">
 		<button
 			aria-label="search"
 			bind:this={searchButton}
@@ -198,13 +204,16 @@
 					<img src={HamburgerIcon} alt="hamburger" />
 				{/if}
 			</button>
-		{:else}
-			<Button
-				onclick={loginAndResetDropdown}
+        {/if}
+        <!--{#if isAuthenticated}-->
+            {@render cartAndAvatar()}
+            <!--{/if}-->
+
+        <Button
 				class="hidden h-full cursor-pointer px-6 lg:inline-flex"
+				onclick={loginAndResetDropdown}
 				>Login
 			</Button>
-		{/if}
 	</div>
 </header>
 
@@ -275,3 +284,18 @@
 		>
 	{/each}
 {/snippet}
+
+{#snippet cartAndAvatar()}
+    <div class="flex items-center gap-4">
+<!-- Cart icon -->
+        <button aria-label="cart" class="cursor-pointer">
+        <img src={MenuCartIcon} alt="cart">
+        </button>
+
+<!-- Avatar icon -->
+        <AvatarRoot>
+            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+            <AvatarFallback>CN</AvatarFallback>
+        </AvatarRoot>
+    </div>
+    {/snippet}
