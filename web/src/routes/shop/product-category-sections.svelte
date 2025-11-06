@@ -1,14 +1,14 @@
 <script lang="ts">
-	import type { ProductI } from "$lib/interfaces";
-	import { Button } from "$lib/components/ui/button";
-	import { onMount } from "svelte";
-	import { useCarousel } from "$lib/helpers/carousel.svelte";
-	import ProductCard from "./product-card.svelte";
-	import { cn } from "$lib/utils";
-	import { MediaQuery } from "svelte/reactivity";
-	import ArrowButton from "$lib/components/arrow-button.svelte";
-	import { goto } from "$app/navigation";
-	// import Picture from "$lib/components/picture.svelte";
+    import type {ProductI} from "$lib/interfaces";
+    import {Button} from "$lib/components/ui/button";
+    import {onMount} from "svelte";
+    import {useCarousel} from "$lib/helpers/carousel.svelte";
+    import ProductCard from "./product-card.svelte";
+    import {cn} from "$lib/utils";
+    import {MediaQuery} from "svelte/reactivity";
+    import ArrowButton from "$lib/components/arrow-button.svelte";
+    import {goto} from "$app/navigation";
+    // import Picture from "$lib/components/picture.svelte";
 
 	const {
 		title,
@@ -70,9 +70,7 @@
 	<!-- Image carousel -->
 	<div bind:this={carousel.carouselState.track} class="flex w-max items-center gap-4">
 		{#each carousel.displayedItems as product, idx (idx)}
-			<button onclick={() => viewProductDetails(product)} class="cursor-pointer">
-				<ProductCard {...product} />
-			</button>
+				<ProductCard product={product} trigger={() => viewProductDetails(product)} />
 		{/each}
 	</div>
 </section>

@@ -301,17 +301,17 @@ export interface UserStoreI {
 // Interface for Cart Item
 export interface CartItemI extends Pick<ProductI, "name" | "price"> {
 	quantity: number;
+	image: StrapiImageI;
 }
 
 // Interface for Cart Store
 export interface CartStoreI {
-	// store: Map<string, CartItemI>;
-	addToCart: (product: ProductI, quantity: number) => void;
+	cartItems: () => CartItemI[];
+	totalItems: () => number;
+	totalPrice: () => number;
+	addToCart: (product: ProductI) => void;
 	removeFromCart: (sku: string) => void;
 	increaseQuantity: (sku: string) => void;
 	reduceQuantity: (sku: string) => void;
 	clearCart: () => void;
-	totalPrice: number;
-	totalItems: number;
-	cartItems: CartItemI[];
 }

@@ -78,7 +78,7 @@
 						{/if}
 					</div>
 					<div class="flex flex-col gap-1">
-						<span   `
+						<span
 							>Asano 32" - 32DF2 Smart Android TV - Frameless Screen - USB - HDMI - Black+12 Months
 							Warranty</span
 						>

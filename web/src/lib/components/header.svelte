@@ -1,31 +1,35 @@
 <script lang="ts">
-	import { resolve } from "$app/paths";
-	import { cn, setRouteParams } from "$lib/utils";
-	import { page } from "$app/state";
-	import SearchIcon from "$lib/assets/search.svg";
-	import { Button } from "$lib/components/ui/button";
-	import LogoComponent from "$lib/components/logo.svelte";
-	import HamburgerIcon from "$lib/assets/menu.svg";
-	import CloseIcon from "$lib/assets/close.svg";
-	import { gsap } from "gsap";
-	import { onMount, tick } from "svelte";
-	import { goto } from "$app/navigation";
-	import { Input } from "$lib/components/ui/input";
-	import { MediaQuery } from "svelte/reactivity";
-	import { ROUTE_NAVS } from "$lib/constants";
-	import MenuCartIcon from "$lib/assets/menu-cart.svg";
-	import {
-		Fallback as AvatarFallback,
-		Image as AvatarImage,
-		Root as AvatarRoot
-	} from "$lib/components/ui/avatar/index.js";
-	import { useUserStore } from "$lib/store/user-store.svelte";
+    import {resolve} from "$app/paths";
+    import {cn, setRouteParams} from "$lib/utils";
+    import {page} from "$app/state";
+    import SearchIcon from "$lib/assets/search.svg";
+    import {Button} from "$lib/components/ui/button";
+    import LogoComponent from "$lib/components/logo.svelte";
+    import HamburgerIcon from "$lib/assets/menu.svg";
+    import CloseIcon from "$lib/assets/close.svg";
+    import {gsap} from "gsap";
+    import {onMount, tick} from "svelte";
+    import {goto} from "$app/navigation";
+    import {Input} from "$lib/components/ui/input";
+    import {MediaQuery} from "svelte/reactivity";
+    import {ROUTE_NAVS} from "$lib/constants";
+    import MenuCartIcon from "$lib/assets/menu-cart.svg";
+    import {
+        Fallback as AvatarFallback,
+        Image as AvatarImage,
+        Root as AvatarRoot
+    } from "$lib/components/ui/avatar/index.js";
+    import {useUserStore} from "$lib/store/user-store.svelte";
+    import {cartStore} from "$lib/store/cart-store.svelte";
 
-	const mediaQuery = new MediaQuery("max-width: 63.9rem");
+    const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const isMobile = $derived(mediaQuery.current);
 	const userStore = () => useUserStore();
 	const isAuthenticated = $derived(userStore().auth.isAuthenticated);
 	const user = $derived(userStore().user);
+
+
+$inspect(cartStore.totalItems);
 
 	const isActiveRoute = (path: string) => {
 		if (path === "/") {
@@ -308,8 +312,13 @@
 {#snippet cartAndAvatar()}
 	<div class="flex items-center gap-4">
 		<!-- Cart icon -->
-		<button onclick={goToCart} aria-label="cart" class="cursor-pointer">
+		<button onclick={goToCart} aria-label="cart" class="cursor-pointer relative">
 			<img src={MenuCartIcon} alt="cart" />
+            {#if cartStore.totalItems() > 0}
+            <span class="absolute -top-2 -right-2 bg-primary text-xs flex items-center justify-center p-1 h-5 w-5 text-white rounded-full">
+                {cartStore.totalItems()}
+            </span>
+                {/if}
 		</button>
 
 		<!-- Avatar icon -->
