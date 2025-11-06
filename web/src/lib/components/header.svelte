@@ -1,20 +1,20 @@
 <script lang="ts">
-	import { resolve } from "$app/paths";
-	import { cn, setRouteParams } from "$lib/utils";
-	import { page } from "$app/state";
-	import SearchIcon from "$lib/assets/search.svg";
-	import { Button } from "$lib/components/ui/button";
-	import LogoComponent from "$lib/components/logo.svelte";
-	import HamburgerIcon from "$lib/assets/menu.svg";
-	import CloseIcon from "$lib/assets/close.svg";
-	import { gsap } from "gsap";
-	import { onMount, tick } from "svelte";
-	import { goto } from "$app/navigation";
-	import { Input } from "$lib/components/ui/input";
-	import { MediaQuery } from "svelte/reactivity";
-	import { ROUTE_NAVS } from "$lib/constants";
+    import {resolve} from "$app/paths";
+    import {cn, setRouteParams} from "$lib/utils";
+    import {page} from "$app/state";
+    import SearchIcon from "$lib/assets/search.svg";
+    import {Button} from "$lib/components/ui/button";
+    import LogoComponent from "$lib/components/logo.svelte";
+    import HamburgerIcon from "$lib/assets/menu.svg";
+    import CloseIcon from "$lib/assets/close.svg";
+    import {gsap} from "gsap";
+    import {onMount, tick} from "svelte";
+    import {goto} from "$app/navigation";
+    import {Input} from "$lib/components/ui/input";
+    import {MediaQuery} from "svelte/reactivity";
+    import {ROUTE_NAVS} from "$lib/constants";
 
-	const mediaQuery = new MediaQuery("max-width: 63.9rem");
+    const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const isMobile = $derived(mediaQuery.current);
 	const isActiveRoute = (path: string) => {
 		if (path === "/") {
@@ -166,15 +166,15 @@
 <header
 	class="fixed top-0 left-0 z-50 flex h-[8vh] w-full items-center justify-between gap-4 border-b bg-white g-px"
 >
-	<!--	Logo-->
+	<!-- Logo -->
 	<LogoComponent />
 
-	<!--		Desktop navigation-->
+	<!-- Desktop navigation -->
 	{#if !isMobile}
 		{@render desktopNav()}
 	{/if}
 
-	<!--	Search and Login buttons -->
+	<!-- Search and Login buttons -->
 	<div class="flex items-center gap-6">
 		<button
 			aria-label="search"
@@ -251,7 +251,7 @@
 	</section>
 {/if}
 
-<!-- Desktop	Navigation-->
+<!-- Desktop Navigation -->
 {#snippet desktopNav()}
 	<nav class="hidden h-12 items-center lg:flex">
 		{@render navigation()}
