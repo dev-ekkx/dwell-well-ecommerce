@@ -1,27 +1,32 @@
 <script lang="ts">
-    import {resolve} from "$app/paths";
-    import {cn, setRouteParams} from "$lib/utils";
-    import {page} from "$app/state";
-    import SearchIcon from "$lib/assets/search.svg";
-    import {Button} from "$lib/components/ui/button";
-    import LogoComponent from "$lib/components/logo.svelte";
-    import HamburgerIcon from "$lib/assets/menu.svg";
-    import CloseIcon from "$lib/assets/close.svg";
-    import {gsap} from "gsap";
-    import {onMount, tick} from "svelte";
-    import {goto} from "$app/navigation";
-    import {Input} from "$lib/components/ui/input";
-    import {MediaQuery} from "svelte/reactivity";
-    import {ROUTE_NAVS} from "$lib/constants";
-    import MenuCartIcon from "$lib/assets/menu-cart.svg";
-    import {
-        Fallback as AvatarFallback,
-        Image as AvatarImage,
-        Root as AvatarRoot
-    } from "$lib/components/ui/avatar/index.js";
+	import { resolve } from "$app/paths";
+	import { cn, setRouteParams } from "$lib/utils";
+	import { page } from "$app/state";
+	import SearchIcon from "$lib/assets/search.svg";
+	import { Button } from "$lib/components/ui/button";
+	import LogoComponent from "$lib/components/logo.svelte";
+	import HamburgerIcon from "$lib/assets/menu.svg";
+	import CloseIcon from "$lib/assets/close.svg";
+	import { gsap } from "gsap";
+	import { onMount, tick } from "svelte";
+	import { goto } from "$app/navigation";
+	import { Input } from "$lib/components/ui/input";
+	import { MediaQuery } from "svelte/reactivity";
+	import { ROUTE_NAVS } from "$lib/constants";
+	import MenuCartIcon from "$lib/assets/menu-cart.svg";
+	import {
+		Fallback as AvatarFallback,
+		Image as AvatarImage,
+		Root as AvatarRoot
+	} from "$lib/components/ui/avatar/index.js";
+	import { useUserStore } from "$lib/store/user-store.svelte";
 
-    const mediaQuery = new MediaQuery("max-width: 63.9rem");
+	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const isMobile = $derived(mediaQuery.current);
+	const userStore = useUserStore();
+	const isAuthenticated = $derived(userStore.auth.isAuthenticated);
+	const user = $derived(userStore.user);
+
 	const isActiveRoute = (path: string) => {
 		if (path === "/") {
 			return page.route.id === "/";
@@ -204,16 +209,16 @@
 					<img src={HamburgerIcon} alt="hamburger" />
 				{/if}
 			</button>
-        {/if}
-        <!--{#if isAuthenticated}-->
-            {@render cartAndAvatar()}
-            <!--{/if}-->
-
-        <Button
+		{/if}
+		{#if isAuthenticated}
+			{@render cartAndAvatar()}
+		{:else}
+			<Button
 				class="hidden h-full cursor-pointer px-6 lg:inline-flex"
 				onclick={loginAndResetDropdown}
 				>Login
 			</Button>
+		{/if}
 	</div>
 </header>
 
@@ -286,16 +291,16 @@
 {/snippet}
 
 {#snippet cartAndAvatar()}
-    <div class="flex items-center gap-4">
-<!-- Cart icon -->
-        <button aria-label="cart" class="cursor-pointer">
-        <img src={MenuCartIcon} alt="cart">
-        </button>
+	<div class="flex items-center gap-4">
+		<!-- Cart icon -->
+		<button aria-label="cart" class="cursor-pointer">
+			<img src={MenuCartIcon} alt="cart" />
+		</button>
 
-<!-- Avatar icon -->
-        <AvatarRoot>
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-            <AvatarFallback>CN</AvatarFallback>
-        </AvatarRoot>
-    </div>
-    {/snippet}
+		<!-- Avatar icon -->
+		<AvatarRoot>
+			<AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+			<AvatarFallback>CN</AvatarFallback>
+		</AvatarRoot>
+	</div>
+{/snippet}

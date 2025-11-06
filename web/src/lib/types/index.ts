@@ -1,12 +1,14 @@
 import * as z from "zod";
 import { QuestionFormSchema } from "$lib/schema";
 import type {
+	AuthI,
 	CategoryI,
 	GlobalPresenceI,
 	GlobalReachI,
 	HeroI,
 	LeadershipTeamI,
 	NewArrivalI,
+	UserI,
 	WhyChooseUsI
 } from "$lib/interfaces";
 
@@ -34,3 +36,10 @@ export type ProductDataMap = Record<
 		inventory: number;
 	}
 >;
+
+export type UseUserStore = {
+	user: UserI;
+	auth: AuthI;
+	updateUser: (data: UserI) => void;
+	updateUserAuth: (data: AuthI) => void;
+};

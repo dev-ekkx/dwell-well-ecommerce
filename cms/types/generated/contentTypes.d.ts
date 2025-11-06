@@ -1,4 +1,4 @@
-import type { Schema, Struct } from '@strapi/strapi';
+import type {Schema, Struct} from '@strapi/strapi';
 
 export interface AdminApiToken extends Struct.CollectionTypeSchema {
   collectionName: 'strapi_api_tokens';
@@ -368,8 +368,8 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   collectionName: 'admin_users';
   info: {
     description: '';
-    displayName: 'User';
-    name: 'User';
+    displayName: 'UserI';
+    name: 'UserI';
     pluralName: 'users';
     singularName: 'user';
   };
@@ -1354,7 +1354,7 @@ export interface PluginUsersPermissionsUser
   collectionName: 'up_users';
   info: {
     description: '';
-    displayName: 'User';
+    displayName: 'UserI';
     name: 'user';
     pluralName: 'users';
     singularName: 'user';

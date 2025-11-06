@@ -121,16 +121,6 @@ export interface FooterI {
 	socialLinks: SocialLinkI[];
 }
 
-// // Product interface
-// export interface ProductI {
-// 	id: number;
-// 	name: string;
-// 	slug: string;
-// 	price: number;
-// 	description: string;
-// 	images: StrapiImageI[];
-// }
-
 // Interface for a standard Strapi media object
 export interface StrapiImageI {
 	url: string;
@@ -282,4 +272,20 @@ export interface FiltersI {
 	styles: FilterI[];
 	sizes: FilterI[];
 	availabilities: FilterI[];
+}
+
+// Interface for User data
+export interface UserI {
+	id: string;
+	name: string;
+	email: string;
+	image: string;
+}
+
+// Interface for Authentication data
+export interface AuthI {
+	isAuthenticated: boolean;
+	token: string;
+	tokenExpiry: number;
+	role: "admin" | "user";
 }

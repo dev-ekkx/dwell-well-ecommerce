@@ -17,11 +17,10 @@
 	import { Content, List, Root, Trigger } from "$lib/components/ui/tabs/index";
 	import RelatedProducts from "./related-products.svelte";
 	import { Badge } from "$lib/components/ui/badge";
-    import {cn, renderMarkdown} from "$lib/utils";
+	import { cn, renderMarkdown } from "$lib/utils";
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const buttonQuantityClass = "cursor-pointer disabled:opacity-50 disabled:pointer-events-none";
-
 
 	let { data }: PageProps = $props();
 	const isMobile = $derived(mediaQuery.current);
@@ -80,7 +79,6 @@
 			starStyles: "gap: 0.2rem"
 		}
 	});
-
 </script>
 
 <div class="flex flex-col gap-4 g-px g-pb">
