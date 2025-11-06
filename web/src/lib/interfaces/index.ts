@@ -291,9 +291,27 @@ export interface AuthI {
 }
 
 // Interface for User Store
-export interface UseUserStore {
+export interface UserStoreI {
 	user: UserI;
 	auth: AuthI;
 	updateUser: (data: UserI) => void;
 	updateUserAuth: (data: AuthI) => void;
+}
+
+// Interface for Cart Item
+export interface CartItemI extends Pick<ProductI, "name" | "price"> {
+	quantity: number;
+}
+
+// Interface for Cart Store
+export interface CartStoreI {
+	// store: Map<string, CartItemI>;
+	addToCart: (product: ProductI, quantity: number) => void;
+	removeFromCart: (sku: string) => void;
+	increaseQuantity: (sku: string) => void;
+	reduceQuantity: (sku: string) => void;
+	clearCart: () => void;
+	totalPrice: number;
+	totalItems: number;
+	cartItems: CartItemI[];
 }

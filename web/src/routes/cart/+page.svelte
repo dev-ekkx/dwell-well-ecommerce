@@ -10,7 +10,9 @@
 	import WarningCircleIcon from "$lib/assets/warning-circle.svg";
 
 	const mediaQuery = new MediaQuery("max-width: 47.9rem");
+	const newMediaQuery = new MediaQuery("min-width: 64rem");
 	const isMobile = $derived(mediaQuery.current);
+	const isBiggerDevice = $derived(newMediaQuery.current);
 
 	const isEmpty = false;
 
@@ -52,6 +54,10 @@
 					<span>$ {formatNumberWithCommas(3.5)}</span>
 				</div>
 			</div>
+			{#if isBiggerDevice}
+				<hr />
+				<Button>CheckOut (${formatNumberWithCommas(10_000)})</Button>
+			{/if}
 		</div>
 
 		<!-- Cart items -->
@@ -63,7 +69,7 @@
 				<!-- Image, price and description -->
 				<div class="flex items-center gap-4">
 					<!-- TODO: Remove image placeholder -->
-					<div class="relative h-18 w-24 bg-muted-foreground">
+					<div class="relative max-h-18 min-h-18 max-w-24 min-w-24 bg-muted-foreground">
 						{#if isMobile}
 							<span
 								class="absolute right-0 rounded-sm bg-primary-foreground p-1 text-xs font-semibold text-primary"
@@ -138,6 +144,10 @@
 				</div>
 			</div>
 		</div>
+		{#if !isBiggerDevice}
+			<hr />
+			<Button>CheckOut (${formatNumberWithCommas(10_000)})</Button>
+		{/if}
 	</section>
 {/snippet}
 
