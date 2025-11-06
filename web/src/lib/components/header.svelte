@@ -1,27 +1,27 @@
 <script lang="ts">
-    import {resolve} from "$app/paths";
-    import {cn, setRouteParams} from "$lib/utils";
-    import {page} from "$app/state";
-    import SearchIcon from "$lib/assets/search.svg";
-    import {Button} from "$lib/components/ui/button";
-    import LogoComponent from "$lib/components/logo.svelte";
-    import HamburgerIcon from "$lib/assets/menu.svg";
-    import CloseIcon from "$lib/assets/close.svg";
-    import {gsap} from "gsap";
-    import {onMount, tick} from "svelte";
-    import {goto} from "$app/navigation";
-    import {Input} from "$lib/components/ui/input";
-    import {MediaQuery} from "svelte/reactivity";
-    import {ROUTE_NAVS} from "$lib/constants";
-    import MenuCartIcon from "$lib/assets/menu-cart.svg";
-    import {
-        Fallback as AvatarFallback,
-        Image as AvatarImage,
-        Root as AvatarRoot
-    } from "$lib/components/ui/avatar/index.js";
-    import {useUserStore} from "$lib/store/user-store.svelte";
+	import { resolve } from "$app/paths";
+	import { cn, setRouteParams } from "$lib/utils";
+	import { page } from "$app/state";
+	import SearchIcon from "$lib/assets/search.svg";
+	import { Button } from "$lib/components/ui/button";
+	import LogoComponent from "$lib/components/logo.svelte";
+	import HamburgerIcon from "$lib/assets/menu.svg";
+	import CloseIcon from "$lib/assets/close.svg";
+	import { gsap } from "gsap";
+	import { onMount, tick } from "svelte";
+	import { goto } from "$app/navigation";
+	import { Input } from "$lib/components/ui/input";
+	import { MediaQuery } from "svelte/reactivity";
+	import { ROUTE_NAVS } from "$lib/constants";
+	import MenuCartIcon from "$lib/assets/menu-cart.svg";
+	import {
+		Fallback as AvatarFallback,
+		Image as AvatarImage,
+		Root as AvatarRoot
+	} from "$lib/components/ui/avatar/index.js";
+	import { useUserStore } from "$lib/store/user-store.svelte";
 
-    const mediaQuery = new MediaQuery("max-width: 63.9rem");
+	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const isMobile = $derived(mediaQuery.current);
 	const userStore = () => useUserStore();
 	const isAuthenticated = $derived(userStore().auth.isAuthenticated);
@@ -119,9 +119,9 @@
 		}
 	};
 
-    const goToCart = async () => {
-        await goto(resolve("/cart"));
-    };
+	const goToCart = async () => {
+		await goto(resolve("/cart"));
+	};
 
 	$effect(() => {
 		if (!isMobile) {
@@ -190,46 +190,48 @@
 	{/if}
 
 	<!-- Search and Login buttons -->
-    <div class="flex items-center gap-4">
-        <!-- Search Button -->
-        <button
-                aria-label="search"
-                bind:this={searchButton}
-                class="cursor-pointer"
-                onclick={toggleSearch}
-        >
-            <img alt="search" src={SearchIcon} />
-        </button>
+	<div class="flex items-center gap-4">
+		<!-- Search Button -->
+		<button
+			aria-label="search"
+			bind:this={searchButton}
+			class="cursor-pointer"
+			onclick={toggleSearch}
+		>
+			<img alt="search" src={SearchIcon} />
+		</button>
 
-        <!-- Authenticated section -->
-        {#if isAuthenticated}
-            {@render cartAndAvatar()}
-        {/if}
+		<!-- Authenticated section -->
+		{#if isAuthenticated}
+			{@render cartAndAvatar()}
+		{/if}
 
-        <!-- Mobile vs Desktop -->
-        {#if isMobile}
-            <!-- Mobile Menu Toggle -->
-            <button
-                    bind:this={menuButton}
-                    onclick={toggleMenu}
-                    aria-label="hamburger toggle"
-                    class="w-8 cursor-pointer justify-center **:pointer-events-none"
-            >
-                <img src={isMenuOpen ? CloseIcon : HamburgerIcon} alt={isMenuOpen ? 'close' : 'hamburger'} />
-            </button>
-        {:else}
-            <!-- Desktop Login -->
-            {#if !isAuthenticated}
-                <Button
-                        class="hidden h-full cursor-pointer px-6 lg:inline-flex"
-                        onclick={loginAndResetDropdown}
-                >
-                    Login
-                </Button>
-            {/if}
-        {/if}
-    </div>
-
+		<!-- Mobile vs Desktop -->
+		{#if isMobile}
+			<!-- Mobile Menu Toggle -->
+			<button
+				bind:this={menuButton}
+				onclick={toggleMenu}
+				aria-label="hamburger toggle"
+				class="w-8 cursor-pointer justify-center **:pointer-events-none"
+			>
+				<img
+					src={isMenuOpen ? CloseIcon : HamburgerIcon}
+					alt={isMenuOpen ? "close" : "hamburger"}
+				/>
+			</button>
+		{:else}
+			<!-- Desktop Login -->
+			{#if !isAuthenticated}
+				<Button
+					class="hidden h-full cursor-pointer px-6 lg:inline-flex"
+					onclick={loginAndResetDropdown}
+				>
+					Login
+				</Button>
+			{/if}
+		{/if}
+	</div>
 </header>
 
 <!--Search menu-->
@@ -266,14 +268,14 @@
 		<div class="flex flex-col gap-8 pt-6">
 			{@render navigation(true)}
 
-            {#if !isAuthenticated}
-			<a
-				onclick={isMenuOpen ? toggleMenu : null}
-				href="/login"
-				class="flex w-full items-center justify-center rounded-lg bg-primary py-2 text-white transition-all duration-200 ease-linear hover:opacity-80"
-				>login</a
-			>
-                {/if}
+			{#if !isAuthenticated}
+				<a
+					onclick={isMenuOpen ? toggleMenu : null}
+					href="/login"
+					class="flex w-full items-center justify-center rounded-lg bg-primary py-2 text-white transition-all duration-200 ease-linear hover:opacity-80"
+					>login</a
+				>
+			{/if}
 		</div>
 	</section>
 {/if}
