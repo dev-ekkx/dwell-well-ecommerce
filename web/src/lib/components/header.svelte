@@ -119,6 +119,10 @@
 		}
 	};
 
+    const goToCart = async () => {
+        await goto(resolve("/cart"));
+    };
+
 	$effect(() => {
 		if (!isMobile) {
 			isMenuOpen = false;
@@ -302,7 +306,7 @@
 {#snippet cartAndAvatar()}
 	<div class="flex items-center gap-4">
 		<!-- Cart icon -->
-		<button aria-label="cart" class="cursor-pointer">
+		<button onclick={goToCart} aria-label="cart" class="cursor-pointer">
 			<img src={MenuCartIcon} alt="cart" />
 		</button>
 

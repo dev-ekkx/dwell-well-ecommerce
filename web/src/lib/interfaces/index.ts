@@ -289,3 +289,11 @@ export interface AuthI {
 	tokenExpiry: number;
 	role: "admin" | "user";
 }
+
+// Interface for User Store
+export interface UseUserStore {
+	user: UserI;
+	auth: AuthI;
+	updateUser: (data: UserI) => void;
+	updateUserAuth: (data: AuthI) => void;
+}

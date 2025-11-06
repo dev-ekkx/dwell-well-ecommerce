@@ -1,14 +1,12 @@
 import * as z from "zod";
 import { QuestionFormSchema } from "$lib/schema";
 import type {
-	AuthI,
 	CategoryI,
 	GlobalPresenceI,
 	GlobalReachI,
 	HeroI,
 	LeadershipTeamI,
 	NewArrivalI,
-	UserI,
 	WhyChooseUsI
 } from "$lib/interfaces";
 
@@ -37,9 +35,20 @@ export type ProductDataMap = Record<
 	}
 >;
 
-export type UseUserStore = {
-	user: UserI;
-	auth: AuthI;
-	updateUser: (data: UserI) => void;
-	updateUserAuth: (data: AuthI) => void;
+export type CarouselOptions<T> = {
+	items: T[];
+	repeat?: number;
+	initialIndex?: number;
+};
+
+export type CarouselState<T> = {
+	displayedItems: (T & { _r: number })[];
+	index: number;
+	carouselState: {
+		container: HTMLElement | null;
+		track: HTMLElement | null;
+	};
+	prev: () => void;
+	next: () => void;
+	collectItems: () => void;
 };

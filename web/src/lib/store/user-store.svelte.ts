@@ -1,5 +1,4 @@
-import type { AuthI, UserI } from "$lib/interfaces";
-import type { UseUserStore } from "$lib/types";
+import type { AuthI, UserI, UseUserStore } from "$lib/interfaces";
 
 export const useUserStore = (): UseUserStore => {
 	let user = $state<UserI>({
