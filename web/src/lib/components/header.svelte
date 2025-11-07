@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
-	import { cn, setRouteParams } from "$lib/utils";
+	import { cn, createInitial, setRouteParams } from "$lib/utils";
 	import { page } from "$app/state";
 	import SearchIcon from "$lib/assets/search.svg";
 	import { Button } from "$lib/components/ui/button";
@@ -46,6 +46,7 @@
 	let searchButton = $state<HTMLElement | null>(null);
 	let searchInput = $state<HTMLInputElement | null>(null);
 	let searchTerm = $state("");
+	const totalCartItems = $derived(() => cartStore.totalItems());
 
 	$effect(() => {
 		if (isSearchOpen && searchInput) {
@@ -311,19 +312,23 @@
 		<!-- Cart icon -->
 		<button onclick={goToCart} aria-label="cart" class="relative cursor-pointer">
 			<img src={MenuCartIcon} alt="cart" />
-			{#if cartStore.totalItems() > 0}
+			{#if totalCartItems() > 0}
 				<span
 					class="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary p-1 text-xs text-white"
 				>
-					{cartStore.totalItems()}
+					{totalCartItems()}
 				</span>
 			{/if}
 		</button>
 
 		<!-- Avatar icon -->
-		<AvatarRoot>
-			<AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-			<AvatarFallback>CN</AvatarFallback>
+		<AvatarRoot
+			class={cn({
+				"ml-2": totalCartItems() > 0
+			})}
+		>
+			<AvatarImage src={user.image} alt={user.name} />
+			<AvatarFallback>{createInitial(user.name)}</AvatarFallback>
 		</AvatarRoot>
 	</div>
 {/snippet}

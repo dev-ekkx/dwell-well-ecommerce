@@ -3,7 +3,7 @@ import type { AuthI, UserI, UserStoreI } from "$lib/interfaces";
 export const useUserStore = (): UserStoreI => {
 	let user = $state<UserI>({
 		id: "dfsdfsfdef4342f",
-		name: "John Doe",
+		name: "John Doe Kojo",
 		email: "john.doe.dwellwell.com",
 		image: "https://github.com/shadcn.png"
 	});
