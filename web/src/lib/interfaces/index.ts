@@ -61,17 +61,18 @@ export interface ProductI {
 	regionalAvailability: RegionalAvailabilityI[];
 }
 
-export interface ProductSummaryI {
-	categories: string[]
-	sizes: string[]
-	styles: string[]
-	availability: string
-	id: number
-	SKU: string
-	name: string
-	slug: string
-	description: string
-	details: string
+export interface ProductSummaryI
+	extends Omit<ProductI, "categories" | "sizes" | "styles" | "availability"> {
+	categories: string[];
+	sizes: string[];
+	styles: string[];
+	availability: string;
+	id: number;
+	SKU: string;
+	name: string;
+	slug: string;
+	description: string;
+	details: string;
 }
 
 // Interface for a region (continent)

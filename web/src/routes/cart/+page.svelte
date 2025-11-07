@@ -6,12 +6,15 @@
     import {MediaQuery} from "svelte/reactivity";
     import {cartStore} from "$lib/store/cart-store.svelte";
     import CartItem from "./cart-item.svelte";
+    import RecentlyViewedProducts from "$lib/components/recently-viewed-products.svelte";
+    import TrashIcon from "$lib/assets/trash.svg";
 
     const mediaQuery = new MediaQuery("max-width: 47.9rem");
     const newMediaQuery = new MediaQuery("min-width: 64rem");
     const isMobile = $derived(mediaQuery.current);
     const isBiggerDevice = $derived(newMediaQuery.current);
     const cartItems = $derived(cartStore.cartItems());
+    const totalCartItems = $derived(cartStore.totalItems())
     const isEmpty = $derived(cartStore.cartItems().length === 0);
 
     const goToShopping = () => {
@@ -25,6 +28,8 @@
     {:else}
         {@render cartData()}
     {/if}
+
+    <RecentlyViewedProducts className="g-mt" />
 </div>
 
 
@@ -57,6 +62,20 @@
 
         <!-- Cart items -->
         <div class="flex flex-1 flex-col gap-4">
+            <div class="flex items-center gap-4 justify-between">
+            <h5 class="text-2xl font-bold">Cart Items ({totalCartItems})</h5>
+                <!-- Clear cart button -->
+                <Button
+                        class="flex cursor-pointer items-center text-md font-medium gap-2 text-primary hover:text-primary"
+                        onclick={() => cartStore.clearCart()}
+                        variant="ghost"
+                >
+                    <img alt="trash" src={TrashIcon} />
+                    {#if !isMobile}
+                        <span>Clear Cart</span>
+                    {/if}
+                </Button>
+            </div>
             <!-- Card item -->
             {#each cartItems as item (item.SKU)}
                 <CartItem {...item}/>

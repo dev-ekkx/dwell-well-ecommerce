@@ -32,7 +32,7 @@
     };
 
     const viewProductDetails = (product: ProductI) => {
-        goto(`/shop?category=${product.slug}`);
+        goto(`/shop/${product.slug}`);
     };
 
     onMount(() => {
@@ -63,10 +63,8 @@
     </div>
 
     <!-- Arrow Buttons -->
-    <div class="absolute top-2/4 left-0 z-10 flex w-full items-center justify-between">
-        <ArrowButton direction="left" onclick={carousel.prev}/>
-        <ArrowButton direction="right" onclick={carousel.next}/>
-    </div>
+        <ArrowButton class="absolute top-2/4 left-0 z-10" direction="left" onclick={carousel.prev}/>
+        <ArrowButton class="absolute top-2/4 right-0 z-10"  direction="right" onclick={carousel.next}/>
 
     <!-- Image carousel -->
     <div bind:this={carousel.carouselState.track} class="flex w-max items-center gap-4">

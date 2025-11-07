@@ -242,7 +242,6 @@
             {/if}
 
             <!-- #################### PRODUCT & PAGINATION CONTENT #################### -->
-
             {#if isFilterOrSearch() || isViewingCategory()}
                 <!--	Product items -->
                 <section class="flex flex-col gap-5 md:gap-7 xl:gap-10">
