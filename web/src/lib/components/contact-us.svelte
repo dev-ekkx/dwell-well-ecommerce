@@ -56,7 +56,7 @@
 		src={ContactusBg}
 	/>
 
-	<!--User card and contact form-->
+	<!--UserI card and contact form-->
 	<div class="grid grid-cols-1 gap-6 g-px pb-10 md:gap-10 lg:grid-cols-2 lg:gap-44">
 		<!--	Description and user card-->
 		<div class="flex flex-col gap-10">
@@ -69,7 +69,7 @@
 					Send us a message, and we’ll get back to you soon!
 				</p>
 			</div>
-			<!-- User card -->
+			<!-- UserI card -->
 			<div class="flex flex-col gap-4 rounded-lg bg-white p-6">
 				<!--Avatar and name-->
 				<div class="flex items-center gap-4">

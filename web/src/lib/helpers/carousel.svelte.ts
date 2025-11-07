@@ -1,24 +1,7 @@
 // carousel.svelte.ts
 import gsap from "gsap";
 import { onMount } from "svelte";
-
-export type CarouselOptions<T> = {
-	items: T[];
-	repeat?: number;
-	initialIndex?: number;
-};
-
-export type CarouselState<T> = {
-	displayedItems: (T & { _r: number })[];
-	index: number;
-	carouselState: {
-		container: HTMLElement | null;
-		track: HTMLElement | null;
-	};
-	prev: () => void;
-	next: () => void;
-	collectItems: () => void;
-};
+import type { CarouselOptions, CarouselState } from "$lib/types";
 
 export function useCarousel<T>(options: CarouselOptions<T>): CarouselState<T> {
 	let carouselState = $state<{

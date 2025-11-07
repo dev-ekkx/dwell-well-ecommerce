@@ -1,14 +1,14 @@
 <script lang="ts">
-    import {Input} from "$lib/components/ui/input/index.js";
-    import {Button} from "$lib/components/ui/button";
-    import {resolve} from "$app/paths";
-    import type {RouteId} from "$app/types";
-    import type {FooterI} from "$lib/interfaces";
-    import {onMount} from "svelte";
-    import {marked} from "marked";
-    import DOMPurify from "dompurify";
+	import { Input } from "$lib/components/ui/input/index.js";
+	import { Button } from "$lib/components/ui/button";
+	import { resolve } from "$app/paths";
+	import type { RouteId } from "$app/types";
+	import type { FooterI } from "$lib/interfaces";
+	import { onMount } from "svelte";
+	import { marked } from "marked";
+	import DOMPurify from "dompurify";
 
-    const { footer } = $props();
+	const { footer } = $props();
 	const footerData = footer as FooterI;
 	const socials = footerData?.socialLinks ?? [];
 	const columnLinks = footerData?.linkColumns ?? [];

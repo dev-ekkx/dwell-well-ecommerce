@@ -34,3 +34,21 @@ export type ProductDataMap = Record<
 		inventory: number;
 	}
 >;
+
+export type CarouselOptions<T> = {
+	items: T[];
+	repeat?: number;
+	initialIndex?: number;
+};
+
+export type CarouselState<T> = {
+	displayedItems: (T & { _r: number })[];
+	index: number;
+	carouselState: {
+		container: HTMLElement | null;
+		track: HTMLElement | null;
+	};
+	prev: () => void;
+	next: () => void;
+	collectItems: () => void;
+};

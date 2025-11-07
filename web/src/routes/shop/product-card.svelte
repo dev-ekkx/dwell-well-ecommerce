@@ -5,10 +5,11 @@
 	import { Badge } from "$lib/components/ui/badge";
 	import type { ProductI } from "$lib/interfaces";
 	import { MediaQuery } from "svelte/reactivity";
+	import { cartStore } from "$lib/store/cart-store.svelte";
 
+	const { product, trigger }: { product: ProductI; trigger?: () => void } = $props();
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const isMobile = $derived(mediaQuery.current);
-	const product: ProductI = $props();
 	const productImage = $derived(`${product.images[0].url}`);
 
 	const config = $derived<ConfigI>({
@@ -27,17 +28,28 @@
 			starStyles: "gap: 0.1rem"
 		}
 	});
+
+	function addToCart() {
+		cartStore.addToCart(product);
+	}
 </script>
 
 <div class="group relative flex flex-col gap-4">
+	<!-- Product action trigger button -->
+	<button
+		aria-label="handle product action"
+		class="absolute top-0 left-0 z-10 h-full w-full cursor-pointer"
+		onclick={trigger}
+	></button>
 	<!--	add to cart button-->
-	{#if product.price > 0}
-		<button
-			class="absolute top-4 right-2 z-10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-primary"
-		>
-			<img alt="cart" class="scale-75" src={CartIcon} />
-		</button>
-	{/if}
+	<!--{#if product.price > 0}-->
+	<button
+		class="absolute top-4 right-2 z-20 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-primary"
+		onclick={addToCart}
+	>
+		<img alt="cart" class="scale-75" src={CartIcon} />
+	</button>
+	<!--{/if}-->
 
 	<div class="h-[11rem] overflow-clip rounded-lg md:h-[12rem]">
 		<img
@@ -66,7 +78,7 @@
 			{#if product.price > 0}
 				<span class="">${formatNumberWithCommas(299)} </span>
 			{:else}
-				<Badge variant="primary">Coming soon</Badge>
+				<Badge variant="secondary">Coming soon</Badge>
 			{/if}
 		</span>
 	</div>

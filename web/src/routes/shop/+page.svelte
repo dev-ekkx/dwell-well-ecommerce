@@ -47,7 +47,7 @@
 		...data.filters,
 		priceRange: {
 			min: 0,
-			max: 10000
+			max: 10_000
 		}
 	});
 	const searchTerm = $derived(page.url.searchParams.get("q") || "");

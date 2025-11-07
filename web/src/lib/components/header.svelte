@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
-	import { cn, setRouteParams } from "$lib/utils";
+	import { cn, createInitial, setRouteParams } from "$lib/utils";
 	import { page } from "$app/state";
 	import SearchIcon from "$lib/assets/search.svg";
 	import { Button } from "$lib/components/ui/button";
@@ -13,9 +13,21 @@
 	import { Input } from "$lib/components/ui/input";
 	import { MediaQuery } from "svelte/reactivity";
 	import { ROUTE_NAVS } from "$lib/constants";
+	import MenuCartIcon from "$lib/assets/menu-cart.svg";
+	import {
+		Fallback as AvatarFallback,
+		Image as AvatarImage,
+		Root as AvatarRoot
+	} from "$lib/components/ui/avatar/index.js";
+	import { useUserStore } from "$lib/store/user-store.svelte";
+	import { cartStore } from "$lib/store/cart-store.svelte";
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const isMobile = $derived(mediaQuery.current);
+	const userStore = () => useUserStore();
+	const isAuthenticated = $derived(userStore().auth.isAuthenticated);
+	const user = $derived(userStore().user);
+
 	const isActiveRoute = (path: string) => {
 		if (path === "/") {
 			return page.route.id === "/";
@@ -34,6 +46,7 @@
 	let searchButton = $state<HTMLElement | null>(null);
 	let searchInput = $state<HTMLInputElement | null>(null);
 	let searchTerm = $state("");
+	const totalCartItems = $derived(() => cartStore.totalItems());
 
 	$effect(() => {
 		if (isSearchOpen && searchInput) {
@@ -108,6 +121,10 @@
 		}
 	};
 
+	const goToCart = async () => {
+		await goto(resolve("/cart"));
+	};
+
 	$effect(() => {
 		if (!isMobile) {
 			isMenuOpen = false;
@@ -166,16 +183,17 @@
 <header
 	class="fixed top-0 left-0 z-50 flex h-[8vh] w-full items-center justify-between gap-4 border-b bg-white g-px"
 >
-	<!--	Logo-->
+	<!-- Logo -->
 	<LogoComponent />
 
-	<!--		Desktop navigation-->
+	<!-- Desktop navigation -->
 	{#if !isMobile}
 		{@render desktopNav()}
 	{/if}
 
-	<!--	Search and Login buttons -->
-	<div class="flex items-center gap-6">
+	<!-- Search and Login buttons -->
+	<div class="flex items-center gap-4">
+		<!-- Search Button -->
 		<button
 			aria-label="search"
 			bind:this={searchButton}
@@ -185,25 +203,35 @@
 			<img alt="search" src={SearchIcon} />
 		</button>
 
+		<!-- Authenticated section -->
+		{#if isAuthenticated}
+			{@render cartAndAvatar()}
+		{/if}
+
+		<!-- Mobile vs Desktop -->
 		{#if isMobile}
+			<!-- Mobile Menu Toggle -->
 			<button
 				bind:this={menuButton}
 				onclick={toggleMenu}
 				aria-label="hamburger toggle"
 				class="w-8 cursor-pointer justify-center **:pointer-events-none"
 			>
-				{#if isMenuOpen}
-					<img src={CloseIcon} alt="close" />
-				{:else}
-					<img src={HamburgerIcon} alt="hamburger" />
-				{/if}
+				<img
+					src={isMenuOpen ? CloseIcon : HamburgerIcon}
+					alt={isMenuOpen ? "close" : "hamburger"}
+				/>
 			</button>
 		{:else}
-			<Button
-				onclick={loginAndResetDropdown}
-				class="hidden h-full cursor-pointer px-6 lg:inline-flex"
-				>Login
-			</Button>
+			<!-- Desktop Login -->
+			{#if !isAuthenticated}
+				<Button
+					class="hidden h-full cursor-pointer px-6 lg:inline-flex"
+					onclick={loginAndResetDropdown}
+				>
+					Login
+				</Button>
+			{/if}
 		{/if}
 	</div>
 </header>
@@ -241,17 +269,20 @@
 	>
 		<div class="flex flex-col gap-8 pt-6">
 			{@render navigation(true)}
-			<a
-				onclick={isMenuOpen ? toggleMenu : null}
-				href="/login"
-				class="flex w-full items-center justify-center rounded-lg bg-primary py-2 text-white transition-all duration-200 ease-linear hover:opacity-80"
-				>login</a
-			>
+
+			{#if !isAuthenticated}
+				<a
+					onclick={isMenuOpen ? toggleMenu : null}
+					href="/login"
+					class="flex w-full items-center justify-center rounded-lg bg-primary py-2 text-white transition-all duration-200 ease-linear hover:opacity-80"
+					>login</a
+				>
+			{/if}
 		</div>
 	</section>
 {/if}
 
-<!-- Desktop	Navigation-->
+<!-- Desktop Navigation -->
 {#snippet desktopNav()}
 	<nav class="hidden h-12 items-center lg:flex">
 		{@render navigation()}
@@ -274,4 +305,30 @@
 			aria-label={nav.label}>{nav.label}</a
 		>
 	{/each}
+{/snippet}
+
+{#snippet cartAndAvatar()}
+	<div class="flex items-center gap-4">
+		<!-- Cart icon -->
+		<button onclick={goToCart} aria-label="cart" class="relative cursor-pointer">
+			<img src={MenuCartIcon} alt="cart" />
+			{#if totalCartItems() > 0}
+				<span
+					class="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary p-1 text-xs text-white"
+				>
+					{totalCartItems()}
+				</span>
+			{/if}
+		</button>
+
+		<!-- Avatar icon -->
+		<AvatarRoot
+			class={cn({
+				"ml-2": totalCartItems() > 0
+			})}
+		>
+			<AvatarImage src={user.image} alt={user.name} />
+			<AvatarFallback>{createInitial(user.name)}</AvatarFallback>
+		</AvatarRoot>
+	</div>
 {/snippet}

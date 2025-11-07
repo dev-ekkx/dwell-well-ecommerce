@@ -65,6 +65,17 @@ export function renderMarkdown(text: string) {
 	return DOMPurify.sanitize(marked(markdown).toString());
 }
 
+export const createInitial = (userName: string): string => {
+	if (!userName?.trim()) return "N/A";
+
+	const parts = userName.trim().split(/\s+/);
+	const first = parts[0]?.[0] ?? "";
+	const second = parts.at(-1)?.[0] ?? "";
+
+	const initials = `${first}${second}`.toUpperCase();
+	return initials || "N/A";
+};
+
 export type WithoutChild<T> = T extends { child?: unknown } ? Omit<T, "child"> : T;
 export type WithoutChildren<T> = T extends { children?: unknown } ? Omit<T, "children"> : T;
 export type WithoutChildrenOrChild<T> = WithoutChildren<WithoutChild<T>>;

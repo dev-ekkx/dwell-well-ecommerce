@@ -45,7 +45,7 @@ src/lib/paraglide
 .idea/**/dictionaries
 .idea/**/shelf
 
-# AWS User-specific
+# AWS UserI-specific
 .idea/**/aws.xml
 
 # Generated files

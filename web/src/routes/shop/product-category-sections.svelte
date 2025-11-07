@@ -70,9 +70,7 @@
 	<!-- Image carousel -->
 	<div bind:this={carousel.carouselState.track} class="flex w-max items-center gap-4">
 		{#each carousel.displayedItems as product, idx (idx)}
-			<button onclick={() => viewProductDetails(product)} class="cursor-pointer">
-				<ProductCard {...product} />
-			</button>
+			<ProductCard {product} trigger={() => viewProductDetails(product)} />
 		{/each}
 	</div>
 </section>
