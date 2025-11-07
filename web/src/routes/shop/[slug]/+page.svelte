@@ -10,15 +10,15 @@
 	} from "$lib/components/ui/breadcrumb/index.js";
 	import { type ConfigI, StarRating } from "@dev-ekkx/svelte-star-rating";
 
-    import { Button } from "$lib/components/ui/button";
+	import { Button } from "$lib/components/ui/button";
 	import { MediaQuery } from "svelte/reactivity";
 	import { Content, List, Root, Trigger } from "$lib/components/ui/tabs/index";
 	import RelatedProducts from "./related-products.svelte";
 	import { Badge } from "$lib/components/ui/badge";
 	import { cn, renderMarkdown } from "$lib/utils";
-    import {onMount} from "svelte";
-    import {recentlyViewedStore} from "$lib/store/recently-viewed-store.svelte";
-    import type {ProductI} from "$lib/interfaces";
+	import { onMount } from "svelte";
+	import { recentlyViewedStore } from "$lib/store/recently-viewed-store.svelte";
+	import type { ProductI } from "$lib/interfaces";
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const buttonQuantityClass = "cursor-pointer disabled:opacity-50 disabled:pointer-events-none";
@@ -81,9 +81,9 @@
 		}
 	});
 
-    onMount(() => {
-        recentlyViewedStore.addProduct(product)
-    })
+	onMount(() => {
+		recentlyViewedStore.addProduct(product);
+	});
 </script>
 
 <div class="flex flex-col gap-4 g-px g-pb">
