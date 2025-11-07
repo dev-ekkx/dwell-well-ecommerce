@@ -60,9 +60,10 @@ class CartStore implements CartStoreI {
 			this.store.set(sku, { ...existing, quantity: existing.quantity - 1 });
 			this.saveToLocalStorage();
 			// this.scheduleBackendSync();
-		} else {
-			this.removeFromCart(sku);
 		}
+		// else {
+		// 	this.removeFromCart(sku);
+		// }
 	}
 
 	public removeFromCart(sku: string) {
@@ -135,7 +136,7 @@ class CartStore implements CartStoreI {
 		}
 	}
 
-	private async initializeFromStorage() {
+	private initializeFromStorage() {
 		if (!browser) return;
 
 		this.loadFromLocalStorage();
