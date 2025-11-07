@@ -316,6 +316,7 @@ export interface UserStoreI {
 export interface CartItemI extends Pick<ProductI, "name" | "price" | "SKU" | "inventory"> {
 	quantity: number;
 	image: StrapiImageI;
+	slug: string;
 }
 
 // Interface for Cart Store

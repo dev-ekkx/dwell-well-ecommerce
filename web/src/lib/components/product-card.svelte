@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { formatNumberWithCommas } from "$lib/utils";
-	import { type ConfigI, StarRating } from "@dev-ekkx/svelte-star-rating";
-	import CartIcon from "$lib/assets/cart.svg";
-	import type { ProductI, ProductSummaryI } from "$lib/interfaces";
-	import { MediaQuery } from "svelte/reactivity";
-	import { cartStore } from "$lib/store/cart-store.svelte.js";
-	import { Badge } from "$lib/components/ui/badge";
+    import {formatNumberWithCommas} from "$lib/utils";
+    import {type ConfigI, StarRating} from "@dev-ekkx/svelte-star-rating";
+    import CartIcon from "$lib/assets/cart.svg";
+    import type {ProductI, ProductSummaryI} from "$lib/interfaces";
+    import {MediaQuery} from "svelte/reactivity";
+    import {cartStore} from "$lib/store/cart-store.svelte.js";
+    import {Badge} from "$lib/components/ui/badge";
 
-	const { product, trigger }: { product: ProductSummaryI | ProductI; trigger?: () => void } =
+    const { product, trigger }: { product: ProductSummaryI | ProductI; trigger?: () => void } =
 		$props();
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const isMobile = $derived(mediaQuery.current);
@@ -42,15 +42,15 @@
 		class="absolute top-0 left-0 z-10 h-full w-full cursor-pointer"
 		onclick={trigger}
 	></button>
-	<!--	add to cart button-->
-	<!--{#if product.price > 0}-->
+	<!--Add to cart button -->
+	{#if product.inventory > 0}
 	<button
 		class="absolute top-2 right-2 z-20 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-primary"
 		onclick={addToCart}
 	>
 		<img alt="cart" class="scale-75" src={CartIcon} />
 	</button>
-	<!--{/if}-->
+	{/if}
 
 	<div class="relative h-[11rem] overflow-clip rounded-lg md:h-[12rem]">
 		<img
@@ -61,7 +61,7 @@
 
 		<Badge
 			class="absolute top-1 left-0 border-primary bg-muted font-semibold text-primary"
-			variant="outline">Coming soon</Badge
+			variant="outline">Currently unavailable</Badge
 		>
 	</div>
 

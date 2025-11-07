@@ -34,6 +34,7 @@ class CartStore implements CartStoreI {
 				image: product.images[0],
 				SKU: product.SKU,
 				inventory: product.inventory,
+				slug: product.slug,
 				quantity: 1
 			});
 		}

@@ -1,16 +1,16 @@
 <script lang="ts">
-	import { cn, formatNumberWithCommas } from "$lib/utils";
-	import WarningCircleIcon from "$lib/assets/warning-circle.svg";
-	import TrashIcon from "$lib/assets/trash.svg";
-	import MinusIcon from "$lib/assets/minus.svg";
-	import PlusIcon from "$lib/assets/plus.svg";
-	import { Button } from "$lib/components/ui/button";
-	import { MediaQuery } from "svelte/reactivity";
-	import { cartStore } from "$lib/store/cart-store.svelte";
-	import { goto } from "$app/navigation";
-	import { resolve } from "$app/paths";
+    import {cn, formatNumberWithCommas} from "$lib/utils";
+    import WarningCircleIcon from "$lib/assets/warning-circle.svg";
+    import TrashIcon from "$lib/assets/trash.svg";
+    import MinusIcon from "$lib/assets/minus.svg";
+    import PlusIcon from "$lib/assets/plus.svg";
+    import {Button} from "$lib/components/ui/button";
+    import {MediaQuery} from "svelte/reactivity";
+    import {cartStore} from "$lib/store/cart-store.svelte";
+    import {goto} from "$app/navigation";
+    import {resolve} from "$app/paths";
 
-	const item = $props();
+    const item = $props();
 
 	const mediaQuery = new MediaQuery("max-width: 47.9rem");
 	const isMobile = $derived(mediaQuery.current);
@@ -28,7 +28,7 @@
 </script>
 
 <div
-	class=" relative flex flex-col gap-4 rounded-lg border border-b-muted-foreground/20 p-4 shadow-sm shadow-muted-foreground/20"
+	class=" relative flex flex-col gap-4 rounded-lg border border-b-muted-foreground/20 pt-4 shadow-sm shadow-muted-foreground/20"
 >
 	<!-- View product button -->
 	<button
@@ -38,7 +38,7 @@
 	></button>
 
 	<!-- Image, price and description -->
-	<div class="flex items-center gap-4">
+	<div class="flex items-center gap-4 px-4">
 		<div class="relative h-20 w-24 overflow-clip rounded">
 			<img alt={item.name} class=" h-full w-full object-cover" src={item.image.url} />
 			{#if isMobile}
@@ -48,7 +48,7 @@
 				>
 			{/if}
 		</div>
-		<div class="z-20 flex flex-col gap-1 bg-amber-400">
+		<div class="z-20 flex flex-col gap-1">
 			<span>{item.name}</span>
 			{#if isMobile}
 				<div class="flex flex-wrap items-center gap-2 font-medium">
@@ -66,7 +66,7 @@
 			{/if}
 		</div>
 		{#if !isMobile}
-			<div class="z-20 ml-auto flex flex-col gap-1 bg-blue-500 font-medium">
+			<div class="z-20 ml-auto flex flex-col gap-1 font-medium">
 				<span class=" text-2xl">${formatNumberWithCommas(12_240.96)}</span>
 
 				<div class="flex items-center gap-4">
@@ -83,10 +83,10 @@
 	</div>
 
 	<!-- Remove button and quantity triggers -->
-	<div class="z-20 flex items-center justify-between gap-4 bg-red-600">
+	<div class="z-20 flex items-center justify-between gap-4 pb-4 px-4">
 		<!-- Remove button -->
 		<Button
-			class="flex cursor-pointer items-center gap-2 text-primary hover:text-primary"
+			class="px-0.5 flex cursor-pointer items-center gap-2 text-primary hover:text-primary"
 			onclick={() => cartStore.removeFromCart(item.SKU)}
 			variant="ghost"
 		>
