@@ -6,16 +6,20 @@
     import PlusIcon from "$lib/assets/plus.svg";
     import {Button} from "$lib/components/ui/button";
     import {MediaQuery} from "svelte/reactivity";
+    import {cartStore} from "$lib/store/cart-store.svelte";
 
     const item = $props();
 
-    $inspect(item)
 
     const mediaQuery = new MediaQuery("max-width: 47.9rem");
     const isMobile = $derived(mediaQuery.current);
 
     const quantityTriggerClass =
         "p-1.5 hover:shadow-md hover:scale-105 hover:opacity-90 transition-all duration-150 ease-linear";
+
+    function increaseQuantity() {
+        cartStore.increaseQuantity(item.SKU)
+    }
 </script>
 
 
@@ -24,13 +28,16 @@
 >
     <!-- Image, price and description -->
     <div class="flex items-center gap-4">
-        <img alt={item.name} class="h-full w-full object-cover relative" src={item.image.url}/>
-        {#if isMobile}
+        <div class="h-20 w-24 relative rounded overflow-clip">
+
+            <img alt={item.name} class=" object-cover h-full w-full" src={item.image.url}/>
+            {#if isMobile}
 							<span
-                                    class="absolute right-0 rounded-sm bg-primary-foreground p-1 text-xs font-semibold text-primary"
+                                    class="absolute top-0 right-0 rounded-sm bg-primary-foreground p-1 text-xs font-semibold text-primary"
                             >-42%</span
                             >
-        {/if}
+            {/if}
+        </div>
         <div class="flex flex-col gap-1">
 						<span
                         >{item.name}</span
@@ -43,10 +50,13 @@
                     >
                 </div>
             {/if}
-            <div class="flex items-center gap-1 text-sm text-warning">
-                <img alt="warning" class="scale-90" src={WarningCircleIcon}/>
-                <span>few units left</span>
-            </div>
+            {item.inventory}
+            {#if (!item.inventory || item.inventory < 5)}
+                <div class="flex items-center gap-1 text-sm text-warning">
+                    <img alt="warning" class="scale-90" src={WarningCircleIcon}/>
+                    <span>few units left</span>
+                </div>
+            {/if}
         </div>
         {#if !isMobile}
             <div class="ml-auto flex flex-col gap-1 font-medium">
@@ -70,6 +80,7 @@
         <!-- Remove button -->
         <Button
                 class="flex cursor-pointer items-center gap-2 text-primary hover:text-primary"
+                onclick={() => cartStore.removeFromCart(item.SKU)}
                 variant="ghost"
         >
             <img alt="trash" src={TrashIcon}/>
@@ -83,13 +94,15 @@
             <button
                     aria-label="decrease item quantity"
                     class={cn("cursor-pointer bg-muted-foreground", quantityTriggerClass)}
+                    onclick={() => cartStore.reduceQuantity(item.SKU)}
             >
                 <img alt="minus" src={MinusIcon}/>
             </button>
-            <span class={cn("pointer-events-none", quantityTriggerClass)}>1</span>
+            <span class={cn("pointer-events-none", quantityTriggerClass)}>{item.quantity}</span>
             <button
                     aria-label="increase item quantity"
                     class={cn("cursor-pointer bg-primary", quantityTriggerClass)}
+                    onclick={increaseQuantity}
             >
                 <img alt="plus" src={PlusIcon}/>
             </button>

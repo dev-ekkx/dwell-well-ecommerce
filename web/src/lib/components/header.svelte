@@ -20,6 +20,7 @@
         Root as AvatarRoot
     } from "$lib/components/ui/avatar/index.js";
     import {useUserStore} from "$lib/store/user-store.svelte";
+    import {cartStore} from "$lib/store/cart-store.svelte";
 
     const mediaQuery = new MediaQuery("max-width: 63.9rem");
     const isMobile = $derived(mediaQuery.current);
@@ -311,11 +312,11 @@
         <!-- Cart icon -->
         <button onclick={goToCart} aria-label="cart" class="cursor-pointer relative">
             <img src={MenuCartIcon} alt="cart"/>
-            <!--{#if cartStore.totalItems() > 0}-->
+            {#if cartStore.totalItems() > 0}
             <span class="absolute -top-2 -right-2 bg-primary text-xs flex items-center justify-center p-1 h-5 w-5 text-white rounded-full">
-                <!--{cartStore.totalItems()}-->
+                {cartStore.totalItems()}
             </span>
-            <!--{/if}-->
+            {/if}
         </button>
 
         <!-- Avatar icon -->

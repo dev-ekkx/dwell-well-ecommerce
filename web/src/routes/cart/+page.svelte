@@ -4,13 +4,14 @@
     import {goto} from "$app/navigation";
     import {formatNumberWithCommas} from "$lib/utils";
     import {MediaQuery} from "svelte/reactivity";
-    import CartItem from "./cart-item.svelte";
     import {cartStore} from "$lib/store/cart-store.svelte";
+    import CartItem from "./cart-item.svelte"
 
     const mediaQuery = new MediaQuery("max-width: 47.9rem");
     const newMediaQuery = new MediaQuery("min-width: 64rem");
     const isMobile = $derived(mediaQuery.current);
     const isBiggerDevice = $derived(newMediaQuery.current);
+    const cartItems = $derived(cartStore.cartItems())
 
     const isEmpty = cartStore.cartItems().length === 0;
 
@@ -50,24 +51,26 @@
                 </div>
             </div>
             {#if isBiggerDevice}
-                <hr/>
-                <Button>CheckOut (${formatNumberWithCommas(10_000)})</Button>
+                {@render checkOutButton()}
             {/if}
         </div>
 
         <!-- Cart items -->
         <div class="flex flex-1 flex-col gap-4">
             <!-- Card item -->
-            {#each cartStore.cartItems() as item (item.SKU)}
+            {#each cartItems as item (item.SKU)}
                 <CartItem {...item}/>
             {/each}
-            <CartItem/>
         </div>
         {#if !isBiggerDevice}
-            <hr/>
-            <Button>CheckOut (${formatNumberWithCommas(10_000)})</Button>
+            {@render checkOutButton()}
         {/if}
     </section>
+{/snippet}
+
+{#snippet checkOutButton()}
+    <hr/>
+    <Button>CheckOut (${formatNumberWithCommas(10_000)})</Button>
 {/snippet}
 
 {#snippet emptyCart()}
