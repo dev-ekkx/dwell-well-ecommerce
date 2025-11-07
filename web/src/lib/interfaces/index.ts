@@ -299,7 +299,7 @@ export interface UserStoreI {
 }
 
 // Interface for Cart Item
-export interface CartItemI extends Pick<ProductI, "name" | "price"> {
+export interface CartItemI extends Pick<ProductI, "name" | "price" | "SKU"> {
 	quantity: number;
 	image: StrapiImageI;
 }

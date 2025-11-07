@@ -26,9 +26,12 @@ function addToCart(product: ProductI) {
 			name: product.name,
 			price: product.price,
 			image: product.images[0],
+			SKU: product.SKU,
 			quantity: 1
 		});
 	}
+
+	console.log(store.values());
 }
 
 function increaseQuantity(sku: string) {
