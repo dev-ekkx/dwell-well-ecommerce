@@ -157,7 +157,11 @@
 				{#if product.inventory > 0}
 					<span class="font-semibold">{product.inventory} Available products</span>
 				{/if}
-				<p class="text-sm text-muted-foreground md:text-base">{@html productDescription}</p>
+				{#await productDescription}
+					<p>waiting for the product description to resolve...</p>
+				{:then value}
+					<p class="text-sm text-muted-foreground md:text-base">{@html value}</p>
+				{/await}
 				<!-- Colors -->
 				<div class="flex flex-col gap-2">
 					<span class="font-semibold">Available colors</span>
@@ -230,7 +234,11 @@
 				{#each groupedTabs() as group (group.title)}
 					<Content value={group.title} class="py-4">
 						<div class=" cms-content **:text-muted-foreground">
-							{@html group.content}
+							{#await group.content}
+								<p>waiting for {group.title} to resolve...</p>
+							{:then value}
+								{@html value}
+							{/await}
 						</div>
 					</Content>
 				{/each}

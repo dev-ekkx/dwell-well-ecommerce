@@ -1,16 +1,16 @@
 <script lang="ts">
-    import {cn, formatNumberWithCommas} from "$lib/utils";
-    import WarningCircleIcon from "$lib/assets/warning-circle.svg";
-    import TrashIcon from "$lib/assets/trash.svg";
-    import MinusIcon from "$lib/assets/minus.svg";
-    import PlusIcon from "$lib/assets/plus.svg";
-    import {Button} from "$lib/components/ui/button";
-    import {MediaQuery} from "svelte/reactivity";
-    import {cartStore} from "$lib/store/cart-store.svelte";
-    import {goto} from "$app/navigation";
-    import {resolve} from "$app/paths";
+	import { cn, formatNumberWithCommas } from "$lib/utils";
+	import WarningCircleIcon from "$lib/assets/warning-circle.svg";
+	import TrashIcon from "$lib/assets/trash.svg";
+	import MinusIcon from "$lib/assets/minus.svg";
+	import PlusIcon from "$lib/assets/plus.svg";
+	import { Button } from "$lib/components/ui/button";
+	import { MediaQuery } from "svelte/reactivity";
+	import { cartStore } from "$lib/store/cart-store.svelte";
+	import { goto } from "$app/navigation";
+	import { resolve } from "$app/paths";
 
-    const item = $props();
+	const item = $props();
 
 	const mediaQuery = new MediaQuery("max-width: 47.9rem");
 	const isMobile = $derived(mediaQuery.current);
@@ -83,10 +83,10 @@
 	</div>
 
 	<!-- Remove button and quantity triggers -->
-	<div class="z-20 flex items-center justify-between gap-4 pb-4 px-4">
+	<div class="z-20 flex items-center justify-between gap-4 px-4 pb-4">
 		<!-- Remove button -->
 		<Button
-			class="px-0.5 flex cursor-pointer items-center gap-2 text-primary hover:text-primary"
+			class="flex cursor-pointer items-center gap-2 px-0.5 text-primary hover:text-primary"
 			onclick={() => cartStore.removeFromCart(item.SKU)}
 			variant="ghost"
 		>

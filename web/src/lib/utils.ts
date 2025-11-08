@@ -6,7 +6,6 @@ import { goto } from "$app/navigation";
 import { resolve } from "$app/paths";
 import type { RouteId } from "$app/types";
 import { marked } from "marked";
-import DOMPurify from "dompurify";
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -59,10 +58,19 @@ marked.setOptions({
 	pedantic: false
 });
 
-export function renderMarkdown(text: string) {
+export async function renderMarkdown(text: string) {
 	if (!text) return "No content";
 	const markdown = text.replace(/\\n/g, "\n");
-	return DOMPurify.sanitize(marked(markdown).toString());
+	const dirty = await marked.parse(markdown);
+
+	// Only sanitize in the browser (client side)
+	if (globalThis.window !== undefined) {
+		const DOMPurify = (await import("dompurify")).default;
+		return DOMPurify.sanitize(dirty);
+	}
+
+	// Return the raw HTML on the server
+	return typeof dirty;
 }
 
 export const createInitial = (userName: string): string => {
