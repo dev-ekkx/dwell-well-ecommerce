@@ -46,20 +46,20 @@
 		"max-w-[67vw] xl:max-w-[71vw]": isDynamicWidth && !isMobile
 	})}
 >
-	<div class="flex items-center justify-between gap-4">
+	<div class="flex flex-col gap-4">
 		<!-- Title and Description -->
-		<div class="flex flex-col gap-2">
+		<div class="g flex items-center justify-between gap-2">
 			<span class="text-2xl leading-8 font-semibold lg:text-3xl lg:leading-10">{title}</span>
-			<p class="text-muted-foreground">{description}</p>
-		</div>
 
-		<!-- View all button -->
-		<Button
-			class="cursor-pointer text-primary hover:text-primary"
-			onclick={viewCategory}
-			variant="ghost"
-			>View all
-		</Button>
+			<!-- View all button -->
+			<Button
+				class="cursor-pointer text-primary hover:text-primary"
+				onclick={viewCategory}
+				variant="ghost"
+				>View all
+			</Button>
+		</div>
+		<p class="text-muted-foreground">{description}</p>
 	</div>
 
 	<!-- Arrow Buttons -->

@@ -1,13 +1,13 @@
 <script lang="ts">
-    import {formatNumberWithCommas} from "$lib/utils";
-    import {type ConfigI, StarRating} from "@dev-ekkx/svelte-star-rating";
-    import CartIcon from "$lib/assets/cart.svg";
-    import type {ProductI, ProductSummaryI} from "$lib/interfaces";
-    import {MediaQuery} from "svelte/reactivity";
-    import {cartStore} from "$lib/store/cart-store.svelte.js";
-    import {Badge} from "$lib/components/ui/badge";
+	import { formatNumberWithCommas } from "$lib/utils";
+	import { type ConfigI, StarRating } from "@dev-ekkx/svelte-star-rating";
+	import CartIcon from "$lib/assets/cart.svg";
+	import type { ProductI, ProductSummaryI } from "$lib/interfaces";
+	import { MediaQuery } from "svelte/reactivity";
+	import { cartStore } from "$lib/store/cart-store.svelte.js";
+	import { Badge } from "$lib/components/ui/badge";
 
-    const { product, trigger }: { product: ProductSummaryI | ProductI; trigger?: () => void } =
+	const { product, trigger }: { product: ProductSummaryI | ProductI; trigger?: () => void } =
 		$props();
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const isMobile = $derived(mediaQuery.current);
