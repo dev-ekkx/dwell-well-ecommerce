@@ -5,7 +5,7 @@ class RecentlyViewedStore {
 	private items = $state<ProductSummaryI[]>([]);
 	public recentlyViewedProducts = $derived(this.items);
 	private readonly STORAGE_KEY = "recently-viewed";
-	private readonly MAX_ITEMS = 20;
+	private readonly MAX_ITEMS = 5;
 	private syncTimeout: NodeJS.Timeout | null = null;
 
 	constructor() {
