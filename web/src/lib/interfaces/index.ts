@@ -61,6 +61,20 @@ export interface ProductI {
 	regionalAvailability: RegionalAvailabilityI[];
 }
 
+export interface ProductSummaryI
+	extends Omit<ProductI, "categories" | "sizes" | "styles" | "availability"> {
+	categories: string[];
+	sizes: string[];
+	styles: string[];
+	availability: string;
+	id: number;
+	SKU: string;
+	name: string;
+	slug: string;
+	description: string;
+	details: string;
+}
+
 // Interface for a region (continent)
 export interface RegionI {
 	name: string;
@@ -302,6 +316,7 @@ export interface UserStoreI {
 export interface CartItemI extends Pick<ProductI, "name" | "price" | "SKU" | "inventory"> {
 	quantity: number;
 	image: StrapiImageI;
+	slug: string;
 }
 
 // Interface for Cart Store

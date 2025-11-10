@@ -9,15 +9,16 @@
 		Separator
 	} from "$lib/components/ui/breadcrumb/index.js";
 	import { type ConfigI, StarRating } from "@dev-ekkx/svelte-star-rating";
-	import { marked } from "marked";
-	import DOMPurify from "dompurify";
-	import { onMount } from "svelte";
+
 	import { Button } from "$lib/components/ui/button";
 	import { MediaQuery } from "svelte/reactivity";
 	import { Content, List, Root, Trigger } from "$lib/components/ui/tabs/index";
 	import RelatedProducts from "./related-products.svelte";
 	import { Badge } from "$lib/components/ui/badge";
 	import { cn, renderMarkdown } from "$lib/utils";
+	import { onMount } from "svelte";
+	import { recentlyViewedStore } from "$lib/store/recently-viewed-store.svelte";
+	import type { ProductI } from "$lib/interfaces";
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const buttonQuantityClass = "cursor-pointer disabled:opacity-50 disabled:pointer-events-none";
@@ -78,6 +79,10 @@
 			containerStyles: "width: max-content; pointer-events: none;",
 			starStyles: "gap: 0.2rem"
 		}
+	});
+
+	onMount(() => {
+		recentlyViewedStore.addProduct(product);
 	});
 </script>
 
@@ -152,7 +157,11 @@
 				{#if product.inventory > 0}
 					<span class="font-semibold">{product.inventory} Available products</span>
 				{/if}
-				<p class="text-sm text-muted-foreground md:text-base">{@html productDescription}</p>
+				{#await productDescription}
+					<p>waiting for the product description to resolve...</p>
+				{:then value}
+					<p class="text-sm text-muted-foreground md:text-base">{@html value}</p>
+				{/await}
 				<!-- Colors -->
 				<div class="flex flex-col gap-2">
 					<span class="font-semibold">Available colors</span>
@@ -225,7 +234,11 @@
 				{#each groupedTabs() as group (group.title)}
 					<Content value={group.title} class="py-4">
 						<div class=" cms-content **:text-muted-foreground">
-							{@html group.content}
+							{#await group.content}
+								<p>waiting for {group.title} to resolve...</p>
+							{:then value}
+								{@html value}
+							{/await}
 						</div>
 					</Content>
 				{/each}

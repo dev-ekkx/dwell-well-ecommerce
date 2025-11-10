@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ProductI } from "$lib/interfaces";
-	import ProductCard from "../product-card.svelte";
+	import ProductCard from "$lib/components/product-card.svelte";
 
 	const relatedProducts: ProductI[] = $props();
 </script>
@@ -10,7 +10,7 @@
 
 	<section class="flex w-full flex-col gap-4 overflow-x-auto md:flex-row md:gap-6 xl:gap-10">
 		{#each relatedProducts as product (product.SKU)}
-			<ProductCard {...product} />
+			<ProductCard {product} />
 		{/each}
 	</section>
 </div>

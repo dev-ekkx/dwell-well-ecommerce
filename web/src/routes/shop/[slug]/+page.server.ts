@@ -2,7 +2,7 @@ import type { PageServerLoad } from "./$types";
 import { client } from "../../../graphql.config";
 import { GET_PRODUCT_BY_SLUG, GET_RELATED_PRODUCTS } from "../../../graphql.queries";
 import { error } from "@sveltejs/kit";
-import type { ProductI } from "$lib/interfaces";
+import type { ProductI, ProductSummaryI } from "$lib/interfaces";
 import type { ProductDataMap } from "$lib/types";
 import { BACKEND_URL } from "$lib/constants";
 
@@ -28,7 +28,7 @@ export const load: PageServerLoad = async ({ params, url }) => {
 		sizes: data.sizes?.map((item) => item.name),
 		styles: data.styles?.map((item) => item.name),
 		availability: data.availability.name
-	};
+	} as ProductSummaryI;
 	const categorySlugs = data.categories?.map((cat) => cat.slug) || [];
 
 	// Fetch related products

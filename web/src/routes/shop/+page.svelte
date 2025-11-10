@@ -2,7 +2,7 @@
 	import type { PageProps } from "./$types";
 	import { formatNumberWithCommas, setRouteParams } from "$lib/utils";
 	import FiltersAndSort from "./filter-and-sort.svelte";
-	import ProductCard from "./product-card.svelte";
+	import ProductCard from "$lib/components/product-card.svelte";
 	import ContactUs from "$lib/components/contact-us.svelte";
 	import { page } from "$app/state";
 	import { ITEMS_PER_PAGE_OPTIONS } from "$lib/constants";
@@ -29,7 +29,6 @@
 	import { MediaQuery, SvelteURLSearchParams } from "svelte/reactivity";
 	import { onMount } from "svelte";
 	import type { PageI, ProductI } from "$lib/interfaces";
-	import { goto } from "$app/navigation";
 	import ProductCategories from "../_home/product-categories.svelte";
 	import { Link, Page } from "$lib/components/ui/breadcrumb";
 	import {
@@ -39,6 +38,7 @@
 		Separator as BreadcrumbSeparator
 	} from "$lib/components/ui/breadcrumb/index.js";
 	import ProductCategorySection from "./product-category-sections.svelte";
+	import { goto } from "$app/navigation";
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const { data }: PageProps = $props();
@@ -110,16 +110,17 @@
 
 	const viewProductDetails = (product: ProductI) => {
 		const opData = {
-			price: product.price,
-			oldPrice: product.oldPrice,
-			inventory: product.inventory,
-			averageRating: product.averageRating,
-			reviewCount: product.reviewCount
+			price: product.price || 0,
+			oldPrice: product.oldPrice || 0,
+			inventory: product.inventory || 0,
+			averageRating: product.averageRating || 0,
+			reviewCount: product.reviewCount || 0
 		};
 
 		const params = new SvelteURLSearchParams();
 		for (const [key, value] of Object.entries(opData)) {
 			if (value !== undefined) {
+				console.log(value);
 				params.append(key, value.toString());
 			}
 		}
@@ -241,7 +242,6 @@
 			{/if}
 
 			<!-- #################### PRODUCT & PAGINATION CONTENT #################### -->
-
 			{#if isFilterOrSearch() || isViewingCategory()}
 				<!--	Product items -->
 				<section class="flex flex-col gap-5 md:gap-7 xl:gap-10">
@@ -249,9 +249,7 @@
 						class="grid grid-cols-2 gap-4 gap-y-8 sm:gap-6 md:grid-cols-3 md:gap-y-12 xl:grid-cols-4"
 					>
 						{#each products as product (product.SKU)}
-							<button onclick={() => viewProductDetails(product)} class="cursor-pointer">
-								<ProductCard {...product} />
-							</button>
+							<ProductCard {product} trigger={() => viewProductDetails(product)} />
 						{/each}
 					</div>
 

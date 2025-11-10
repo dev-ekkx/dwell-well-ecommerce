@@ -3,7 +3,7 @@
 	import { Button } from "$lib/components/ui/button";
 	import { onMount } from "svelte";
 	import { useCarousel } from "$lib/helpers/carousel.svelte";
-	import ProductCard from "./product-card.svelte";
+	import ProductCard from "$lib/components/product-card.svelte";
 	import { cn } from "$lib/utils";
 	import { MediaQuery } from "svelte/reactivity";
 	import ArrowButton from "$lib/components/arrow-button.svelte";
@@ -32,7 +32,7 @@
 	};
 
 	const viewProductDetails = (product: ProductI) => {
-		goto(`/shop?category=${product.slug}`);
+		goto(`/shop/${product.slug}`);
 	};
 
 	onMount(() => {
@@ -57,15 +57,14 @@
 		<Button
 			class="cursor-pointer text-primary hover:text-primary"
 			onclick={viewCategory}
-			variant="ghost">View all</Button
-		>
+			variant="ghost"
+			>View all
+		</Button>
 	</div>
 
 	<!-- Arrow Buttons -->
-	<div class="absolute top-2/4 left-0 z-10 flex w-full items-center justify-between">
-		<ArrowButton direction="left" onclick={carousel.prev} />
-		<ArrowButton direction="right" onclick={carousel.next} />
-	</div>
+	<ArrowButton class="absolute top-2/4 left-0 z-10" direction="left" onclick={carousel.prev} />
+	<ArrowButton class="absolute top-2/4 right-0 z-10" direction="right" onclick={carousel.next} />
 
 	<!-- Image carousel -->
 	<div bind:this={carousel.carouselState.track} class="flex w-max items-center gap-4">

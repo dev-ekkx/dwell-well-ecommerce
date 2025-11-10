@@ -7,6 +7,8 @@
 	import { Button } from "$lib/components/ui/button";
 	import { MediaQuery } from "svelte/reactivity";
 	import { cartStore } from "$lib/store/cart-store.svelte";
+	import { goto } from "$app/navigation";
+	import { resolve } from "$app/paths";
 
 	const item = $props();
 
@@ -19,13 +21,24 @@
 	function increaseQuantity() {
 		cartStore.increaseQuantity(item.SKU);
 	}
+
+	function viewProduct() {
+		goto(resolve(`/shop/${item.slug}`));
+	}
 </script>
 
 <div
-	class="flex flex-col gap-4 rounded-lg border border-b-muted-foreground/20 p-4 shadow-sm shadow-muted-foreground/20"
+	class=" relative flex flex-col gap-4 rounded-lg border border-b-muted-foreground/20 pt-4 shadow-sm shadow-muted-foreground/20"
 >
+	<!-- View product button -->
+	<button
+		aria-label="view product"
+		class="absolute top-0 left-0 z-10 h-full w-full cursor-pointer"
+		onclick={viewProduct}
+	></button>
+
 	<!-- Image, price and description -->
-	<div class="flex items-center gap-4">
+	<div class="flex items-center gap-4 px-4">
 		<div class="relative h-20 w-24 overflow-clip rounded">
 			<img alt={item.name} class=" h-full w-full object-cover" src={item.image.url} />
 			{#if isMobile}
@@ -35,7 +48,7 @@
 				>
 			{/if}
 		</div>
-		<div class="flex flex-col gap-1">
+		<div class="z-20 flex flex-col gap-1">
 			<span>{item.name}</span>
 			{#if isMobile}
 				<div class="flex flex-wrap items-center gap-2 font-medium">
@@ -53,7 +66,7 @@
 			{/if}
 		</div>
 		{#if !isMobile}
-			<div class="ml-auto flex flex-col gap-1 font-medium">
+			<div class="z-20 ml-auto flex flex-col gap-1 font-medium">
 				<span class=" text-2xl">${formatNumberWithCommas(12_240.96)}</span>
 
 				<div class="flex items-center gap-4">
@@ -70,10 +83,10 @@
 	</div>
 
 	<!-- Remove button and quantity triggers -->
-	<div class="flex items-center justify-between gap-4">
+	<div class="z-20 flex items-center justify-between gap-4 px-4 pb-4">
 		<!-- Remove button -->
 		<Button
-			class="flex cursor-pointer items-center gap-2 text-primary hover:text-primary"
+			class="flex cursor-pointer items-center gap-2 px-0.5 text-primary hover:text-primary"
 			onclick={() => cartStore.removeFromCart(item.SKU)}
 			variant="ghost"
 		>
