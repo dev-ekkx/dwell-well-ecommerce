@@ -57,7 +57,6 @@ Resources:
         - ClientId: !Ref CognitoUserPoolClient
           ProviderName: !GetAtt CognitoUserPool.ProviderName
 
-
   # --- API Gateway ---
   ApiGateway:
     Type: AWS::Serverless::Api
@@ -121,20 +120,29 @@ Resources:
       TableName: !Ref ProductsTableName
       BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
+        - AttributeName: userId
+          AttributeType: S
         - AttributeName: sku
           AttributeType: S
+        - AttributeName: addedAt
+          AttributeType: S
       KeySchema:
-        - AttributeName: sku
+        - AttributeName: userId
           KeyType: HASH
-#      GlobalSecondaryIndexes:
-#        - IndexName: StatusPriceIndex
-#          KeySchema:
-#            - AttributeName: productStatus
-#              KeyType: HASH
-#            - AttributeName: price
-#              KeyType: RANGE
-#          Projection:
-#            ProjectionType: KEYS_ONLY
+        - AttributeName: sku
+          KeyType: RANGE
+      GlobalSecondaryIndexes:
+        - IndexName: skuIndex
+          KeySchema:
+            - AttributeName: sku
+              KeyType: HASH
+            - AttributeName: addedAt
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      TimeToLiveSpecification:
+        AttributeName: TTL
+        Enabled: true
 
   # --- Products Function ---
   GetProductsFunction:
