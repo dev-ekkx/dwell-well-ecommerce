@@ -163,22 +163,24 @@
 					<p class="text-sm text-muted-foreground md:text-base">{@html value}</p>
 				{/await}
 				<!-- Colors -->
-				<div class="flex flex-col gap-2">
-					<span class="font-semibold">Available colors</span>
-					<div
-						class={cn("flex items-center gap-4", {
-							"pointer-events-none": product.inventory < 1
-						})}
-					>
-						{#each product.colors as color}
-							<button
-								class="h-8 w-8 cursor-pointer rounded-full border-2 border-muted-foreground transition-all duration-200 ease-linear hover:scale-105"
-								style="background-color: {`#${color.hex_code}`};"
-								aria-label={color.name}
-							></button>
-						{/each}
+				{#if product.colors.length > 0}
+					<div class="flex flex-col gap-2">
+						<span class="font-semibold">Available colors</span>
+						<div
+							class={cn("flex items-center gap-4", {
+								"pointer-events-none": product.inventory < 1
+							})}
+						>
+							{#each product.colors as color}
+								<button
+									class="h-8 w-8 cursor-pointer rounded-full border-2 border-muted-foreground transition-all duration-200 ease-linear hover:scale-105"
+									style="background-color: {`#${color.hex_code}`};"
+									aria-label={color.name}
+								></button>
+							{/each}
+						</div>
 					</div>
-				</div>
+				{/if}
 
 				{#if product.inventory > 0}
 					<!-- Quantity -->
