@@ -15,6 +15,10 @@ Parameters:
     Type: String
     Description: Name of the DynamoDB table for products.
     Default: DwellWellProductsTable
+  CartTableName:
+    Type: String
+    Description: Name of DynamoDB table for cart items
+    Default: DwellWellCartTable
 
 Resources:
 # --- Cognito Resources ---
@@ -110,6 +114,28 @@ Resources:
           Projection:
             ProjectionType: KEYS_ONLY
 
+  # --- Cart Table ---
+  CartTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref ProductsTableName
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: sku
+          AttributeType: S
+      KeySchema:
+        - AttributeName: sku
+          KeyType: HASH
+#      GlobalSecondaryIndexes:
+#        - IndexName: StatusPriceIndex
+#          KeySchema:
+#            - AttributeName: productStatus
+#              KeyType: HASH
+#            - AttributeName: price
+#              KeyType: RANGE
+#          Projection:
+#            ProjectionType: KEYS_ONLY
+
   # --- Products Function ---
   GetProductsFunction:
     Type: AWS::Serverless::Function
@@ -132,7 +158,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref ApiGateway
-            Path: /products/
+            Path: api/products/
             Method: POST
             Auth:
                 Authorizer: NONE
@@ -156,7 +182,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref ApiGateway
-            Path: /products/skus-by-price
+            Path: api/products/skus-by-price
             Method: GET
 
   # --- Webhooks Functions ---
@@ -181,7 +207,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref ApiGateway
-            Path: /webhooks/strapi
+            Path: api/webhooks/strapi
             Method: POST
 
 #  PaystackWebhookLambda:
