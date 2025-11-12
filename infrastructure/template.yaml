@@ -117,7 +117,7 @@ Resources:
   CartTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: !Ref ProductsTableName
+      TableName: !Ref CartTableName
       BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
         - AttributeName: userId
