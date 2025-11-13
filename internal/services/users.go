@@ -38,7 +38,6 @@ func NewUserService() *UserService {
 func (s *UserService) InviteAndGroupUser(ctx context.Context, email string, name string, group string) error {
 	log.Printf("Starting invitation for user %s to group %s...", email, group)
 
-	// --- 1. ADMIN CREATE USER ---
 	// AdminCreateUser handles sending the temporary password invitation email.
 	_, err := s.CognitoClient.AdminCreateUser(ctx, &cognitoidentityprovider.AdminCreateUserInput{
 		UserPoolId: aws.String(s.UserPoolID),

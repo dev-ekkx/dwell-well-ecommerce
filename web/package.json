@@ -60,6 +60,7 @@
 	"dependencies": {
 		"@dev-ekkx/svelte-star-rating": "^1.1.3",
 		"@urql/svelte": "^5.0.0",
+		"aws-amplify": "^6.15.8",
 		"dompurify": "^3.2.7",
 		"google": "^2.1.0",
 		"gsap": "^3.13.0",
