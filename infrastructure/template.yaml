@@ -25,8 +25,9 @@ Parameters:
     Default: https://localhost:5173/
 
 Resources:
-# --- Cognito Resources ---
-  CognitoUserPool:
+  ############### COGNITO RESOURCES ###############
+  # --- Cognito user pool and client pool ---
+  DwellWellCognitoUserPool: # Renamed
     Type: AWS::Cognito::UserPool
     Properties:
       UserPoolName: DwellWellUserPool
@@ -53,10 +54,10 @@ Resources:
           - Name: verified_email
             Priority: 1
 
-  CognitoUserPoolClient:
+  DwellWellCognitoUserPoolClient: # Renamed
     Type: AWS::Cognito::UserPoolClient
     Properties:
-      UserPoolId: !Ref CognitoUserPool
+      UserPoolId: !Ref DwellWellCognitoUserPool # Updated Ref
       ClientName: DwellWellWebAppClient
       GenerateSecret: false
       AllowedOAuthFlowsUserPoolClient: true
@@ -74,37 +75,37 @@ Resources:
         - COGNITO
       ExplicitAuthFlows:
         - ALLOW_USER_SRP_AUTH
-#        - ALLOW_USER_PASSWORD_AUTH
+        #        - ALLOW_USER_PASSWORD_AUTH
         - ALLOW_REFRESH_TOKEN_AUTH
       PreventUserExistenceErrors: ENABLED
 
-  IdentityPool:
+  DwellWellIdentityPool: # Renamed
     Type: AWS::Cognito::IdentityPool
     Properties:
       IdentityPoolName: DwellWellIdentityPool
       AllowUnauthenticatedIdentities: false
       CognitoIdentityProviders:
-        - ClientId: !Ref CognitoUserPoolClient
-          ProviderName: !GetAtt CognitoUserPool.ProviderName
+        - ClientId: !Ref DwellWellCognitoUserPoolClient # Updated Ref
+          ProviderName: !GetAtt DwellWellCognitoUserPool.ProviderName # Updated GetAtt
 
   # Cognito user Groups
-  AdminGroup:
+  DwellWellAdminGroup: # Renamed
     Type: AWS::Cognito::UserPoolGroup
     Properties:
       GroupName: admin
-      UserPoolId: !Ref CognitoUserPool
+      UserPoolId: !Ref DwellWellCognitoUserPool # Updated Ref
       Precedence: 1
 
-  SubAdminGroup:
+  DwellWellSubAdminGroup: # Renamed
     Type: AWS::Cognito::UserPoolGroup
-    Properties: 
+    Properties:
       GroupName: subAdmin
-      UserPoolId: !Ref CognitoUserPool
+      UserPoolId: !Ref DwellWellCognitoUserPool # Updated Ref
       Precedence: 2
 
   # IdentityPool Authentication Roles
-  IdentityPoolAuthRole:
-    Type: AWS::IAM:Role
+  DwellWellIdentityPoolAuthRole: # Renamed
+    Type: AWS::IAM::Role
     Properties:
       RoleName: DwellWellAuthRole
       AssumeRolePolicyDocument:
@@ -116,14 +117,14 @@ Resources:
               Action: sts:AssumeRoleWithWebIdentity
               Condition:
                 StringEquals:
-                  cognito-identity.amazonaws.com:aud: !Ref IdentityPool
+                  cognito-identity.amazonaws.com:aud: !Ref DwellWellIdentityPool # Updated Ref
                 "ForAnyValue:StringLike":
                   cognito-identity.amazonaws.com:amr: authenticated
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonCognitoReadOnly
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
 
-  IdentityPoolUnauthRole:
+  DwellWellIdentityPoolUnauthRole: # Renamed
     Type: AWS::IAM::Role
     Properties:
       RoleName: DwellWellUnauthorizeRole
@@ -136,14 +137,16 @@ Resources:
             Action: sts:AssumeRoleWithWebIdentity
             Condition:
               StringEquals:
-                cognito-identity.amazonaws.com:aud: !Ref IdentityPool
+                cognito-identity.amazonaws.com:aud: !Ref DwellWellIdentityPool # Updated Ref
               "ForAnyValue:StringLike":
                 cognito-identity.amazonaws.com:amr: unauthenticated
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonCognitoReadOnly
-        
-  # --- API Gateway ---
-  ApiGateway:
+
+
+
+  ############### API GATEWAY RESOURCE ###############
+  DwellWellApiGateway: # Renamed
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
@@ -156,24 +159,67 @@ Resources:
         DefaultAuthorizer: CognitoAuthorizer
         Authorizers:
           CognitoAuthorizer:
-            UserPoolArn: !GetAtt CognitoUserPool.Arn
+            UserPoolArn: !GetAtt DwellWellCognitoUserPool.Arn # Updated GetAtt
 
-  # --- Event Bus ---
-  AppEventBus:
+
+  ############### EVENT BUS RESOURCE ###############
+  DwellWellAppEventBus: # Renamed
     Type: AWS::Events::EventBus
     Properties:
       Name: DwellWellAppEventBus
 
-  EventBusPutEventsPolicy:
+  DwellWellEventBusPutEventsPolicy: # Renamed
     Type: AWS::Events::EventBusPolicy
     Properties:
-      EventBusName: !Ref AppEventBus
+      EventBusName: !Ref DwellWellAppEventBus # Updated Ref
       StatementId: AllowPutEventsFromAccount
       Action: events:PutEvents
       Principal: "*"
 
-# --- Products table resource ---
-  ProductsTable:
+
+  ############### SES AND SNS RESOURCES ###############
+  # SES Configuration for Email Notifications
+  DwellWellSESConfigurationSet: # Renamed
+    Type: AWS::SES::ConfigurationSet
+    Properties:
+      Name: dwell-well-notifications
+
+  DwellWellSESIdentity: # Renamed
+    Type: AWS::SES::EmailIdentity
+    Properties:
+      EmailIdentity: noreply@dwell-well.com
+      ConfigurationSetAttributes:
+        ConfigurationSetName: !Ref DwellWellSESConfigurationSet # Updated Ref
+
+  # SNS Topics for notifications (UPDATED FOR DOMAIN SEPARATION)
+  DwellWellOrderEventsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: "DwellWellOrderEvents"
+      DisplayName: "E-commerce Order Events"
+
+  DwellWellInventoryEventsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: "DwellWellInventoryEvents"
+      DisplayName: "E-commerce Inventory Events"
+
+  DwellWellPaymentEventsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: "DwellWellPaymentEvents"
+      DisplayName: "E-commerce Payment Events"
+
+  DwellWellUserEventsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: "DwellWellUserEvents"
+      DisplayName: "E-commerce User Events"
+
+
+  ############### DYNAMODB RESOURCES ###############
+  # --- Products table resource ---
+  DwellWellProductsTable: # Renamed
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: !Ref ProductsTableName
@@ -189,7 +235,7 @@ Resources:
         - AttributeName: sku
           KeyType: HASH
       GlobalSecondaryIndexes:
-        - IndexName: StatusPriceIndex
+        - IndexName: DwellWellStatusPriceIndex # Renamed
           KeySchema:
             - AttributeName: productStatus
               KeyType: HASH
@@ -199,7 +245,7 @@ Resources:
             ProjectionType: KEYS_ONLY
 
   # --- Cart Table ---
-  CartTable:
+  DwellWellCartTable: # Renamed
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: !Ref CartTableName
@@ -217,7 +263,7 @@ Resources:
         - AttributeName: sku
           KeyType: RANGE
       GlobalSecondaryIndexes:
-        - IndexName: skuIndex
+        - IndexName: DwellWellSkuIndex # Renamed
           KeySchema:
             - AttributeName: sku
               KeyType: HASH
@@ -230,7 +276,7 @@ Resources:
         Enabled: true
 
   # --- Products Function ---
-  GetProductsFunction:
+  DwellWellGetProductsFunction: # Renamed
     Type: AWS::Serverless::Function
     Metadata:
       BuildMethod: go1.x
@@ -250,13 +296,13 @@ Resources:
         ApiProducts:
           Type: Api
           Properties:
-            RestApiId: !Ref ApiGateway
+            RestApiId: !Ref DwellWellApiGateway # Updated Ref
             Path: api/products/
             Method: POST
             Auth:
-                Authorizer: NONE
+              Authorizer: NONE
 
-  GetSKUsByPriceFunction:
+  DwellWellGetSKUsByPriceFunction: # Renamed
     Type: AWS::Serverless::Function
     Metadata:
       BuildMethod: go1.x
@@ -274,12 +320,12 @@ Resources:
         ApiSkus:
           Type: Api
           Properties:
-            RestApiId: !Ref ApiGateway
+            RestApiId: !Ref DwellWellApiGateway # Updated Ref
             Path: api/products/skus-by-price
             Method: GET
 
   # --- Webhooks Functions ---
-  StrapiWebhookFunction:
+  DwellWellStrapiWebhookFunction: # Renamed
     Type: AWS::Serverless::Function
     Metadata:
       BuildMethod: go1.x
@@ -299,33 +345,33 @@ Resources:
         ApiWebhookStrapi:
           Type: Api
           Properties:
-            RestApiId: !Ref ApiGateway
+            RestApiId: !Ref DwellWellApiGateway # Updated Ref
             Path: api/webhooks/strapi
             Method: POST
 
-#  PaystackWebhookLambda:
-#    Type: AWS::Serverless::Function
-#    Metadata:
-#      BuildMethod: go1.x
-#    Properties:
-#      CodeUri: ../cmd/webhook-paystack/
-#      Handler: webhook-paystack
-#      Runtime: provided.al2023
-#      Environment:
-#        Variables:
-#          EVENT_BUS_NAME: !Ref AppEventBus
-#      Policies:
-#        - EventBridgePutEventsPolicy:
-#            EventBusName: !Ref AppEventBus
-#        - AWSXrayWriteOnlyAccess
-#        - CloudWatchLogsFullAccess
-#      Events:
-#        ApiWebhookPaystack:
-#          Type: Api
-#          Properties:
-#            RestApiId: !Ref ApiGateway
-#            Path: /webhooks/paystack
-#            Method: POST
+  #  PaystackWebhookLambda:
+  #    Type: AWS::Serverless::Function
+  #    Metadata:
+  #      BuildMethod: go1.x
+  #    Properties:
+  #      CodeUri: ../cmd/webhook-paystack/
+  #      Handler: webhook-paystack
+  #      Runtime: provided.al2023
+  #      Environment:
+  #        Variables:
+  #          EVENT_BUS_NAME: !Ref DwellWellAppEventBus # Updated Ref
+  #      Policies:
+  #        - EventBridgePutEventsPolicy:
+  #            EventBusName: !Ref DwellWellAppEventBus # Updated Ref
+  #        - AWSXrayWriteOnlyAccess
+  #        - CloudWatchLogsFullAccess
+  #      Events:
+  #        ApiWebhookPaystack:
+  #          Type: Api
+  #          Properties:
+  #            RestApiId: !Ref DwellWellApiGateway # Updated Ref
+  #            Path: /webhooks/paystack
+  #            Method: POST
 
 
   # --- Optional / Future Stacks ---
@@ -341,7 +387,7 @@ Resources:
   #   Properties:
   #     Location: ./stacks/orders.yaml
   #     Parameters:
-  #       AppEventBusName: !Ref AppEventBus
+  #       AppEventBusName: !Ref DwellWellAppEventBus # Updated Ref
   #       ProductsTableName: !Ref ProductsTableName
 
   # RatingsStack:
@@ -349,14 +395,26 @@ Resources:
   #   Properties:
   #     Location: ./stacks/ratings.yaml
   #     Parameters:
-  #       AppEventBusName: !Ref AppEventBus
+  #       AppEventBusName: !Ref DwellWellAppEventBus # Updated Ref
   #       ProductsTableName: !Ref ProductsTableName
 
 Outputs:
   ApiGatewayId:
-    Value: !Ref ApiGateway
+    Value: !Ref DwellWellApiGateway # Updated Ref
   ApiEndpoint:
     Description: API Gateway endpoint URL
-    Value: !Sub "https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+    Value: !Sub "https://${DwellWellApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
   AppEventBusName:
-    Value: !Ref AppEventBus
+    Value: !Ref DwellWellAppEventBus # Updated Ref
+  DwellWellOrderEventsTopicArn:
+    Description: ARN of the Order Events SNS Topic
+    Value: !Ref DwellWellOrderEventsTopic
+  DwellWellInventoryEventsTopicArn:
+    Description: ARN of the Inventory Events SNS Topic
+    Value: !Ref DwellWellInventoryEventsTopic
+  DwellWellPaymentEventsTopicArn:
+    Description: ARN of the Payment Events SNS Topic
+    Value: !Ref DwellWellPaymentEventsTopic
+  DwellWellUserEventsTopicArn:
+    Description: ARN of the User Events SNS Topic
+    Value: !Ref DwellWellUserEventsTopic
