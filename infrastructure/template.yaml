@@ -275,6 +275,40 @@ Resources:
         AttributeName: TTL
         Enabled: true
 
+############### LAMBDA FUNCTION RESOURCES ###############
+  # --- Admin User Invitation Function ---
+  DwellWellInviteUserFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
+    Properties:
+      CodeUri: ../cmd/invite-user/
+      Handler: invite-user
+      Runtime: provided.al2023
+      Environment:
+        Variables:
+          USER_POOL_ID: !Ref DwellWellCognitoUserPool
+      Policies:
+        - Statement:
+            Sid: CognitoAdminActions
+            Effect: Allow
+            Action:
+              - cognito-idp:AdminCreateUser
+              - cognito-idp:AdminAddUserToGroup
+              - cognito-idp:AdminSetUserPassword
+            Resource: !GetAtt DwellWellCognitoUserPool.Arn
+        - AWSXrayWriteOnlyAccess
+        - CloudWatchLogsFullAccess
+      Events:
+        ApiInviteUser:
+          Type: Api
+          Properties:
+            RestApiId: !Ref DwellWellApiGateway
+            Path: api/admin/invite
+            Method: POST
+            Auth:
+              Authorizer: CognitoAuthorizer
+
   # --- Products Function ---
   DwellWellGetProductsFunction: # Renamed
     Type: AWS::Serverless::Function

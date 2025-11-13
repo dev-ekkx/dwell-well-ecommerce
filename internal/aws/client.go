@@ -10,6 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/eventbridge"
+	"github.com/aws/aws-sdk-go-v2/service/sns"
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
 )
 
@@ -19,11 +20,12 @@ var (
 	DynamoClient *dynamodb.Client
 	SQSClient    *sqs.Client
 	EventClient  *eventbridge.Client
+	SnsClient    *sns.Client
 )
 
 // Init initializes the AWS configuration and all service clients as singletons.
-// The sync.Once ensures this logic runs only one time per Lambda cold start.
 func Init() {
+	// The sync.Once ensures this logic runs only one time per Lambda cold start.
 	once.Do(func() {
 		var err error
 		region := os.Getenv("AWS_REGION")
