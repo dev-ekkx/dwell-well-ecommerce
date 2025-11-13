@@ -27,7 +27,7 @@ Parameters:
 Resources:
   ############### COGNITO RESOURCES ###############
   # --- Cognito user pool and client pool ---
-  DwellWellCognitoUserPool: # Renamed
+  DwellWellCognitoUserPool:
     Type: AWS::Cognito::UserPool
     Properties:
       UserPoolName: DwellWellUserPool

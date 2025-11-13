@@ -8,6 +8,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/eventbridge"
 	"github.com/aws/aws-sdk-go-v2/service/sns"
@@ -15,12 +16,13 @@ import (
 )
 
 var (
-	cfg          aws.Config
-	once         sync.Once
-	DynamoClient *dynamodb.Client
-	SQSClient    *sqs.Client
-	EventClient  *eventbridge.Client
-	SnsClient    *sns.Client
+	cfg           aws.Config
+	once          sync.Once
+	DynamoClient  *dynamodb.Client
+	SQSClient     *sqs.Client
+	EventClient   *eventbridge.Client
+	SnsClient     *sns.Client
+	CognitoClient *cognitoidentityprovider.Client
 )
 
 // Init initializes the AWS configuration and all service clients as singletons.
@@ -40,8 +42,11 @@ func Init() {
 			log.Fatalf("unable to load AWS SDK config: %v", err)
 		}
 
+		//Initialize all clients
 		DynamoClient = dynamodb.NewFromConfig(cfg)
 		SQSClient = sqs.NewFromConfig(cfg)
 		EventClient = eventbridge.NewFromConfig(cfg)
+		SnsClient = sns.NewFromConfig(cfg)
+		CognitoClient = cognitoidentityprovider.NewFromConfig(cfg)
 	})
 }
