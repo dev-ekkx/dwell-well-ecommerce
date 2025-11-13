@@ -19,6 +19,10 @@ Parameters:
     Type: String
     Description: Name of DynamoDB table for cart items
     Default: DwellWellCartTable
+  FrontendUrl:
+    Type: String
+    Description: Frontend callback URL for the application
+    Default: https://localhost:5173/
 
 Resources:
 # --- Cognito Resources ---
@@ -40,6 +44,10 @@ Resources:
           RequireSymbols: true
       UsernameAttributes: [email]
       AutoVerifiedAttributes: [email]
+      AccountRecoverySetting:
+        RecoveryMechanisms:
+          - Name: verified_email
+            Priority: 1
 
   CognitoUserPoolClient:
     Type: AWS::Cognito::UserPoolClient
@@ -47,6 +55,29 @@ Resources:
       UserPoolId: !Ref CognitoUserPool
       ClientName: DwellWellWebAppClient
       GenerateSecret: false
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthFlows:
+        - code
+      AllowedOAuthScopes:
+        - email
+        - openid
+        - profile
+      CallbackURLs:
+        - !Ref FrontendUrl
+      LogoutURLs:
+        - !Ref FrontendUrl
+      SupportedIdentityProviders:
+        - COGNITO
+      ExplicitAuthFlows:
+        - ALLOW_USER_SRP_AUTH
+#        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+
+#  CognitoDomain:
+#    Type: AWS::Cognito::UserPoolDomain
+#    Properties:
+#      Domain: dwell-well-ecommerce
+#      UserPoolId: !Ref CognitoUserPool
 
   IdentityPool:
     Type: AWS::Cognito::IdentityPool
