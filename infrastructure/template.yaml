@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: Template for the Dwell Well E-commerce application. All microservices and API Gateway in a single stack.
 
@@ -32,6 +32,10 @@ Resources:
       UserPoolName: DwellWellUserPool
       Schema:
         - Name: name
+          AttributeDataType: String
+          Mutable: true
+          Required: true
+        - Name: phone_number
           AttributeDataType: String
           Mutable: true
           Required: true
@@ -72,22 +76,72 @@ Resources:
         - ALLOW_USER_SRP_AUTH
 #        - ALLOW_USER_PASSWORD_AUTH
         - ALLOW_REFRESH_TOKEN_AUTH
-
-#  CognitoDomain:
-#    Type: AWS::Cognito::UserPoolDomain
-#    Properties:
-#      Domain: dwell-well-ecommerce
-#      UserPoolId: !Ref CognitoUserPool
+      PreventUserExistenceErrors: ENABLED
 
   IdentityPool:
     Type: AWS::Cognito::IdentityPool
     Properties:
-      IdentityPoolName: IncidentReportingIdentityPool
+      IdentityPoolName: DwellWellIdentityPool
       AllowUnauthenticatedIdentities: false
       CognitoIdentityProviders:
         - ClientId: !Ref CognitoUserPoolClient
           ProviderName: !GetAtt CognitoUserPool.ProviderName
 
+  # Cognito user Groups
+  AdminGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      GroupName: admin
+      UserPoolId: !Ref CognitoUserPool
+      Precedence: 1
+
+  SubAdminGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties: 
+      GroupName: subAdmin
+      UserPoolId: !Ref CognitoUserPool
+      Precedence: 2
+
+  # IdentityPool Authentication Roles
+  IdentityPoolAuthRole:
+    Type: AWS::IAM:Role
+    Properties:
+      RoleName: DwellWellAuthRole
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: cognito-identity.amazonaws.com
+              Action: sts:AssumeRoleWithWebIdentity
+              Condition:
+                StringEquals:
+                  cognito-identity.amazonaws.com:aud: !Ref IdentityPool
+                "ForAnyValue:StringLike":
+                  cognito-identity.amazonaws.com:amr: authenticated
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonCognitoReadOnly
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+  IdentityPoolUnauthRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: DwellWellUnauthorizeRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Deny
+            Principal:
+              Federated: cognito-identity.amazonaws.com
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                cognito-identity.amazonaws.com:aud: !Ref IdentityPool
+              "ForAnyValue:StringLike":
+                cognito-identity.amazonaws.com:amr: unauthenticated
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonCognitoReadOnly
+        
   # --- API Gateway ---
   ApiGateway:
     Type: AWS::Serverless::Api
@@ -95,7 +149,7 @@ Resources:
       StageName: Prod
       TracingEnabled: true
       Cors:
-        AllowMethods: "'GET,POST,OPTIONS'"
+        AllowMethods: \""GET,POST,OPTIONS'"
         AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
         AllowOrigin: "'*'"
       Auth:
