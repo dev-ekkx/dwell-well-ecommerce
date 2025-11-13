@@ -103,7 +103,7 @@ Resources:
       UserPoolId: !Ref DwellWellCognitoUserPool
       Precedence: 2
 
-  # IdentityPool Authentication Roles
+    # IdentityPool Authentication Roles
   DwellWellIdentityPoolAuthRole:
     Type: AWS::IAM::Role
     Properties:
@@ -118,7 +118,7 @@ Resources:
             Condition:
               StringEquals:
                 cognito-identity.amazonaws.com:aud: !Ref DwellWellIdentityPool
-              "ForAnyValue:StringLike":
+              ForAnyValue:StringLike:
                 cognito-identity.amazonaws.com:amr: authenticated
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonCognitoReadOnly
@@ -131,19 +131,17 @@ Resources:
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
-          - Effect: Deny
+          - Effect: Allow
             Principal:
               Federated: cognito-identity.amazonaws.com
             Action: sts:AssumeRoleWithWebIdentity
             Condition:
               StringEquals:
                 cognito-identity.amazonaws.com:aud: !Ref DwellWellIdentityPool
-              "ForAnyValue:StringLike":
+              ForAnyValue:StringLike:
                 cognito-identity.amazonaws.com:amr: unauthenticated
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonCognitoReadOnly
-
-
 
   ############### API GATEWAY RESOURCE ###############
   DwellWellApiGateway:
