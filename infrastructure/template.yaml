@@ -54,10 +54,10 @@ Resources:
           - Name: verified_email
             Priority: 1
 
-  DwellWellCognitoUserPoolClient: # Renamed
+  DwellWellCognitoUserPoolClient:
     Type: AWS::Cognito::UserPoolClient
     Properties:
-      UserPoolId: !Ref DwellWellCognitoUserPool # Updated Ref
+      UserPoolId: !Ref DwellWellCognitoUserPool
       ClientName: DwellWellWebAppClient
       GenerateSecret: false
       AllowedOAuthFlowsUserPoolClient: true
@@ -79,32 +79,32 @@ Resources:
         - ALLOW_REFRESH_TOKEN_AUTH
       PreventUserExistenceErrors: ENABLED
 
-  DwellWellIdentityPool: # Renamed
+  DwellWellIdentityPool:
     Type: AWS::Cognito::IdentityPool
     Properties:
       IdentityPoolName: DwellWellIdentityPool
       AllowUnauthenticatedIdentities: false
       CognitoIdentityProviders:
-        - ClientId: !Ref DwellWellCognitoUserPoolClient # Updated Ref
+        - ClientId: !Ref DwellWellCognitoUserPoolClient
           ProviderName: !GetAtt DwellWellCognitoUserPool.ProviderName # Updated GetAtt
 
   # Cognito user Groups
-  DwellWellAdminGroup: # Renamed
+  DwellWellAdminGroup:
     Type: AWS::Cognito::UserPoolGroup
     Properties:
       GroupName: admin
-      UserPoolId: !Ref DwellWellCognitoUserPool # Updated Ref
+      UserPoolId: !Ref DwellWellCognitoUserPool
       Precedence: 1
 
-  DwellWellSubAdminGroup: # Renamed
+  DwellWellSubAdminGroup:
     Type: AWS::Cognito::UserPoolGroup
     Properties:
       GroupName: subAdmin
-      UserPoolId: !Ref DwellWellCognitoUserPool # Updated Ref
+      UserPoolId: !Ref DwellWellCognitoUserPool
       Precedence: 2
 
   # IdentityPool Authentication Roles
-  DwellWellIdentityPoolAuthRole: # Renamed
+  DwellWellIdentityPoolAuthRole:
     Type: AWS::IAM::Role
     Properties:
       RoleName: DwellWellAuthRole
@@ -114,17 +114,17 @@ Resources:
           - Effect: Allow
             Principal:
               Federated: cognito-identity.amazonaws.com
-              Action: sts:AssumeRoleWithWebIdentity
-              Condition:
-                StringEquals:
-                  cognito-identity.amazonaws.com:aud: !Ref DwellWellIdentityPool # Updated Ref
-                "ForAnyValue:StringLike":
-                  cognito-identity.amazonaws.com:amr: authenticated
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                cognito-identity.amazonaws.com:aud: !Ref DwellWellIdentityPool
+              "ForAnyValue:StringLike":
+                cognito-identity.amazonaws.com:amr: authenticated
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonCognitoReadOnly
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
 
-  DwellWellIdentityPoolUnauthRole: # Renamed
+  DwellWellIdentityPoolUnauthRole:
     Type: AWS::IAM::Role
     Properties:
       RoleName: DwellWellUnauthorizeRole
@@ -137,7 +137,7 @@ Resources:
             Action: sts:AssumeRoleWithWebIdentity
             Condition:
               StringEquals:
-                cognito-identity.amazonaws.com:aud: !Ref DwellWellIdentityPool # Updated Ref
+                cognito-identity.amazonaws.com:aud: !Ref DwellWellIdentityPool
               "ForAnyValue:StringLike":
                 cognito-identity.amazonaws.com:amr: unauthenticated
       ManagedPolicyArns:
@@ -146,7 +146,7 @@ Resources:
 
 
   ############### API GATEWAY RESOURCE ###############
-  DwellWellApiGateway: # Renamed
+  DwellWellApiGateway:
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
@@ -163,15 +163,15 @@ Resources:
 
 
   ############### EVENT BUS RESOURCE ###############
-  DwellWellAppEventBus: # Renamed
+  DwellWellAppEventBus:
     Type: AWS::Events::EventBus
     Properties:
       Name: DwellWellAppEventBus
 
-  DwellWellEventBusPutEventsPolicy: # Renamed
+  DwellWellEventBusPutEventsPolicy:
     Type: AWS::Events::EventBusPolicy
     Properties:
-      EventBusName: !Ref DwellWellAppEventBus # Updated Ref
+      EventBusName: !Ref DwellWellAppEventBus
       StatementId: AllowPutEventsFromAccount
       Action: events:PutEvents
       Principal: "*"
@@ -179,17 +179,17 @@ Resources:
 
   ############### SES AND SNS RESOURCES ###############
   # SES Configuration for Email Notifications
-  DwellWellSESConfigurationSet: # Renamed
+  DwellWellSESConfigurationSet:
     Type: AWS::SES::ConfigurationSet
     Properties:
       Name: dwell-well-notifications
 
-  DwellWellSESIdentity: # Renamed
+  DwellWellSESIdentity:
     Type: AWS::SES::EmailIdentity
     Properties:
       EmailIdentity: noreply@dwell-well.com
       ConfigurationSetAttributes:
-        ConfigurationSetName: !Ref DwellWellSESConfigurationSet # Updated Ref
+        ConfigurationSetName: !Ref DwellWellSESConfigurationSet
 
   # SNS Topics for notifications (UPDATED FOR DOMAIN SEPARATION)
   DwellWellOrderEventsTopic:
@@ -219,7 +219,7 @@ Resources:
 
   ############### DYNAMODB RESOURCES ###############
   # --- Products table resource ---
-  DwellWellProductsTable: # Renamed
+  DwellWellProductsTable:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: !Ref ProductsTableName
@@ -235,7 +235,7 @@ Resources:
         - AttributeName: sku
           KeyType: HASH
       GlobalSecondaryIndexes:
-        - IndexName: DwellWellStatusPriceIndex # Renamed
+        - IndexName: DwellWellStatusPriceIndex
           KeySchema:
             - AttributeName: productStatus
               KeyType: HASH
@@ -245,7 +245,7 @@ Resources:
             ProjectionType: KEYS_ONLY
 
   # --- Cart Table ---
-  DwellWellCartTable: # Renamed
+  DwellWellCartTable:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: !Ref CartTableName
@@ -263,7 +263,7 @@ Resources:
         - AttributeName: sku
           KeyType: RANGE
       GlobalSecondaryIndexes:
-        - IndexName: DwellWellSkuIndex # Renamed
+        - IndexName: DwellWellSkuIndex
           KeySchema:
             - AttributeName: sku
               KeyType: HASH
@@ -310,7 +310,7 @@ Resources:
               Authorizer: CognitoAuthorizer
 
   # --- Products Function ---
-  DwellWellGetProductsFunction: # Renamed
+  DwellWellGetProductsFunction:
     Type: AWS::Serverless::Function
     Metadata:
       BuildMethod: go1.x
@@ -330,13 +330,13 @@ Resources:
         ApiProducts:
           Type: Api
           Properties:
-            RestApiId: !Ref DwellWellApiGateway # Updated Ref
+            RestApiId: !Ref DwellWellApiGateway
             Path: api/products/
             Method: POST
             Auth:
               Authorizer: NONE
 
-  DwellWellGetSKUsByPriceFunction: # Renamed
+  DwellWellGetSKUsByPriceFunction:
     Type: AWS::Serverless::Function
     Metadata:
       BuildMethod: go1.x
@@ -354,12 +354,12 @@ Resources:
         ApiSkus:
           Type: Api
           Properties:
-            RestApiId: !Ref DwellWellApiGateway # Updated Ref
+            RestApiId: !Ref DwellWellApiGateway
             Path: api/products/skus-by-price
             Method: GET
 
   # --- Webhooks Functions ---
-  DwellWellStrapiWebhookFunction: # Renamed
+  DwellWellStrapiWebhookFunction:
     Type: AWS::Serverless::Function
     Metadata:
       BuildMethod: go1.x
@@ -379,7 +379,7 @@ Resources:
         ApiWebhookStrapi:
           Type: Api
           Properties:
-            RestApiId: !Ref DwellWellApiGateway # Updated Ref
+            RestApiId: !Ref DwellWellApiGateway
             Path: api/webhooks/strapi
             Method: POST
 
@@ -393,17 +393,17 @@ Resources:
   #      Runtime: provided.al2023
   #      Environment:
   #        Variables:
-  #          EVENT_BUS_NAME: !Ref DwellWellAppEventBus # Updated Ref
+  #          EVENT_BUS_NAME: !Ref DwellWellAppEventBus
   #      Policies:
   #        - EventBridgePutEventsPolicy:
-  #            EventBusName: !Ref DwellWellAppEventBus # Updated Ref
+  #            EventBusName: !Ref DwellWellAppEventBus
   #        - AWSXrayWriteOnlyAccess
   #        - CloudWatchLogsFullAccess
   #      Events:
   #        ApiWebhookPaystack:
   #          Type: Api
   #          Properties:
-  #            RestApiId: !Ref DwellWellApiGateway # Updated Ref
+  #            RestApiId: !Ref DwellWellApiGateway
   #            Path: /webhooks/paystack
   #            Method: POST
 
@@ -421,7 +421,7 @@ Resources:
   #   Properties:
   #     Location: ./stacks/orders.yaml
   #     Parameters:
-  #       AppEventBusName: !Ref DwellWellAppEventBus # Updated Ref
+  #       AppEventBusName: !Ref DwellWellAppEventBus
   #       ProductsTableName: !Ref ProductsTableName
 
   # RatingsStack:
@@ -429,17 +429,17 @@ Resources:
   #   Properties:
   #     Location: ./stacks/ratings.yaml
   #     Parameters:
-  #       AppEventBusName: !Ref DwellWellAppEventBus # Updated Ref
+  #       AppEventBusName: !Ref DwellWellAppEventBus
   #       ProductsTableName: !Ref ProductsTableName
 
 Outputs:
   ApiGatewayId:
-    Value: !Ref DwellWellApiGateway # Updated Ref
+    Value: !Ref DwellWellApiGateway
   ApiEndpoint:
     Description: API Gateway endpoint URL
     Value: !Sub "https://${DwellWellApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
   AppEventBusName:
-    Value: !Ref DwellWellAppEventBus # Updated Ref
+    Value: !Ref DwellWellAppEventBus
   DwellWellOrderEventsTopicArn:
     Description: ARN of the Order Events SNS Topic
     Value: !Ref DwellWellOrderEventsTopic
