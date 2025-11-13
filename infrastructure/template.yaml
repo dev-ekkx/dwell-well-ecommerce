@@ -150,7 +150,7 @@ Resources:
       StageName: Prod
       TracingEnabled: true
       Cors:
-        AllowMethods: \""GET,POST,OPTIONS'"
+        AllowMethods: "'GET,POST,OPTIONS'"
         AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
         AllowOrigin: "'*'"
       Auth:
