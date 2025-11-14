@@ -33,3 +33,17 @@ export const signupSchema = z
 		message: "Passwords must match",
 		path: ["confirmPassword"]
 	});
+
+export const resetPasswordSchema = z
+	.object({
+		oldPassword: z.string().nonempty("Password is required"),
+		newPassword: strongPassword,
+		confirmPassword: z
+			.string()
+			.nonempty("Confirm Password is required")
+			.min(6, "Please confirm your password")
+	})
+	.refine((data) => data.newPassword === data.confirmPassword, {
+		message: "Passwords must match",
+		path: ["newPassword"]
+	});

@@ -12,12 +12,8 @@
     import {Spinner} from "$lib/components/ui/spinner";
     import {Description as AlertDescription, Root as AlertRoot, Title as AlertTitle} from "$lib/components/ui/alert";
     import CheckCircle2Icon from "@lucide/svelte/icons/check-circle-2";
-    import {page} from "$app/state";
 
     const { children, data }: LayoutProps = $props();
-
-    // let route = $state("login")
-    // let title = $state("Login")
 
     const titleMap: Record<string, AuthType> = {
         "Login": "login",
@@ -26,7 +22,7 @@
         "Verify OTP": "otp",
     };
 
-    const route = $derived(Object.values(titleMap).find(r => page.url.pathname.endsWith(`/${r}`)) || "");
+    const route = $derived(data.route || "");
     const title = $derived(Object.entries(titleMap).find(([_, r]) => r === route)?.[0] || "Login");
 
     $inspect(route)
@@ -161,7 +157,8 @@
 			<!-- Forgot password, terms & conditions, and privacy policy -->
 			{#if route === "login"}
 				<a class="flex self-start text-primary underline" href="/login">Forgot password</a>
-			{:else}
+			{/if}
+			{#if route === "signup"}
 				<div class="item-center flex gap-1 self-start">
 					<Checkbox bind:checked={agreeToTermsAndConditions} class="cursor-pointer" id="terms" />
 					<Label class="line-clamp-3 cursor-pointer" for="terms">
@@ -176,7 +173,7 @@
 
 			<!-- Login or create an account -->
 			<Button
-				class="mt-10 w-full cursor-pointer"
+				class="mt-8 w-full cursor-pointer"
 				disabled={!isFormValid() || isLoading}
 				type="submit"
 			>
@@ -193,7 +190,7 @@
 					></Label
 				>
 			{/if}
-			{#if route === "signup"}
+			{#if ["signup", "reset_password"].includes(route)}
 				<Label
 					>Already have an account?<a class="text-primary underline" href="/login">Login</a></Label
 				>
