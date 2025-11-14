@@ -8,7 +8,7 @@ export const useUserStore = (): UserStoreI => {
 		image: "https://github.com/shadcn.png"
 	});
 	let auth = $state<AuthI>({
-		isAuthenticated: true,
+		isAuthenticated: false,
 		token: "abcdef123456",
 		tokenExpiry: 3,
 		role: "admin"

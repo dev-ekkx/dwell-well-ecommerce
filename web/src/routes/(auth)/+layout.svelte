@@ -1,18 +1,21 @@
 <script lang="ts">
-	import type { LayoutProps } from "./$types";
-	import AuthBackground from "$lib/assets/images/auth-bg.webp";
-	import { page } from "$app/state";
-	import { cn } from "$lib/utils";
-	import Logo from "$lib/components/logo.svelte";
-	import { Checkbox } from "$lib/components/ui/checkbox";
-	import { Label } from "$lib/components/ui/label";
-	import { Button } from "$lib/components/ui/button";
-	import { setContext } from "svelte";
-	import { MediaQuery } from "svelte/reactivity";
+    import type {LayoutProps} from "./$types";
+    import AuthBackground from "$lib/assets/images/auth-bg.webp";
+    import {page} from "$app/state";
+    import {cn} from "$lib/utils";
+    import Logo from "$lib/components/logo.svelte";
+    import {Checkbox} from "$lib/components/ui/checkbox";
+    import {Label} from "$lib/components/ui/label";
+    import {setContext} from "svelte";
+    import {MediaQuery} from "svelte/reactivity";
+    import {Button} from "$lib/components/ui/button";
+    import {deserialize} from '$app/forms';
 
-	const { children, data }: LayoutProps = $props();
-	const route = $derived(page.url.href.split("/").pop()) as "login" | "signup";
-	const title = $derived(route === "login" ? "Login" : "Create an Account");
+    const { children, data }: LayoutProps = $props();
+
+    const route = $derived(page.url.pathname.endsWith('/login') ? 'login' : 'signup'
+    );
+    const title = $derived(route === "login" ? "Login" : "Create an Account");
 	const description = $derived(
 		route === "login"
 			? "Welcome back! Please enter your details to continue."
@@ -29,6 +32,9 @@
 		errors: {} as Record<string, string>
 	});
 	setContext("authState", authState);
+    let isLoading = $state(false);
+    let successMessage = '';
+    let errorMessage = '';
 
 	$effect(() => {
 		authState.form = Object.fromEntries(data.formInputs.map((f) => [f.name, ""]));
@@ -47,9 +53,30 @@
 		return baseIsValid && agreeToTermsAndConditions;
 	});
 
-	const handleSubmit = () => {
-		alert(JSON.stringify(authState.form));
-	};
+    async function handleSubmit(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement}) {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget, event.submitter);
+
+
+        const response = await fetch(event.currentTarget.action, {
+            method: 'POST',
+            body: data
+        });
+
+        console.log("response: ", response)
+
+        const result: ActionResult = deserialize(await response.text());
+
+        console.log("result: ", result);
+        if (result.type === 'success') {
+            // rerun all `load` functions, following the successful update
+            // await invalidateAll();
+            console.log("success: ", result);
+        }
+
+        // applyAction(result);
+    }
+
 </script>
 
 <svelte:head>
@@ -64,9 +91,12 @@
 >
 	<div class="flex h-screen items-center justify-center bg-white">
 		<form
-			class="flex h-full w-full flex-col items-center justify-center gap-4 px-6 sm:max-w-xl"
-			onsubmit={handleSubmit}
-		>
+                class="flex h-full w-full flex-col items-center justify-center gap-4 px-6 sm:max-w-xl"
+			method="POST"
+                onsubmit={handleSubmit}
+        >
+<!--                use:enhance={customEnhance}>-->
+<!--			onsubmit={handleSubmit}-->
 			<!--	Form logo, title, and description-->
 			<Logo />
 			<h2 class="mt-1 auth-heading">{title}</h2>

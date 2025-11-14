@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { Label } from "$lib/components/ui/label";
-	import { Input } from "$lib/components/ui/input";
-	import { z } from "zod";
-	import { getContext } from "svelte";
+    import {Label} from "$lib/components/ui/label";
+    import {Input} from "$lib/components/ui/input";
+    import {z} from "zod";
+    import {getContext} from "svelte";
 
-	const { data } = $props();
+    const { data } = $props();
 
 	const authState = getContext<{
 		form: Record<string, string>;
@@ -31,6 +31,7 @@
 		<div class="flex w-full flex-col gap-1">
 			<Label for={input.name}>{input.label}</Label>
 			<Input
+                name={input.name}
 				id={input.name}
 				type={input.type}
 				placeholder={input.placeholder}
