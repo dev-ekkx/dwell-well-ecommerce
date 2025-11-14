@@ -1,14 +1,16 @@
 <script lang="ts">
-    import "../app.css";
-    import favicon from "$lib/assets/favicon.ico";
-    import HeaderComponent from "$lib/components/header.svelte";
-    import FooterComponent from "$lib/components/footer.svelte";
-    import {page} from "$app/state";
-    import {cn} from "$lib/utils";
+	import "../app.css";
+	import favicon from "$lib/assets/favicon.ico";
+	import HeaderComponent from "$lib/components/header.svelte";
+	import FooterComponent from "$lib/components/footer.svelte";
+	import { page } from "$app/state";
+	import { cn } from "$lib/utils";
 
-    let { children, data } = $props();
+	let { children, data } = $props();
 	const activePage = $derived(page.route.id);
-    const isAuthPage = $derived( page.url.pathname.endsWith("/login") || page.url.pathname.endsWith("/signup") );
+	const isAuthPage = $derived(
+		page.url.pathname.endsWith("/login") || page.url.pathname.endsWith("/signup")
+	);
 </script>
 
 <svelte:head>
