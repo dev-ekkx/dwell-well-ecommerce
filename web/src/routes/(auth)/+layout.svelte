@@ -10,6 +10,7 @@
     import {MediaQuery} from "svelte/reactivity";
     import {Button} from "$lib/components/ui/button";
     import {deserialize} from '$app/forms';
+    import {Spinner} from "$lib/components/ui/spinner";
 
 
     const { children, data }: LayoutProps = $props();
@@ -55,6 +56,7 @@
 	});
 
     async function handleSubmit(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement}) {
+        isLoading = true;
         event.preventDefault();
         const data = new FormData(event.currentTarget, event.submitter);
 
@@ -74,6 +76,8 @@
             // await invalidateAll();
             console.log("success: ", result);
         }
+
+        isLoading = false;
 
         // applyAction(result);
     }
@@ -123,8 +127,13 @@
 			{/if}
 
 			<!-- Login or create an account -->
-			<Button class="mt-10 w-full cursor-pointer" disabled={!isFormValid()} type="submit"
-				>{route === "login" ? "Login" : "Create an account"}</Button
+			<Button class="mt-10 w-full cursor-pointer" disabled={!isFormValid() || isLoading} type="submit"
+				>
+                {#if isLoading}
+            <Spinner />
+                    {/if}
+                {route === "login" ? "Login" : "Create an account"}
+            </Button
 			>
 
             {#if route === "login"}
