@@ -11,6 +11,7 @@
     import {Button} from "$lib/components/ui/button";
     import {deserialize} from '$app/forms';
 
+
     const { children, data }: LayoutProps = $props();
 
     const route = $derived(page.url.pathname.endsWith('/login') ? 'login' : 'signup'
@@ -125,7 +126,8 @@
 			<Button class="mt-10 w-full cursor-pointer" disabled={!isFormValid()} type="submit"
 				>{route === "login" ? "Login" : "Create an account"}</Button
 			>
-			{#if route === "login"}
+
+            {#if route === "login"}
 				<Label
 					>Don’t have an account yet?<a class="text-primary underline" href="/signup"
 						>Create an account</a
