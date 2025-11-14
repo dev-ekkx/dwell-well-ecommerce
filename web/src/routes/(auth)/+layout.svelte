@@ -1,35 +1,36 @@
 <script lang="ts">
-    import type {LayoutProps} from "./$types";
-    import AuthBackground from "$lib/assets/images/auth-bg.webp";
-    import {cn} from "$lib/utils";
-    import Logo from "$lib/components/logo.svelte";
-    import {Checkbox} from "$lib/components/ui/checkbox";
-    import {Label} from "$lib/components/ui/label";
-    import {setContext} from "svelte";
-    import {MediaQuery} from "svelte/reactivity";
-    import {Button} from "$lib/components/ui/button";
-    import {applyAction, deserialize} from "$app/forms";
-    import {Spinner} from "$lib/components/ui/spinner";
-    import {Description as AlertDescription, Root as AlertRoot, Title as AlertTitle} from "$lib/components/ui/alert";
-    import CheckCircle2Icon from "@lucide/svelte/icons/check-circle-2";
+	import type { LayoutProps } from "./$types";
+	import AuthBackground from "$lib/assets/images/auth-bg.webp";
+	import { cn } from "$lib/utils";
+	import Logo from "$lib/components/logo.svelte";
+	import { Checkbox } from "$lib/components/ui/checkbox";
+	import { Label } from "$lib/components/ui/label";
+	import { setContext } from "svelte";
+	import { MediaQuery } from "svelte/reactivity";
+	import { Button } from "$lib/components/ui/button";
+	import { applyAction, deserialize } from "$app/forms";
+	import { Spinner } from "$lib/components/ui/spinner";
+	import {
+		Description as AlertDescription,
+		Root as AlertRoot,
+		Title as AlertTitle
+	} from "$lib/components/ui/alert";
+	import CheckCircle2Icon from "@lucide/svelte/icons/check-circle-2";
 
-    const { children, data }: LayoutProps = $props();
+	const { children, data }: LayoutProps = $props();
 
-    const titleMap: Record<string, AuthType> = {
-        "Login": "login",
-        "Reset Password": "reset_password",
-        "Create an Account": "signup",
-        "Verify OTP": "otp",
-    };
+	const titleMap: Record<string, AuthType> = {
+		Login: "login",
+		"Reset Password": "reset_password",
+		"Create an Account": "signup",
+		"Verify OTP": "otp"
+	};
 
-    const route = $derived(data.route || "");
-    const title = $derived(Object.entries(titleMap).find(([_, r]) => r === route)?.[0] || "Login");
+	const route = $derived(data.route || "");
+	const title = $derived(Object.entries(titleMap).find(([_, r]) => r === route)?.[0] || "Login");
 
-    $inspect(route)
-    $inspect(title)
-
-
-
+	$inspect(route);
+	$inspect(title);
 
 	const description = $derived(
 		route === "login"
@@ -37,26 +38,22 @@
 			: "Join us to enjoy personalized features."
 	);
 
-
-
-    // const route = $derived(page.url.pathname.endsWith("/login") ? "login" : "signup");
-    // const title = $derived(route === "login" ? "Login" : "Create an Account");
-
+	// const route = $derived(page.url.pathname.endsWith("/login") ? "login" : "signup");
+	// const title = $derived(route === "login" ? "Login" : "Create an Account");
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const isMobile = $derived(mediaQuery.current);
 
-    // Form states
-    let isLoading = $state(false);
-    let isError = $state(false);
-    let errorMessage = $state("");
+	// Form states
+	let isLoading = $state(false);
+	let isError = $state(false);
+	let errorMessage = $state("");
 	let agreeToTermsAndConditions = $state(false);
 	const authState = $state({
 		form: Object.fromEntries(data.formInputs.map((f) => [f.name, ""])),
 		errors: {} as Record<string, string>
 	});
 	setContext("authState", authState);
-
 
 	$effect(() => {
 		authState.form = Object.fromEntries(data.formInputs.map((f) => [f.name, ""]));
@@ -75,50 +72,46 @@
 		return baseIsValid && agreeToTermsAndConditions;
 	});
 
-    async function handleSubmit(
-        event: SubmitEvent & { currentTarget: HTMLFormElement }
-    ) {
-        event.preventDefault();
-        isLoading = true;
+	async function handleSubmit(event: SubmitEvent & { currentTarget: HTMLFormElement }) {
+		event.preventDefault();
+		isLoading = true;
 
+		try {
+			const form = event.currentTarget;
+			const data = new FormData(form, event.submitter);
 
-        try {
-            const form = event.currentTarget;
-            const data = new FormData(form, event.submitter);
+			const response = await fetch(form.action, {
+				method: "POST",
+				body: data
+			});
 
-            const response = await fetch(form.action, {
-                method: "POST",
-                body: data
-            });
+			const result: ActionResult = deserialize(await response.text());
 
-            const result: ActionResult = deserialize(await response.text());
+			if (result.type === "success") {
+				console.log(result.data);
+				return;
+			}
 
-            if (result.type === "success") {
-                console.log(result.data);
-                return;
-            }
+			if (result.type === "failure") {
+				isError = true;
+				errorMessage = result.data;
 
-            if (result.type === "failure") {
-                isError = true;
-                errorMessage = result.data;
+				const timer = setTimeout(() => {
+					isError = false;
+				}, 5000);
 
-                const timer = setTimeout(() => {
-                    isError = false;
-                }, 5000);
+				return () => clearTimeout(timer);
+			}
 
-                return () => clearTimeout(timer);
-            }
-
-            await applyAction(result);
-        } catch (err) {
-            isError = true;
-            errorMessage = "Unexpected error. Please try again.";
-            console.error(err);
-        } finally {
-            isLoading = false;
-        }
-    }
-
+			await applyAction(result);
+		} catch (err) {
+			isError = true;
+			errorMessage = "Unexpected error. Please try again.";
+			console.error(err);
+		} finally {
+			isLoading = false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -137,19 +130,18 @@
 			method="POST"
 			onsubmit={handleSubmit}
 		>
-
 			<Logo />
 			<h2 class="mt-1 auth-heading">{title}</h2>
 			<p>{description}</p>
 
-            <!-- Alert component -->
-            {#if isError}
-            <AlertRoot variant="destructive">
-                <CheckCircle2Icon class="size-4" />
-                <AlertTitle class="capitalize font-semibold"> {route} Error</AlertTitle>
-                <AlertDescription>{errorMessage}</AlertDescription>
-            </AlertRoot>
-                {/if}
+			<!-- Alert component -->
+			{#if isError}
+				<AlertRoot variant="destructive">
+					<CheckCircle2Icon class="size-4" />
+					<AlertTitle class="font-semibold capitalize">{route} Error</AlertTitle>
+					<AlertDescription>{errorMessage}</AlertDescription>
+				</AlertRoot>
+			{/if}
 
 			<!-- Form content -->
 			{@render children()}

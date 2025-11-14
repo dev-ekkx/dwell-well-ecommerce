@@ -1,83 +1,85 @@
 <script lang="ts">
-    import {Label} from "$lib/components/ui/label";
-    import {Input} from "$lib/components/ui/input";
-    import {z} from "zod";
-    import {getContext} from "svelte";
-    import {Eye, EyeOff} from "@lucide/svelte/icons"
+	import { Label } from "$lib/components/ui/label";
+	import { Input } from "$lib/components/ui/input";
+	import { z } from "zod";
+	import { getContext } from "svelte";
+	import { Eye, EyeOff } from "@lucide/svelte/icons";
 
-    const { data } = $props();
+	const { data } = $props();
 
 	const authState = getContext<{
 		form: Record<string, string>;
 		errors: Record<string, string>;
 	}>("authState");
 
-    let viewPassword = $state<Record<string, boolean>>({});
+	let viewPassword = $state<Record<string, boolean>>({});
 
-	// function handleBlur(field: string) {
-	// 	try {
-	// 		const fieldSchema = z.object({ [field]: data.schema.shape[field] });
-	// 		fieldSchema.parse({ [field]: authState.form[field] });
-	// 		authState.errors[field] = "";
-	// 	} catch (e) {
-	// 		if (e instanceof z.ZodError && e.issues.length > 0) {
-	// 			authState.errors[field] = e.issues[0].message;
-	// 		} else {
-	// 			authState.errors[field] = "Invalid value";
-	// 		}
-	// 	}
-	// }
+	/*
+	function handleBlur(field: string) {
+		try {
+			const fieldSchema = z.object({ [field]: data.schema.shape[field] });
+			fieldSchema.parse({ [field]: authState.form[field] });
+			authState.errors[field] = "";
+		} catch (e) {
+			if (e instanceof z.ZodError && e.issues.length > 0) {
+				authState.errors[field] = e.issues[0].message;
+			} else {
+				authState.errors[field] = "Invalid value";
+			}
+		}
+	}
+        **/
 
-    function handleBlur(field: string) {
-        try {
-            data.schema.parse(authState.form); // validate the whole form
-            authState.errors[field] = ""; // clear this field's error if no issues
-        } catch (e) {
-            if (e instanceof z.ZodError) {
-                // reset current field error
-                authState.errors[field] = "";
+	function handleBlur(field: string) {
+		try {
+			data.schema.parse(authState.form);
+			authState.errors[field] = "";
+		} catch (e) {
+			if (e instanceof z.ZodError) {
+				authState.errors[field] = "";
 
-                // find any issues that match this field's path
-                const fieldIssues = e.issues.filter((i) => i.path[0] === field);
+				const fieldIssues = e.issues.filter((i) => i.path[0] === field);
 
-                if (fieldIssues.length > 0) {
-                    authState.errors[field] = fieldIssues[0].message;
-                }
-            } else {
-                authState.errors[field] = "Invalid value";
-            }
-        }
-    }
+				if (fieldIssues.length > 0) {
+					authState.errors[field] = fieldIssues[0].message;
+				}
+			} else {
+				authState.errors[field] = "Invalid value";
+			}
+		}
+	}
 
-
-
-    function togglePassword(name: string) {
-        viewPassword[name] = !viewPassword[name];
-    }
+	function togglePassword(name: string) {
+		viewPassword[name] = !viewPassword[name];
+	}
 </script>
 
 <div class="mt-4 flex w-full flex-col gap-4">
 	{#each data.formInputs as input (input)}
-		<div class="flex w-full flex-col gap-1.5 relative">
+		<div class="relative flex w-full flex-col gap-1.5">
 			<Label for={input.name}>{input.label}</Label>
 			<Input
 				name={input.name}
 				id={input.name}
-                type={input.type === "password" && !viewPassword[input.name] ? "password" : "text"}
+				type={input.type === "password" && !viewPassword[input.name] ? "password" : "text"}
 				placeholder={input.placeholder}
 				bind:value={authState.form[input.name]}
 				onblur={() => handleBlur(input.name)}
 				oninput={() => handleBlur(input.name)}
 			/>
-            {#if input.type === "password"}
-                <button onclick={() => togglePassword(input.name)} type="button" class="text-muted-foreground cursor-pointer absolute top-3.5 translate-y-1/2 right-1">
-                    {#if viewPassword[input.name]}
-                    <EyeOff />
-                        {:else}
-                    <Eye />
-                        {/if}
-                </button>
-                {/if}
+			{#if input.type === "password"}
+				<button
+					onclick={() => togglePassword(input.name)}
+					type="button"
+					class="absolute top-3.5 right-1 translate-y-1/2 cursor-pointer text-muted-foreground"
+				>
+					{#if viewPassword[input.name]}
+						<EyeOff />
+					{:else}
+						<Eye />
+					{/if}
+				</button>
+			{/if}
 			{#if authState.errors[input.name]}
 				<p class="text-sm text-red-500">{authState.errors[input.name]}</p>
 			{/if}

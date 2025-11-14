@@ -24,10 +24,7 @@ export const signupSchema = z
 		name: z.string().nonempty("Name is required").min(3, "Name is required"),
 		email: z.pipe(z.string().nonempty("Email is required"), z.email("Invalid email address")),
 		password: strongPassword,
-		confirmPassword: z
-			.string()
-			.nonempty("Confirm Password is required")
-			.min(6, "Please confirm your password")
+		confirmPassword: z.string().nonempty("Confirm Password is required")
 	})
 	.refine((data) => data.password === data.confirmPassword, {
 		message: "Passwords must match",
@@ -38,10 +35,7 @@ export const resetPasswordSchema = z
 	.object({
 		oldPassword: z.string().nonempty("Password is required"),
 		newPassword: strongPassword,
-		confirmPassword: z
-			.string()
-			.nonempty("Confirm Password is required")
-			.min(6, "Please confirm your password")
+		confirmPassword: z.string().nonempty("Confirm Password is required")
 	})
 	.refine((data) => data.newPassword === data.confirmPassword, {
 		message: "Passwords must match",
