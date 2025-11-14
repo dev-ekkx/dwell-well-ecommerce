@@ -1,15 +1,18 @@
 <script lang="ts">
-	import { Label } from "$lib/components/ui/label";
-	import { Input } from "$lib/components/ui/input";
-	import { z } from "zod";
-	import { getContext } from "svelte";
+    import {Label} from "$lib/components/ui/label";
+    import {Input} from "$lib/components/ui/input";
+    import {z} from "zod";
+    import {getContext} from "svelte";
+    import {Eye, EyeOff} from "@lucide/svelte/icons"
 
-	const { data } = $props();
+    const { data } = $props();
 
 	const authState = getContext<{
 		form: Record<string, string>;
 		errors: Record<string, string>;
 	}>("authState");
+
+    let viewPassword = $state<Record<string, boolean>>({});
 
 	function handleBlur(field: string) {
 		try {
@@ -24,21 +27,34 @@
 			}
 		}
 	}
+
+    function togglePassword(name: string) {
+        viewPassword[name] = !viewPassword[name];
+    }
 </script>
 
 <div class="mt-4 flex w-full flex-col gap-4">
 	{#each data.formInputs as input (input)}
-		<div class="flex w-full flex-col gap-1">
+		<div class="flex w-full flex-col gap-1 relative">
 			<Label for={input.name}>{input.label}</Label>
 			<Input
 				name={input.name}
 				id={input.name}
-				type={input.type}
+                type={input.type === "password" && !viewPassword[input.name] ? "password" : "text"}
 				placeholder={input.placeholder}
 				bind:value={authState.form[input.name]}
 				onblur={() => handleBlur(input.name)}
 				oninput={() => handleBlur(input.name)}
 			/>
+            {#if input.type === "password"}
+                <button onclick={() => togglePassword(input.name)} type="button" class="text-muted-foreground cursor-pointer absolute top-3 translate-y-1/2 right-1">
+                    {#if viewPassword[input.name]}
+                    <Eye />
+                        {:else}
+                    <EyeOff />
+                        {/if}
+                </button>
+                {/if}
 			{#if authState.errors[input.name]}
 				<p class="text-sm text-red-500">{authState.errors[input.name]}</p>
 			{/if}

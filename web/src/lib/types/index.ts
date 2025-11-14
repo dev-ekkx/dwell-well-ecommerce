@@ -52,3 +52,5 @@ export type CarouselState<T> = {
 	next: () => void;
 	collectItems: () => void;
 };
+
+export type AuthType = "login" | "signup" | "otp" | "reset_password";

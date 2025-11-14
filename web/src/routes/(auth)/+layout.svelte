@@ -1,7 +1,6 @@
 <script lang="ts">
     import type {LayoutProps} from "./$types";
     import AuthBackground from "$lib/assets/images/auth-bg.webp";
-    import {page} from "$app/state";
     import {cn} from "$lib/utils";
     import Logo from "$lib/components/logo.svelte";
     import {Checkbox} from "$lib/components/ui/checkbox";
@@ -13,16 +12,40 @@
     import {Spinner} from "$lib/components/ui/spinner";
     import {Description as AlertDescription, Root as AlertRoot, Title as AlertTitle} from "$lib/components/ui/alert";
     import CheckCircle2Icon from "@lucide/svelte/icons/check-circle-2";
+    import {page} from "$app/state";
 
     const { children, data }: LayoutProps = $props();
 
-	const route = $derived(page.url.pathname.endsWith("/login") ? "login" : "signup");
-	const title = $derived(route === "login" ? "Login" : "Create an Account");
+    // let route = $state("login")
+    // let title = $state("Login")
+
+    const titleMap: Record<string, AuthType> = {
+        "Login": "login",
+        "Reset Password": "reset_password",
+        "Create an Account": "signup",
+        "Verify OTP": "otp",
+    };
+
+    const route = $derived(Object.values(titleMap).find(r => page.url.pathname.endsWith(`/${r}`)) || "");
+    const title = $derived(Object.entries(titleMap).find(([_, r]) => r === route)?.[0] || "Login");
+
+    $inspect(route)
+    $inspect(title)
+
+
+
+
 	const description = $derived(
 		route === "login"
 			? "Welcome back! Please enter your details to continue."
 			: "Join us to enjoy personalized features."
 	);
+
+
+
+    // const route = $derived(page.url.pathname.endsWith("/login") ? "login" : "signup");
+    // const title = $derived(route === "login" ? "Login" : "Create an Account");
+
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const isMobile = $derived(mediaQuery.current);
@@ -37,7 +60,6 @@
 		errors: {} as Record<string, string>
 	});
 	setContext("authState", authState);
-
 
 
 	$effect(() => {
@@ -170,7 +192,8 @@
 						>Create an account</a
 					></Label
 				>
-			{:else}
+			{/if}
+			{#if route === "signup"}
 				<Label
 					>Already have an account?<a class="text-primary underline" href="/login">Login</a></Label
 				>
