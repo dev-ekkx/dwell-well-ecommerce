@@ -14,7 +14,10 @@ export const actions = {
 				password: String(password ?? "")
 			};
 
-			return await signIn(user);
+			return {
+				response: await signIn(user),
+				oldPassword: String(password ?? "")
+			};
 		} catch (e) {
 			return fail(400, (e as Error).message);
 		}

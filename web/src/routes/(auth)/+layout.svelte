@@ -1,23 +1,23 @@
 <script lang="ts">
-	import type { LayoutProps } from "./$types";
-	import AuthBackground from "$lib/assets/images/auth-bg.webp";
-	import { cn } from "$lib/utils";
-	import Logo from "$lib/components/logo.svelte";
-	import { Checkbox } from "$lib/components/ui/checkbox";
-	import { Label } from "$lib/components/ui/label";
-	import { setContext } from "svelte";
-	import { MediaQuery } from "svelte/reactivity";
-	import { Button } from "$lib/components/ui/button";
-	import { applyAction, deserialize } from "$app/forms";
-	import { Spinner } from "$lib/components/ui/spinner";
-	import {
-		Description as AlertDescription,
-		Root as AlertRoot,
-		Title as AlertTitle
-	} from "$lib/components/ui/alert";
-	import CheckCircle2Icon from "@lucide/svelte/icons/check-circle-2";
+    import type {LayoutProps} from "./$types";
+    import AuthBackground from "$lib/assets/images/auth-bg.webp";
+    import {cn} from "$lib/utils";
+    import Logo from "$lib/components/logo.svelte";
+    import {Checkbox} from "$lib/components/ui/checkbox";
+    import {Label} from "$lib/components/ui/label";
+    import {onMount, setContext} from "svelte";
+    import {MediaQuery} from "svelte/reactivity";
+    import {Button} from "$lib/components/ui/button";
+    import {applyAction, deserialize} from "$app/forms";
+    import {Spinner} from "$lib/components/ui/spinner";
+    import {Description as AlertDescription, Root as AlertRoot, Title as AlertTitle} from "$lib/components/ui/alert";
+    import CheckCircle2Icon from "@lucide/svelte/icons/check-circle-2";
+    import type {ActionResult} from "@sveltejs/kit";
+    import type {AuthType} from "$lib/types";
+    import {type SignInOutput} from "@aws-amplify/auth";
+    import {goto} from "$app/navigation";
 
-	const { children, data }: LayoutProps = $props();
+    const { children, data }: LayoutProps = $props();
 
 	const titleMap: Record<string, AuthType> = {
 		Login: "login",
@@ -26,20 +26,22 @@
 		"Verify OTP": "otp"
 	};
 
+	const descriptionMap: Record<string, AuthType> = {
+		"Welcome back! Please enter your details to continue.": "login",
+		"Please enter your new password.": "reset_password",
+		"Join us to enjoy personalized features.": "signup",
+		"Please enter the code sent to your email": "otp"
+	};
+
 	const route = $derived(data.route || "");
 	const title = $derived(Object.entries(titleMap).find(([_, r]) => r === route)?.[0] || "Login");
+	const description = $derived(
+		Object.entries(descriptionMap).find(([_, r]) => r === route)?.[0] ||
+			"Welcome back! Please enter your details to continue."
+	);
 
 	$inspect(route);
 	$inspect(title);
-
-	const description = $derived(
-		route === "login"
-			? "Welcome back! Please enter your details to continue."
-			: "Join us to enjoy personalized features."
-	);
-
-	// const route = $derived(page.url.pathname.endsWith("/login") ? "login" : "signup");
-	// const title = $derived(route === "login" ? "Login" : "Create an Account");
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const isMobile = $derived(mediaQuery.current);
@@ -48,6 +50,7 @@
 	let isLoading = $state(false);
 	let isError = $state(false);
 	let errorMessage = $state("");
+	let oldPassword = $state("");
 	let agreeToTermsAndConditions = $state(false);
 	const authState = $state({
 		form: Object.fromEntries(data.formInputs.map((f) => [f.name, ""])),
@@ -56,7 +59,14 @@
 	setContext("authState", authState);
 
 	$effect(() => {
-		authState.form = Object.fromEntries(data.formInputs.map((f) => [f.name, ""]));
+		authState.form = Object.fromEntries(
+			data.formInputs.map((f) => {
+				if (route === "reset_password" && f.name === "oldPassword") {
+					return [f.name, oldPassword];
+				}
+				return [f.name, ""];
+			})
+		);
 		authState.errors = {};
 	});
 
@@ -65,9 +75,10 @@
 			Object.values(authState.form).every((item) => !!item) &&
 			Object.values(authState.errors).every((item) => item.length < 1);
 
-		if (route === "login") {
+		if (route !== "signup") {
 			return baseIsValid;
 		}
+
 
 		return baseIsValid && agreeToTermsAndConditions;
 	});
@@ -88,13 +99,26 @@
 			const result: ActionResult = deserialize(await response.text());
 
 			if (result.type === "success") {
-				console.log(result.data);
-				return;
+				if (route === "login") {
+					const res = result.data as {
+						oldPassword: string;
+						response: SignInOutput;
+					};
+
+					const { nextStep } = res.response;
+
+					if (nextStep.signInStep === "CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED") {
+						oldPassword = res.oldPassword;
+						await cookieStore.set("oldPassword", oldPassword);
+						await goto("/reset_password");
+					}
+					return;
+				}
 			}
 
 			if (result.type === "failure") {
 				isError = true;
-				errorMessage = result.data;
+				errorMessage = String(result.data ?? "error processing form");
 
 				const timer = setTimeout(() => {
 					isError = false;
@@ -112,6 +136,13 @@
 			isLoading = false;
 		}
 	}
+
+	onMount(async () => {
+		if (route === "reset_password") {
+			const oldP = await cookieStore.get("oldPassword");
+			oldPassword = oldP?.value ?? "";
+		}
+	});
 </script>
 
 <svelte:head>
@@ -172,7 +203,7 @@
 				{#if isLoading}
 					<Spinner />
 				{/if}
-				{route === "login" ? "Login" : "Create an account"}
+				{title}
 			</Button>
 
 			{#if route === "login"}

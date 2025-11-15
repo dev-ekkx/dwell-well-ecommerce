@@ -5,12 +5,12 @@
 	import FooterComponent from "$lib/components/footer.svelte";
 	import { page } from "$app/state";
 	import { cn } from "$lib/utils";
+	import { AUTH_ROUTES } from "$lib/constants";
 
 	let { children, data } = $props();
 	const activePage = $derived(page.route.id);
-	const isAuthPage = $derived(
-		page.url.pathname.endsWith("/login") || page.url.pathname.endsWith("/signup")
-	);
+
+	const isAuthPage = $derived(AUTH_ROUTES.some((r) => page.url.pathname.endsWith(`/${r}`)));
 </script>
 
 <svelte:head>

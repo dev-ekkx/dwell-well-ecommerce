@@ -39,5 +39,5 @@ export const resetPasswordSchema = z
 	})
 	.refine((data) => data.newPassword === data.confirmPassword, {
 		message: "Passwords must match",
-		path: ["newPassword"]
+		path: ["confirmPassword"]
 	});
