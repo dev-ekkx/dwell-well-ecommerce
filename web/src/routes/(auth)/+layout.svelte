@@ -1,5 +1,4 @@
 <script lang="ts">
-    import type {LayoutProps} from "./$types";
     import AuthBackground from "$lib/assets/images/auth-bg.webp";
     import {cn} from "$lib/utils";
     import Logo from "$lib/components/logo.svelte";
@@ -8,16 +7,20 @@
     import {onMount, setContext} from "svelte";
     import {MediaQuery} from "svelte/reactivity";
     import {Button} from "$lib/components/ui/button";
-    import {applyAction, deserialize} from "$app/forms";
+    import {applyAction, deserialize, enhance} from "$app/forms";
     import {Spinner} from "$lib/components/ui/spinner";
     import {Description as AlertDescription, Root as AlertRoot, Title as AlertTitle} from "$lib/components/ui/alert";
     import CheckCircle2Icon from "@lucide/svelte/icons/check-circle-2";
     import type {ActionResult} from "@sveltejs/kit";
     import type {AuthType} from "$lib/types";
-    import {type SignInOutput} from "@aws-amplify/auth";
+    import type {ConfirmSignInOutput, SignInOutput} from "@aws-amplify/auth";
     import {goto} from "$app/navigation";
+    import type {LayoutProps} from "./$types";
 
-    const { children, data }: LayoutProps = $props();
+    type Props = LayoutProps & {
+        form: unknown
+    }
+    const { children, data, form }: Props = $props();
 
 	const titleMap: Record<string, AuthType> = {
 		Login: "login",
@@ -25,6 +28,7 @@
 		"Create an Account": "signup",
 		"Verify OTP": "otp"
 	};
+
 
 	const descriptionMap: Record<string, AuthType> = {
 		"Welcome back! Please enter your details to continue.": "login",
@@ -40,8 +44,6 @@
 			"Welcome back! Please enter your details to continue."
 	);
 
-	$inspect(route);
-	$inspect(title);
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const isMobile = $derived(mediaQuery.current);
@@ -70,6 +72,7 @@
 		authState.errors = {};
 	});
 
+    // Check form validity
 	const isFormValid = $derived(() => {
 		const baseIsValid =
 			Object.values(authState.form).every((item) => !!item) &&
@@ -78,8 +81,6 @@
 		if (route !== "signup") {
 			return baseIsValid;
 		}
-
-
 		return baseIsValid && agreeToTermsAndConditions;
 	});
 
@@ -114,6 +115,17 @@
 					}
 					return;
 				}
+
+                if (route === "reset_password") {
+                    const res = result.data as ConfirmSignInOutput
+
+                    console.log("result: ", result.data)
+
+                    const {signInStep} = res.nextStep
+                    if (signInStep === "DONE") {
+                        console.log("Sign in step: ", signInStep);
+                    }
+                }
 			}
 
 			if (result.type === "failure") {
@@ -137,6 +149,8 @@
 		}
 	}
 
+
+
 	onMount(async () => {
 		if (route === "reset_password") {
 			const oldP = await cookieStore.get("oldPassword");
@@ -159,7 +173,7 @@
 		<form
 			class="flex h-full w-full flex-col items-center justify-center gap-4 px-6 sm:max-w-xl"
 			method="POST"
-			onsubmit={handleSubmit}
+            use:enhance={() => { isLoading = true; return async ({ update }) => { await update(); isLoading = false; }; }}
 		>
 			<Logo />
 			<h2 class="mt-1 auth-heading">{title}</h2>
@@ -169,7 +183,7 @@
 			{#if isError}
 				<AlertRoot variant="destructive">
 					<CheckCircle2Icon class="size-4" />
-					<AlertTitle class="font-semibold capitalize">{route} Error</AlertTitle>
+					<AlertTitle class="font-semibold capitalize">{title} Error</AlertTitle>
 					<AlertDescription>{errorMessage}</AlertDescription>
 				</AlertRoot>
 			{/if}
