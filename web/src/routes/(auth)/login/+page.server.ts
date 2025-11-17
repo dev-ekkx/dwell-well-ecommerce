@@ -4,7 +4,9 @@ import { signIn } from "@aws-amplify/auth";
 import type { AmplifyAuthResponseI } from "$lib/interfaces";
 
 export const actions = {
-	default: async ({ request }): Promise<AmplifyAuthResponseI | ActionFailure<error, string>> => {
+	default: async ({
+		request
+	}): Promise<AmplifyAuthResponseI | ActionFailure<{ error: string }>> => {
 		const data = await request.formData();
 		const email = data.get("email");
 		const password = data.get("password");
@@ -15,8 +17,8 @@ export const actions = {
 				password: String(password ?? "")
 			};
 
-			const response = await signIn(user);
 			return {
+				authResponse: await signIn(user),
 				oldPassword: String(password ?? "")
 			};
 		} catch (e) {

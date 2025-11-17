@@ -333,8 +333,7 @@ export interface CartStoreI {
 }
 
 export interface AmplifyAuthResponseI {
-	isError?: boolean;
 	error?: string;
 	oldPassword?: string;
-	nextStepType?: SignInOutput | ConfirmSignInOutput;
+	authResponse?: SignInOutput | ConfirmSignInOutput;
 }

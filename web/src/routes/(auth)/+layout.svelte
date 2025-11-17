@@ -11,14 +11,15 @@
     import {Spinner} from "$lib/components/ui/spinner";
     import {Description as AlertDescription, Root as AlertRoot, Title as AlertTitle} from "$lib/components/ui/alert";
     import CheckCircle2Icon from "@lucide/svelte/icons/check-circle-2";
-    import type {ActionResult} from "@sveltejs/kit";
+    import {type ActionResult} from "@sveltejs/kit";
     import type {AuthType} from "$lib/types";
     import type {ConfirmSignInOutput, SignInOutput} from "@aws-amplify/auth";
     import {goto} from "$app/navigation";
     import type {LayoutProps} from "./$types";
+    import type {AmplifyAuthResponseI} from "$lib/interfaces";
 
     type Props = LayoutProps & {
-        form: unknown
+        form: AmplifyAuthResponseI
     }
     const { children, data, form }: Props = $props();
 
@@ -87,6 +88,27 @@
 
     $effect(() => {
         console.log("Form: ", form)
+
+        // Handle form errors
+        if (form?.error) {
+            isError = true
+            errorMessage = form.error
+
+            const timer = setTimeout(() => {
+                isError = false;
+            }, 5000);
+
+            return () => clearTimeout(timer);
+        }
+
+        if (route === "login") {
+            const {oldPassword: password, authResponse} = form
+            if (authResponse?.nextStep.signInStep === "CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED") {
+                oldPassword = password ?? ""
+               cookieStore.set("oldPassword", oldPassword)
+                goto("/reset_password");
+            }
+        }
     })
 
 	async function handleSubmit(event: SubmitEvent & { currentTarget: HTMLFormElement }) {
