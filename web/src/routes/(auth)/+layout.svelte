@@ -60,6 +60,7 @@
 	});
 	setContext("authState", authState);
 
+    // Handle form data
 	$effect(() => {
 		authState.form = Object.fromEntries(
 			data.formInputs.map((f) => {
@@ -83,6 +84,10 @@
 		}
 		return baseIsValid && agreeToTermsAndConditions;
 	});
+
+    $effect(() => {
+        console.log("Form: ", form)
+    })
 
 	async function handleSubmit(event: SubmitEvent & { currentTarget: HTMLFormElement }) {
 		event.preventDefault();

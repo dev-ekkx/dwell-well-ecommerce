@@ -13,7 +13,6 @@ export const actions = {
 				challengeResponse: String(password ?? "")
 			});
 		} catch (e) {
-			console.error("Error: ", (e as Error).message);
 			return fail(400, (e as Error).message);
 		}
 	}

@@ -1,5 +1,6 @@
 import type { HTMLButtonAttributes } from "svelte/elements";
 import type { ContentSectionT } from "$lib/types";
+import type { ConfirmSignInOutput, SignInOutput } from "@aws-amplify/auth";
 
 export interface ButtonI extends HTMLButtonAttributes {
 	direction: "left" | "right";
@@ -329,4 +330,11 @@ export interface CartStoreI {
 	increaseQuantity: (sku: string) => void;
 	reduceQuantity: (sku: string) => void;
 	clearCart: () => void;
+}
+
+export interface AmplifyAuthResponseI {
+	isError?: boolean;
+	error?: string;
+	oldPassword?: string;
+	nextStepType?: SignInOutput | ConfirmSignInOutput;
 }
