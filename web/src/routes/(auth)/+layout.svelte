@@ -102,11 +102,20 @@
         }
 
         if (route === "login") {
+            if (!form?.authResponse) return;
             const {oldPassword: password, authResponse} = form
             if (authResponse?.nextStep.signInStep === "CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED") {
                 oldPassword = password ?? ""
                cookieStore.set("oldPassword", oldPassword)
                 goto("/reset_password");
+            }
+        }
+
+        if (route === "reset_password") {
+            if (!form?.authResponse) return;
+    const {authResponse} = form
+            if (authResponse.nextStep.signInStep === "DONE") {
+                console.log("done signing in")
             }
         }
     })
