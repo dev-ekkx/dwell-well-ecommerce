@@ -88,6 +88,15 @@ Resources:
         - ClientId: !Ref DwellWellCognitoUserPoolClient
           ProviderName: !GetAtt DwellWellCognitoUserPool.ProviderName # Updated GetAtt
 
+  # Add this resource to link the IAM Roles to the Identity Pool
+  DwellWellIdentityPoolRoleAttachment:
+    Type: AWS::Cognito::IdentityPoolRoleAttachment
+    Properties:
+      IdentityPoolId: !Ref DwellWellIdentityPool
+      Roles:
+        authenticated: !GetAtt DwellWellIdentityPoolAuthRole.Arn
+        unauthenticated: !GetAtt DwellWellIdentityPoolUnauthRole.Arn
+
   # Cognito user Groups
   DwellWellAdminGroup:
     Type: AWS::Cognito::UserPoolGroup
@@ -296,7 +305,8 @@ Resources:
               - cognito-idp:AdminSetUserPassword
             Resource: !GetAtt DwellWellCognitoUserPool.Arn
         - AWSXrayWriteOnlyAccess
-        - CloudWatchLogsFullAccess
+#        - CloudWatchLogsFullAccess
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
       Events:
         ApiInviteUser:
           Type: Api
@@ -323,7 +333,8 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref ProductsTableName
         - AWSXrayWriteOnlyAccess
-        - CloudWatchLogsFullAccess
+#        - CloudWatchLogsFullAccess
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
       Events:
         ApiProducts:
           Type: Api
@@ -347,7 +358,8 @@ Resources:
           PRODUCTS_TABLE_NAME: !Ref ProductsTableName
       Policies:
         - AWSXrayWriteOnlyAccess
-        - CloudWatchLogsFullAccess
+#        - CloudWatchLogsFullAccess
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
       Events:
         ApiSkus:
           Type: Api
@@ -372,7 +384,8 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref ProductsTableName
         - AWSXrayWriteOnlyAccess
-        - CloudWatchLogsFullAccess
+#        - CloudWatchLogsFullAccess
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
       Events:
         ApiWebhookStrapi:
           Type: Api

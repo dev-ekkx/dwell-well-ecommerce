@@ -1,20 +1,20 @@
 import type { LayoutLoad } from "./$types";
-import type { FooterI, PageI } from "$lib/interfaces";
+import type { FooterI, PageI, UserAuthI } from "$lib/interfaces";
 import { AUTH_ROUTES } from "$lib/constants";
-import { Amplify } from "aws-amplify";
-import { PUBLIC_USER_CLIENT_POOL_ID, PUBLIC_USER_POOL_ID } from "$env/static/public";
+import { userStore } from "$lib/store/user-store.svelte";
+import { browser } from "$app/environment";
 
 export const load: LayoutLoad = async ({ fetch, url }) => {
-	// Configure amplify auth
-	Amplify.configure({
-		Auth: {
-			Cognito: {
-				userPoolId: PUBLIC_USER_POOL_ID,
-				userPoolClientId: PUBLIC_USER_CLIENT_POOL_ID
-				// identityPoolId: IDENTITY_POOL_ID
+	// Fetch user data from cookies
+	if (browser) {
+		const data = await cookieStore.get("userAuth");
+		if (data?.value !== "undefined") {
+			const userAuth = JSON.parse(data?.value as string) as UserAuthI;
+			if (userAuth && userAuth.auth.tokenExpiry > 0) {
+				await userStore.updateUserStore(userAuth);
 			}
 		}
-	});
+	}
 
 	const isAuthPage = AUTH_ROUTES.some((r) => url.pathname.endsWith(`/${r}`));
 

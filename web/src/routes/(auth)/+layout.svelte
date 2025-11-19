@@ -126,7 +126,7 @@
         }
 
         if (authResponse.nextStep.signInStep === "DONE") {
-            userStore.updateUserStore(userAuth)
+            userStore.updateUserStore(userAuth!)
             goto("/")
         }
     }

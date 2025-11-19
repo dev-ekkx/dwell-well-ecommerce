@@ -342,7 +342,7 @@ export interface CartStoreI {
 export interface AmplifyAuthResponseI {
 	error?: string;
 	oldPassword?: string;
-	authResponse?: SignInOutput | ConfirmSignInOutput | Promise<void>;
+	authResponse?: SignInOutput | ConfirmSignInOutput;
 	userAuth?: UserAuthI;
 }
 

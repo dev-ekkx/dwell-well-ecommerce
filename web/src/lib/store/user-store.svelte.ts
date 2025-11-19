@@ -24,6 +24,7 @@ class UserStore {
 	public authData = $derived(this.store.auth);
 
 	public async updateUserStore(userAuth: UserAuthI) {
+		await cookieStore.set("userAuth", JSON.stringify(userAuth));
 		this.store = userAuth;
 	}
 

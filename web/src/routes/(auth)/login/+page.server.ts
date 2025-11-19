@@ -1,9 +1,7 @@
 import type { Actions } from "./$types";
 import { type ActionFailure, fail } from "@sveltejs/kit";
-import { signIn } from "aws-amplify/auth";
+import { fetchAuthSession, getCurrentUser, signIn, signOut } from "aws-amplify/auth";
 import type { AmplifyAuthResponseI, UserAuthI } from "$lib/interfaces";
-import { getUserAndAuthData } from "$lib/utils";
-import { signOut } from "@aws-amplify/auth";
 import { initialState } from "$lib/store/user-store.svelte";
 
 export const actions = {
@@ -21,16 +19,28 @@ export const actions = {
 				password: String(password ?? "")
 			};
 			const authResponse = await signIn(user);
+			console.log("auth response: ", authResponse);
 			let res: UserAuthI = initialState;
 			if (authResponse.nextStep.signInStep === "DONE") {
-				res = await getUserAndAuthData();
+				// res = await getUserAndAuthData();
+				// console.log(res);
+				// cookies.set("userAuth", JSON.stringify(res), {
+				// 	path: "/",
+				// 	httpOnly: true,
+				// 	sameSite: "lax"
+				// });
+				const data = await getCurrentUser();
+				const auth = await fetchAuthSession();
+				console.log(data);
+				console.log(auth);
 			}
 			return {
-				userAuth: res,
+				// userAuth: res,
 				authResponse,
 				oldPassword: String(password ?? "")
 			};
 		} catch (e) {
+			console.log(e);
 			await signOut();
 			return fail(400, { error: (e as Error).message });
 		}
