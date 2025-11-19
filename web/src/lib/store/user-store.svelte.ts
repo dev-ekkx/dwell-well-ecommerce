@@ -1,26 +1,42 @@
-import type { AuthI, UserI, UserStoreI } from "$lib/interfaces";
+import type { UserAuthI } from "$lib/interfaces";
 
-export const useUserStore = (): UserStoreI => {
-	let user = $state<UserI>({
-		id: "dfsdfsfdef4342f",
-		name: "John Doe Kojo",
-		email: "john.doe.dwellwell.com",
-		image: "https://github.com/shadcn.png"
-	});
-	let auth = $state<AuthI>({
-		isAuthenticated: false,
-		token: "abcdef123456",
-		tokenExpiry: 3,
-		role: "admin"
-	});
+export const initialState = {
+	user: {
+		email: "",
+		image: "",
+		name: "",
+		userId: "",
+		role: "customer",
+		phone: ""
+	},
+	auth: {
+		tokenExpiry: 0,
+		accessToken: "",
+		idToken: ""
+	}
+} as UserAuthI;
 
-	function updateUser(data: UserI) {
-		user = data;
+class UserStore {
+	private authenticated = $state(false);
+	public isAuthenticated = $derived(this.authenticated);
+	private store = $state<UserAuthI>(initialState);
+	public userData = $derived(this.store.user);
+	public authData = $derived(this.store.auth);
+
+	public async updateUserStore(userAuth: UserAuthI) {
+		this.store = userAuth;
 	}
 
-	function updateUserAuth(data: AuthI) {
-		auth = data;
+	public async logout() {
+		const tasks: Promise<void>[] = [];
+		const keys = ["oldPassword", "authUser"];
+		for (const key of keys) {
+			tasks.push(cookieStore.delete(key));
+		}
+		this.store = initialState;
+		console.log(tasks);
+		return Promise.all(tasks);
 	}
+}
 
-	return { user, auth, updateUser, updateUserAuth };
-};
+export const userStore = new UserStore();

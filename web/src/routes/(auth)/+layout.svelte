@@ -7,16 +7,15 @@
     import {onMount, setContext} from "svelte";
     import {MediaQuery} from "svelte/reactivity";
     import {Button} from "$lib/components/ui/button";
-    import {applyAction, deserialize, enhance} from "$app/forms";
+    import {enhance} from "$app/forms";
     import {Spinner} from "$lib/components/ui/spinner";
     import {Description as AlertDescription, Root as AlertRoot, Title as AlertTitle} from "$lib/components/ui/alert";
     import CheckCircle2Icon from "@lucide/svelte/icons/check-circle-2";
-    import {type ActionResult} from "@sveltejs/kit";
     import type {AuthType} from "$lib/types";
-    import type {ConfirmSignInOutput, SignInOutput} from "@aws-amplify/auth";
     import {goto} from "$app/navigation";
     import type {LayoutProps} from "./$types";
     import type {AmplifyAuthResponseI} from "$lib/interfaces";
+    import {userStore} from "$lib/store/user-store.svelte";
 
     type Props = LayoutProps & {
         form: AmplifyAuthResponseI
@@ -87,18 +86,9 @@
 	});
 
     $effect(() => {
-        console.log("Form: ", form)
-
         // Handle form errors
         if (form?.error) {
-            isError = true
-            errorMessage = form.error
-
-            const timer = setTimeout(() => {
-                isError = false;
-            }, 5000);
-
-            return () => clearTimeout(timer);
+          handleError()
         }
 
         if (route === "login") {
@@ -112,11 +102,23 @@
                 goto("/login")
             }
         }
+
     })
+
+    const handleError = () => {
+        isError = true
+        errorMessage = form.error ?? ""
+
+        const timer = setTimeout(() => {
+            isError = false;
+        }, 5000);
+
+        return () => clearTimeout(timer);
+    }
 
     const handleLoginSteps = () => {
         if (!form?.authResponse) return;
-        const {oldPassword: password, authResponse} = form
+        const {oldPassword: password, authResponse, userAuth} = form
         if (authResponse?.nextStep.signInStep === "CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED") {
             oldPassword = password ?? ""
             cookieStore.set("oldPassword", oldPassword)
@@ -124,76 +126,10 @@
         }
 
         if (authResponse.nextStep.signInStep === "DONE") {
+            userStore.updateUserStore(userAuth)
             goto("/")
         }
     }
-
-	async function handleSubmit(event: SubmitEvent & { currentTarget: HTMLFormElement }) {
-		event.preventDefault();
-		isLoading = true;
-
-		try {
-			const form = event.currentTarget;
-			const data = new FormData(form, event.submitter);
-
-			const response = await fetch(form.action, {
-				method: "POST",
-				body: data
-			});
-
-			const result: ActionResult = deserialize(await response.text());
-
-			if (result.type === "success") {
-				if (route === "login") {
-					const res = result.data as {
-						oldPassword: string;
-						response: SignInOutput;
-					};
-
-					const { nextStep } = res.response;
-
-					if (nextStep.signInStep === "CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED") {
-						oldPassword = res.oldPassword;
-						await cookieStore.set("oldPassword", oldPassword);
-						await goto("/reset_password");
-					}
-					return;
-				}
-
-                if (route === "reset_password") {
-                    const res = result.data as ConfirmSignInOutput
-
-                    console.log("result: ", result.data)
-
-                    const {signInStep} = res.nextStep
-                    if (signInStep === "DONE") {
-                        console.log("Sign in step: ", signInStep);
-                    }
-                }
-			}
-
-			if (result.type === "failure") {
-				isError = true;
-				errorMessage = String(result.data ?? "error processing form");
-
-				const timer = setTimeout(() => {
-					isError = false;
-				}, 5000);
-
-				return () => clearTimeout(timer);
-			}
-
-			await applyAction(result);
-		} catch (err) {
-			isError = true;
-			errorMessage = "Unexpected error. Please try again.";
-			console.error(err);
-		} finally {
-			isLoading = false;
-		}
-	}
-
-
 
 	onMount(async () => {
 		if (route === "reset_password") {

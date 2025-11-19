@@ -7,6 +7,8 @@ import { resolve } from "$app/paths";
 import type { RouteId } from "$app/types";
 import { marked } from "marked";
 import { signOut } from "@aws-amplify/auth";
+import { fetchAuthSession, getCurrentUser } from "aws-amplify/auth";
+import type { UserAuthI } from "$lib/interfaces";
 
 // SHADCN SVELTE TYPES (DON'T DELETE)
 export type WithoutChild<T> = T extends { child?: unknown } ? Omit<T, "child"> : T;
@@ -96,4 +98,35 @@ export const logout = async () => {
 	tasks.push(cookieStore.delete("oldPassword"), signOut());
 
 	return Promise.all(tasks);
+};
+
+export const checkTokenExpiry = (expiry: number) => {
+	const currentTime = Math.floor(Date.now() / 1000);
+	return currentTime > expiry;
+};
+
+export const getUserAndAuthData = async () => {
+	const [authSession, currentUser] = await Promise.all([fetchAuthSession(), getCurrentUser()]);
+
+	const userInfo = authSession?.tokens?.idToken?.payload ?? {};
+	const accessToken = String(authSession?.tokens?.accessToken?.toString());
+	const idToken = String(authSession?.tokens?.idToken?.toString());
+	const user: UserAuthI["user"] = {
+		userId: currentUser?.userId ?? "",
+		name: userInfo["name"] ?? "",
+		email: userInfo["email"] ?? "",
+		phone: userInfo["phone_number"] ?? "",
+		role: Array.isArray(userInfo["cognito:groups"])
+			? (userInfo["cognito:groups"]?.[0] ?? "customer")
+			: "customer"
+	} as UserAuthI["user"];
+
+	return {
+		user,
+		auth: {
+			accessToken,
+			idToken,
+			tokenExpiry: userInfo.exp ?? 0
+		}
+	};
 };

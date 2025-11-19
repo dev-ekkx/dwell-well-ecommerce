@@ -4,7 +4,7 @@ import { browser } from "$app/environment";
 
 class CartStore implements CartStoreI {
 	// Top-level reactive store
-	private store = new SvelteMap<string, CartItemI>();
+	private readonly store = new SvelteMap<string, CartItemI>();
 	// Derived reactive values
 	public cartItems = $derived(() => Array.from(this.store.values()));
 	public totalItems = $derived(() =>

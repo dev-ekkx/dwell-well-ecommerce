@@ -1,8 +1,21 @@
 import type { LayoutLoad } from "./$types";
 import type { FooterI, PageI } from "$lib/interfaces";
 import { AUTH_ROUTES } from "$lib/constants";
+import { Amplify } from "aws-amplify";
+import { PUBLIC_USER_CLIENT_POOL_ID, PUBLIC_USER_POOL_ID } from "$env/static/public";
 
 export const load: LayoutLoad = async ({ fetch, url }) => {
+	// Configure amplify auth
+	Amplify.configure({
+		Auth: {
+			Cognito: {
+				userPoolId: PUBLIC_USER_POOL_ID,
+				userPoolClientId: PUBLIC_USER_CLIENT_POOL_ID
+				// identityPoolId: IDENTITY_POOL_ID
+			}
+		}
+	});
+
 	const isAuthPage = AUTH_ROUTES.some((r) => url.pathname.endsWith(`/${r}`));
 
 	try {

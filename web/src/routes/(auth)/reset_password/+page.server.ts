@@ -9,7 +9,6 @@ export const actions = {
 	}): Promise<AmplifyAuthResponseI | ActionFailure<{ error: string }>> => {
 		const data = await request.formData();
 		const password = data.get("newPassword");
-		console.log(password);
 		try {
 			return {
 				authResponse: await confirmSignIn({
@@ -20,8 +19,7 @@ export const actions = {
 				})
 			};
 		} catch (e) {
-			const error = (e as Error).message;
-			return fail(400, { error });
+			return fail(400, { error: JSON.stringify(e) });
 		}
 	}
 } satisfies Actions;
