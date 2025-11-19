@@ -23,9 +23,7 @@ export const actions = {
 			};
 		} catch (e) {
 			const error = (e as Error).message;
-			return fail(400, {
-				error
-			});
+			return fail(400, { error });
 		}
 	}
 } satisfies Actions;

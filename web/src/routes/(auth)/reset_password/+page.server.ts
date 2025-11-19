@@ -1,19 +1,27 @@
-import { fail } from "@sveltejs/kit";
+import { type ActionFailure, fail } from "@sveltejs/kit";
 import type { Actions } from "./$types";
 import { confirmSignIn } from "@aws-amplify/auth";
+import type { AmplifyAuthResponseI } from "$lib/interfaces";
 
 export const actions = {
-	default: async ({ request }) => {
+	default: async ({
+		request
+	}): Promise<AmplifyAuthResponseI | ActionFailure<{ error: string }>> => {
 		const data = await request.formData();
 		const password = data.get("newPassword");
 		console.log(password);
 		try {
-			// return password;
-			return await confirmSignIn({
-				challengeResponse: String(password ?? "")
-			});
+			return {
+				authResponse: await confirmSignIn({
+					challengeResponse: String(password ?? ""),
+					options: {
+						userAttributes: {}
+					}
+				})
+			};
 		} catch (e) {
-			return fail(400, (e as Error).message);
+			const error = (e as Error).message;
+			return fail(400, { error });
 		}
 	}
 } satisfies Actions;
