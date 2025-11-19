@@ -9,6 +9,7 @@ import type {
 	NewArrivalI,
 	WhyChooseUsI
 } from "$lib/interfaces";
+import { AUTH_ROUTES } from "$lib/constants";
 
 export type QuestionT = z.infer<typeof QuestionFormSchema>;
 export type ContactFormFieldT = keyof QuestionT;
@@ -24,7 +25,7 @@ export type ContentSectionT =
 	| GlobalPresenceI
 	| LeadershipTeamI;
 
-export type ProductDataMap = Record<
+export type ProductDataMapT = Record<
 	string,
 	{
 		price: number;
@@ -35,13 +36,13 @@ export type ProductDataMap = Record<
 	}
 >;
 
-export type CarouselOptions<T> = {
+export type CarouselOptionsT<T> = {
 	items: T[];
 	repeat?: number;
 	initialIndex?: number;
 };
 
-export type CarouselState<T> = {
+export type CarouselStateT<T> = {
 	displayedItems: (T & { _r: number })[];
 	index: number;
 	carouselState: {
@@ -52,3 +53,15 @@ export type CarouselState<T> = {
 	next: () => void;
 	collectItems: () => void;
 };
+
+export type AuthType = (typeof AUTH_ROUTES)[number];
+
+export type FormInputT = Record<
+	AuthType,
+	Array<{
+		name: string;
+		label: string;
+		type: string;
+		placeholder: string;
+	}>
+>;

@@ -3,7 +3,7 @@ import { client } from "../../../graphql.config";
 import { GET_PRODUCT_BY_SLUG, GET_RELATED_PRODUCTS } from "../../../graphql.queries";
 import { error } from "@sveltejs/kit";
 import type { ProductI, ProductSummaryI } from "$lib/interfaces";
-import type { ProductDataMap } from "$lib/types";
+import type { ProductDataMapT } from "$lib/types";
 import { BACKEND_URL } from "$lib/constants";
 
 export const load: PageServerLoad = async ({ params, url }) => {
@@ -47,7 +47,7 @@ export const load: PageServerLoad = async ({ params, url }) => {
 		relatedProducts = relatedResult.data?.products || [];
 	}
 
-	let productDataMap: ProductDataMap = {};
+	let productDataMap: ProductDataMapT = {};
 	const skusToFetch = relatedProducts.map((prod) => prod.SKU);
 	if (skusToFetch.length > 0) {
 		try {

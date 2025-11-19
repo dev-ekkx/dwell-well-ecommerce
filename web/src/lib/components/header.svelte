@@ -1,32 +1,30 @@
 <script lang="ts">
-	import { resolve } from "$app/paths";
-	import { cn, createInitial, setRouteParams } from "$lib/utils";
-	import { page } from "$app/state";
-	import SearchIcon from "$lib/assets/search.svg";
-	import { Button } from "$lib/components/ui/button";
-	import LogoComponent from "$lib/components/logo.svelte";
-	import HamburgerIcon from "$lib/assets/menu.svg";
-	import CloseIcon from "$lib/assets/close.svg";
-	import { gsap } from "gsap";
-	import { onMount, tick } from "svelte";
-	import { goto } from "$app/navigation";
-	import { Input } from "$lib/components/ui/input";
-	import { MediaQuery } from "svelte/reactivity";
-	import { ROUTE_NAVS } from "$lib/constants";
-	import MenuCartIcon from "$lib/assets/menu-cart.svg";
-	import {
-		Fallback as AvatarFallback,
-		Image as AvatarImage,
-		Root as AvatarRoot
-	} from "$lib/components/ui/avatar/index.js";
-	import { useUserStore } from "$lib/store/user-store.svelte";
-	import { cartStore } from "$lib/store/cart-store.svelte";
+    import {resolve} from "$app/paths";
+    import {cn, createInitial, setRouteParams} from "$lib/utils";
+    import {page} from "$app/state";
+    import SearchIcon from "$lib/assets/search.svg";
+    import {Button} from "$lib/components/ui/button";
+    import LogoComponent from "$lib/components/logo.svelte";
+    import HamburgerIcon from "$lib/assets/menu.svg";
+    import CloseIcon from "$lib/assets/close.svg";
+    import {gsap} from "gsap";
+    import {onMount, tick} from "svelte";
+    import {goto} from "$app/navigation";
+    import {Input} from "$lib/components/ui/input";
+    import {MediaQuery} from "svelte/reactivity";
+    import {ROUTE_NAVS} from "$lib/constants";
+    import MenuCartIcon from "$lib/assets/menu-cart.svg";
+    import {
+        Fallback as AvatarFallback,
+        Image as AvatarImage,
+        Root as AvatarRoot
+    } from "$lib/components/ui/avatar/index.js";
+    import {userStore} from "$lib/store/user-store.svelte";
+    import {cartStore} from "$lib/store/cart-store.svelte";
 
-	const mediaQuery = new MediaQuery("max-width: 63.9rem");
+    const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const isMobile = $derived(mediaQuery.current);
-	const userStore = () => useUserStore();
-	const isAuthenticated = $derived(userStore().auth.isAuthenticated);
-	const user = $derived(userStore().user);
+
 
 	const isActiveRoute = (path: string) => {
 		if (path === "/") {
@@ -204,7 +202,7 @@
 		</button>
 
 		<!-- Authenticated section -->
-		{#if isAuthenticated}
+		{#if userStore.isAuthenticated}
 			{@render cartAndAvatar()}
 		{/if}
 
@@ -224,7 +222,7 @@
 			</button>
 		{:else}
 			<!-- Desktop Login -->
-			{#if !isAuthenticated}
+			{#if !userStore.isAuthenticated}
 				<Button
 					class="hidden h-full cursor-pointer px-6 lg:inline-flex"
 					onclick={loginAndResetDropdown}
@@ -270,7 +268,7 @@
 		<div class="flex flex-col gap-8 pt-6">
 			{@render navigation(true)}
 
-			{#if !isAuthenticated}
+			{#if !userStore.isAuthenticated}
 				<a
 					onclick={isMenuOpen ? toggleMenu : null}
 					href="/login"
@@ -327,8 +325,8 @@
 				"ml-2": totalCartItems() > 0
 			})}
 		>
-			<AvatarImage src={user.image} alt={user.name} />
-			<AvatarFallback>{createInitial(user.name)}</AvatarFallback>
+			<AvatarImage src={userStore.userData.image} alt={userStore.userData.name} />
+			<AvatarFallback>{createInitial(userStore.userData.name)}</AvatarFallback>
 		</AvatarRoot>
 	</div>
 {/snippet}

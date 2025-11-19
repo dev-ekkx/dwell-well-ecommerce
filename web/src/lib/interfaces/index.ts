@@ -1,5 +1,6 @@
 import type { HTMLButtonAttributes } from "svelte/elements";
 import type { ContentSectionT } from "$lib/types";
+import type { ConfirmSignInOutput, SignInOutput } from "@aws-amplify/auth";
 
 export interface ButtonI extends HTMLButtonAttributes {
 	direction: "left" | "right";
@@ -290,18 +291,24 @@ export interface FiltersI {
 
 // Interface for User data
 export interface UserI {
-	id: string;
+	userId: string;
 	name: string;
 	email: string;
-	image: string;
+	phone: string;
+	image?: string;
+	role: "admin" | "subAdmin" | "customer";
 }
 
 // Interface for Authentication data
 export interface AuthI {
-	isAuthenticated: boolean;
-	token: string;
+	accessToken: string;
+	idToken: string;
 	tokenExpiry: number;
-	role: "admin" | "user";
+}
+
+export interface UserAuthI {
+	user: UserI;
+	auth: AuthI;
 }
 
 // Interface for User Store
@@ -330,3 +337,14 @@ export interface CartStoreI {
 	reduceQuantity: (sku: string) => void;
 	clearCart: () => void;
 }
+
+// Interface for response from amplify auth
+export interface AmplifyAuthResponseI {
+	error?: string;
+	oldPassword?: string;
+	authResponse?: SignInOutput | ConfirmSignInOutput;
+	userAuth?: UserAuthI;
+}
+
+// interface for the user store
+export interface UserStoreI {}

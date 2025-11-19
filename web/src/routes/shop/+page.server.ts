@@ -3,7 +3,7 @@ import { GET_PRODUCTS } from "../../graphql.queries";
 import { client } from "../../graphql.config";
 import { error } from "@sveltejs/kit";
 import type { ProductI } from "$lib/interfaces";
-import type { ProductDataMap } from "$lib/types";
+import type { ProductDataMapT } from "$lib/types";
 import { BACKEND_URL } from "$lib/constants";
 
 export const load: PageServerLoad = async ({ fetch, url }) => {
@@ -105,7 +105,7 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	const totalProducts = strapiResult.data.products_connection.pageInfo.total as number;
 	const productsFromStrapi = (strapiResult.data.products || []) as ProductI[];
 	const skusToFetch = productsFromStrapi.map((product) => product.SKU);
-	let productDataMap: ProductDataMap = {};
+	let productDataMap: ProductDataMapT = {};
 	if (skusToFetch.length > 0) {
 		try {
 			const operationalDataResponse = await fetch(`${BACKEND_URL}/products`, {

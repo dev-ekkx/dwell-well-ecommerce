@@ -1,30 +1,28 @@
 import type { LayoutLoad } from "./$types";
-import { loginSchema, signupSchema } from "$lib/schema";
+import { loginSchema, resetPasswordSchema, signupSchema } from "$lib/schema";
+import type { AuthType, FormInputT } from "$lib/types";
+import type { ZodObject } from "zod";
+import { FORM_FIELDS } from "$lib/constants";
 
 export const load: LayoutLoad = async ({ url }) => {
-	const route = url.pathname.split("/").pop() as "login" | "signup";
+	const route = url.pathname.split("/").pop() as AuthType;
 
-	const formInputs = {
-		login: [
-			{ name: "email", label: "Email", type: "email", placeholder: "Enter your email" },
-			{ name: "password", label: "Password", type: "password", placeholder: "Enter your password" }
-		],
-		signup: [
-			{ name: "name", label: "Full Name", type: "text", placeholder: "Enter your name" },
-			{ name: "email", label: "Email", type: "email", placeholder: "Enter your email" },
-			{ name: "password", label: "Password", type: "password", placeholder: "Enter password" },
-			{
-				name: "confirmPassword",
-				label: "Confirm Password",
-				type: "password",
-				placeholder: "Confirm password"
-			}
-		]
+	const formInputs: FormInputT = {
+		login: FORM_FIELDS.login,
+		signup: FORM_FIELDS.signup,
+		reset_password: FORM_FIELDS.reset_password,
+		otp: FORM_FIELDS.login
+	};
+	const schema: Record<AuthType, ZodObject> = {
+		login: loginSchema,
+		signup: signupSchema,
+		reset_password: resetPasswordSchema,
+		otp: loginSchema
 	};
 
 	return {
 		route,
 		formInputs: formInputs[route],
-		schema: route === "login" ? loginSchema : signupSchema
+		schema: schema[route]
 	};
 };
