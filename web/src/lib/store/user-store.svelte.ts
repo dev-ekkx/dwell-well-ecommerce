@@ -26,6 +26,7 @@ class UserStore {
 	public async updateUserStore(userAuth: UserAuthI) {
 		await cookieStore.set("userAuth", JSON.stringify(userAuth));
 		this.store = userAuth;
+		this.authenticated = true;
 	}
 
 	public async logout() {
@@ -36,6 +37,7 @@ class UserStore {
 		}
 		this.store = initialState;
 		console.log(tasks);
+		this.authenticated = false;
 		return Promise.all(tasks);
 	}
 }

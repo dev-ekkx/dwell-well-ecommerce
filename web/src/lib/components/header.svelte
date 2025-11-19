@@ -21,6 +21,8 @@
     } from "$lib/components/ui/avatar/index.js";
     import {userStore} from "$lib/store/user-store.svelte";
     import {cartStore} from "$lib/store/cart-store.svelte";
+    import {Root as DropdownMenuRoot} from "$lib/components/ui/dropdown-menu/index";
+
 
     const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const isMobile = $derived(mediaQuery.current);
@@ -128,6 +130,7 @@
 			isMenuOpen = false;
 		}
 	});
+
 
 	onMount(() => {
 		// Set search term on page mount
@@ -320,6 +323,9 @@
 		</button>
 
 		<!-- Avatar icon -->
+<DropdownMenuRoot>
+
+</DropdownMenuRoot>
 		<AvatarRoot
 			class={cn({
 				"ml-2": totalCartItems() > 0

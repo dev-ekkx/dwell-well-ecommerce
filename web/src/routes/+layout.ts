@@ -8,7 +8,7 @@ export const load: LayoutLoad = async ({ fetch, url }) => {
 	// Fetch user data from cookies
 	if (browser) {
 		const data = await cookieStore.get("userAuth");
-		if (data?.value !== "undefined") {
+		if (data?.value) {
 			const userAuth = JSON.parse(data?.value as string) as UserAuthI;
 			if (userAuth && userAuth.auth.tokenExpiry > 0) {
 				await userStore.updateUserStore(userAuth);

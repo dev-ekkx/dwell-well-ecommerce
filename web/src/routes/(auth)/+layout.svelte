@@ -126,8 +126,11 @@
         }
 
         if (authResponse.nextStep.signInStep === "DONE") {
-            userStore.updateUserStore(userAuth!)
+            console.log(userAuth)
+            if (userAuth && userAuth.auth.tokenExpiry > 0) {
+            userStore.updateUserStore(userAuth)
             goto("/")
+            }
         }
     }
 
