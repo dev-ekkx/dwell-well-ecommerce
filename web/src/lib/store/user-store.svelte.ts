@@ -36,9 +36,8 @@ class UserStore {
 			tasks.push(cookieStore.delete(key));
 		}
 		this.store = initialState;
-		console.log(tasks);
 		this.authenticated = false;
-		return Promise.all(tasks);
+		await Promise.all(tasks);
 	}
 }
 

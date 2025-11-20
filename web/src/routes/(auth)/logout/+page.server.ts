@@ -7,7 +7,9 @@ export const actions = {
 	default: async (): Promise<AmplifyAuthResponseI | ActionFailure<{ error: string }>> => {
 		try {
 			await signOut();
-			return {};
+			return {
+				isLogout: true
+			};
 		} catch (e) {
 			return fail(400, { error: (e as Error).message });
 		}

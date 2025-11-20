@@ -6,7 +6,6 @@ import { goto } from "$app/navigation";
 import { resolve } from "$app/paths";
 import type { RouteId } from "$app/types";
 import { marked } from "marked";
-import { signOut } from "@aws-amplify/auth";
 import { fetchAuthSession, getCurrentUser } from "aws-amplify/auth";
 import type { UserAuthI } from "$lib/interfaces";
 
@@ -91,13 +90,6 @@ export const createInitial = (userName: string): string => {
 
 	const initials = `${first}${second}`.toUpperCase();
 	return initials || "N/A";
-};
-
-export const logout = async () => {
-	const tasks: Promise<void>[] = [];
-	tasks.push(cookieStore.delete("oldPassword"), signOut());
-
-	return Promise.all(tasks);
 };
 
 export const checkTokenExpiry = (expiry: number) => {
