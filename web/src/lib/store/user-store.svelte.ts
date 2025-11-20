@@ -26,17 +26,18 @@ class UserStore {
 	public async updateUserStore(userAuth: UserAuthI) {
 		await cookieStore.set("userAuth", JSON.stringify(userAuth));
 		this.store = userAuth;
+		this.authenticated = true;
 	}
 
 	public async logout() {
 		const tasks: Promise<void>[] = [];
-		const keys = ["oldPassword", "authUser"];
+		const keys = ["oldPassword", "userAuth"];
 		for (const key of keys) {
 			tasks.push(cookieStore.delete(key));
 		}
 		this.store = initialState;
-		console.log(tasks);
-		return Promise.all(tasks);
+		this.authenticated = false;
+		await Promise.all(tasks);
 	}
 }
 

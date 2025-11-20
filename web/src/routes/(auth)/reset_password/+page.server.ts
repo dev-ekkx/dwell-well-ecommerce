@@ -12,14 +12,11 @@ export const actions = {
 		try {
 			return {
 				authResponse: await confirmSignIn({
-					challengeResponse: String(password ?? ""),
-					options: {
-						userAttributes: {}
-					}
+					challengeResponse: String(password ?? "")
 				})
 			};
 		} catch (e) {
-			return fail(400, { error: JSON.stringify(e) });
+			return fail(400, { error: (e as Error).message });
 		}
 	}
 } satisfies Actions;

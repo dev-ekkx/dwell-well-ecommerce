@@ -1,30 +1,37 @@
 <script lang="ts">
-    import {resolve} from "$app/paths";
-    import {cn, createInitial, setRouteParams} from "$lib/utils";
-    import {page} from "$app/state";
-    import SearchIcon from "$lib/assets/search.svg";
-    import {Button} from "$lib/components/ui/button";
-    import LogoComponent from "$lib/components/logo.svelte";
-    import HamburgerIcon from "$lib/assets/menu.svg";
-    import CloseIcon from "$lib/assets/close.svg";
-    import {gsap} from "gsap";
-    import {onMount, tick} from "svelte";
-    import {goto} from "$app/navigation";
-    import {Input} from "$lib/components/ui/input";
-    import {MediaQuery} from "svelte/reactivity";
-    import {ROUTE_NAVS} from "$lib/constants";
-    import MenuCartIcon from "$lib/assets/menu-cart.svg";
-    import {
-        Fallback as AvatarFallback,
-        Image as AvatarImage,
-        Root as AvatarRoot
-    } from "$lib/components/ui/avatar/index.js";
-    import {userStore} from "$lib/store/user-store.svelte";
-    import {cartStore} from "$lib/store/cart-store.svelte";
+	import { resolve } from "$app/paths";
+	import { cn, createInitial, setRouteParams } from "$lib/utils";
+	import { page } from "$app/state";
+	import SearchIcon from "$lib/assets/search.svg";
+	import { Button } from "$lib/components/ui/button";
+	import LogoComponent from "$lib/components/logo.svelte";
+	import HamburgerIcon from "$lib/assets/menu.svg";
+	import CloseIcon from "$lib/assets/close.svg";
+	import { gsap } from "gsap";
+	import { onMount, tick } from "svelte";
+	import { goto } from "$app/navigation";
+	import { Input } from "$lib/components/ui/input";
+	import { MediaQuery } from "svelte/reactivity";
+	import { ROUTE_NAVS } from "$lib/constants";
+	import MenuCartIcon from "$lib/assets/menu-cart.svg";
+	import {
+		Fallback as AvatarFallback,
+		Image as AvatarImage,
+		Root as AvatarRoot
+	} from "$lib/components/ui/avatar/index.js";
+	import { userStore } from "$lib/store/user-store.svelte";
+	import { cartStore } from "$lib/store/cart-store.svelte";
+	import {
+		Content as DropdownMenuContent,
+		Item as DropdownMenuItem,
+		Label as DropdownMenuLabel,
+		Root as DropdownMenuRoot,
+		Trigger as DropdownMenuTrigger
+	} from "$lib/components/ui/dropdown-menu";
 
-    const mediaQuery = new MediaQuery("max-width: 63.9rem");
+	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const isMobile = $derived(mediaQuery.current);
-
+	const dropdownItems = ["profile", "in box", "vouchers", "logout"];
 
 	const isActiveRoute = (path: string) => {
 		if (path === "/") {
@@ -123,6 +130,42 @@
 		await goto(resolve("/cart"));
 	};
 
+	const loginAndResetDropdown = () => {
+		if (isMenuOpen) {
+			toggleMenu();
+		}
+		if (isSearchOpen) {
+			toggleSearch();
+		}
+		goto(resolve("/login"));
+	};
+
+	const logout = async (event: Event) => {
+		event.preventDefault();
+		fetch("/logout", {
+			body: "logout",
+			method: "POST"
+		}).then(() => {
+			userStore.logout();
+		});
+	};
+
+	const handleDropdownItem = (item: string) => {
+		switch (item) {
+			case "profile":
+				console.log("This is my profile");
+				break;
+			case "in box":
+				console.log("in box");
+				break;
+			case "vouchers":
+				console.log("vouchers");
+				break;
+			default:
+				console.log("default");
+		}
+	};
+
 	$effect(() => {
 		if (!isMobile) {
 			isMenuOpen = false;
@@ -165,16 +208,6 @@
 			}
 		};
 	});
-
-	const loginAndResetDropdown = () => {
-		if (isMenuOpen) {
-			toggleMenu();
-		}
-		if (isSearchOpen) {
-			toggleSearch();
-		}
-		goto(resolve("/login"));
-	};
 </script>
 
 <!-- Header component-->
@@ -320,13 +353,39 @@
 		</button>
 
 		<!-- Avatar icon -->
-		<AvatarRoot
-			class={cn({
-				"ml-2": totalCartItems() > 0
-			})}
-		>
-			<AvatarImage src={userStore.userData.image} alt={userStore.userData.name} />
-			<AvatarFallback>{createInitial(userStore.userData.name)}</AvatarFallback>
-		</AvatarRoot>
+		<DropdownMenuRoot>
+			<DropdownMenuTrigger class="cursor-pointer">
+				<AvatarRoot
+					class={cn({
+						"ml-2": totalCartItems() > 0
+					})}
+				>
+					<AvatarImage src={userStore.userData.image} alt={userStore.userData.name} />
+					<AvatarFallback>{createInitial(userStore.userData.name)}</AvatarFallback>
+				</AvatarRoot>
+			</DropdownMenuTrigger>
+
+			<DropdownMenuContent>
+				<DropdownMenuLabel>My Account</DropdownMenuLabel>
+				{#each dropdownItems as item (item)}
+					{#if item === "logout"}
+						<form onsubmit={logout}>
+							<button>
+								<DropdownMenuItem class="cursor-pointer capitalize">
+									{item}
+								</DropdownMenuItem>
+							</button>
+						</form>
+					{:else}
+						<DropdownMenuItem
+							class="cursor-pointer capitalize"
+							onclick={() => handleDropdownItem(item)}
+						>
+							{item}
+						</DropdownMenuItem>
+					{/if}
+				{/each}
+			</DropdownMenuContent>
+		</DropdownMenuRoot>
 	</div>
 {/snippet}

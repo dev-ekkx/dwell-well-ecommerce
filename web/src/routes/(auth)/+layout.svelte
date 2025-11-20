@@ -1,26 +1,30 @@
 <script lang="ts">
-    import AuthBackground from "$lib/assets/images/auth-bg.webp";
-    import {cn} from "$lib/utils";
-    import Logo from "$lib/components/logo.svelte";
-    import {Checkbox} from "$lib/components/ui/checkbox";
-    import {Label} from "$lib/components/ui/label";
-    import {onMount, setContext} from "svelte";
-    import {MediaQuery} from "svelte/reactivity";
-    import {Button} from "$lib/components/ui/button";
-    import {enhance} from "$app/forms";
-    import {Spinner} from "$lib/components/ui/spinner";
-    import {Description as AlertDescription, Root as AlertRoot, Title as AlertTitle} from "$lib/components/ui/alert";
-    import CheckCircle2Icon from "@lucide/svelte/icons/check-circle-2";
-    import type {AuthType} from "$lib/types";
-    import {goto} from "$app/navigation";
-    import type {LayoutProps} from "./$types";
-    import type {AmplifyAuthResponseI} from "$lib/interfaces";
-    import {userStore} from "$lib/store/user-store.svelte";
+	import AuthBackground from "$lib/assets/images/auth-bg.webp";
+	import { cn } from "$lib/utils";
+	import Logo from "$lib/components/logo.svelte";
+	import { Checkbox } from "$lib/components/ui/checkbox";
+	import { Label } from "$lib/components/ui/label";
+	import { onMount, setContext } from "svelte";
+	import { MediaQuery } from "svelte/reactivity";
+	import { Button } from "$lib/components/ui/button";
+	import { enhance } from "$app/forms";
+	import { Spinner } from "$lib/components/ui/spinner";
+	import {
+		Description as AlertDescription,
+		Root as AlertRoot,
+		Title as AlertTitle
+	} from "$lib/components/ui/alert";
+	import CheckCircle2Icon from "@lucide/svelte/icons/check-circle-2";
+	import type { AuthType } from "$lib/types";
+	import { goto } from "$app/navigation";
+	import type { LayoutProps } from "./$types";
+	import type { AmplifyAuthResponseI } from "$lib/interfaces";
+	import { userStore } from "$lib/store/user-store.svelte";
 
-    type Props = LayoutProps & {
-        form: AmplifyAuthResponseI
-    }
-    const { children, data, form }: Props = $props();
+	type Props = LayoutProps & {
+		form: AmplifyAuthResponseI;
+	};
+	const { children, data, form }: Props = $props();
 
 	const titleMap: Record<string, AuthType> = {
 		Login: "login",
@@ -28,7 +32,6 @@
 		"Create an Account": "signup",
 		"Verify OTP": "otp"
 	};
-
 
 	const descriptionMap: Record<string, AuthType> = {
 		"Welcome back! Please enter your details to continue.": "login",
@@ -43,7 +46,6 @@
 		Object.entries(descriptionMap).find(([_, r]) => r === route)?.[0] ||
 			"Welcome back! Please enter your details to continue."
 	);
-
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const isMobile = $derived(mediaQuery.current);
@@ -60,7 +62,7 @@
 	});
 	setContext("authState", authState);
 
-    // Handle form data
+	// Handle form data
 	$effect(() => {
 		authState.form = Object.fromEntries(
 			data.formInputs.map((f) => {
@@ -73,7 +75,7 @@
 		authState.errors = {};
 	});
 
-    // Check form validity
+	// Check form validity
 	const isFormValid = $derived(() => {
 		const baseIsValid =
 			Object.values(authState.form).every((item) => !!item) &&
@@ -85,51 +87,54 @@
 		return baseIsValid && agreeToTermsAndConditions;
 	});
 
-    $effect(() => {
-        // Handle form errors
-        if (form?.error) {
-          handleError()
-        }
+	$effect(() => {
+		// Handle form errors
+		if (form?.error) {
+			handleError();
+		}
 
-        if (route === "login") {
-         handleLoginSteps()
-        }
+		if (route === "login") {
+			handleLoginSteps();
+		}
 
-        if (route === "reset_password") {
-            if (!form?.authResponse) return;
-    const {authResponse} = form
-            if (authResponse.nextStep.signInStep === "DONE") {
-                goto("/login")
-            }
-        }
+		if (route === "reset_password") {
+			if (!form?.authResponse) return;
+			const { authResponse } = form;
+			if (authResponse.nextStep.signInStep === "DONE") {
+				goto("/login");
+			}
+		}
+	});
 
-    })
+	const handleError = () => {
+		isError = true;
+		errorMessage = form.error ?? "";
 
-    const handleError = () => {
-        isError = true
-        errorMessage = form.error ?? ""
+		const timer = setTimeout(() => {
+			isError = false;
+		}, 5000);
 
-        const timer = setTimeout(() => {
-            isError = false;
-        }, 5000);
+		return () => clearTimeout(timer);
+	};
 
-        return () => clearTimeout(timer);
-    }
+	const handleLoginSteps = () => {
+		if (!form?.authResponse) return;
+		const { oldPassword: password, authResponse, userAuth } = form;
+		if (authResponse?.nextStep.signInStep === "CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED") {
+			oldPassword = password ?? "";
+			cookieStore.set("oldPassword", oldPassword);
+			goto("/reset_password");
+		}
 
-    const handleLoginSteps = () => {
-        if (!form?.authResponse) return;
-        const {oldPassword: password, authResponse, userAuth} = form
-        if (authResponse?.nextStep.signInStep === "CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED") {
-            oldPassword = password ?? ""
-            cookieStore.set("oldPassword", oldPassword)
-            goto("/reset_password");
-        }
-
-        if (authResponse.nextStep.signInStep === "DONE") {
-            userStore.updateUserStore(userAuth!)
-            goto("/")
-        }
-    }
+		if (authResponse.nextStep.signInStep === "DONE") {
+			console.log(userAuth);
+			if (userAuth && userAuth.auth.tokenExpiry > 0) {
+				userStore.updateUserStore(userAuth);
+				isLoading = true;
+				goto("/").then(() => (isLoading = false));
+			}
+		}
+	};
 
 	onMount(async () => {
 		if (route === "reset_password") {
@@ -153,7 +158,13 @@
 		<form
 			class="flex h-full w-full flex-col items-center justify-center gap-4 px-6 sm:max-w-xl"
 			method="POST"
-            use:enhance={() => { isLoading = true; return async ({ update }) => { await update(); isLoading = false; }; }}
+			use:enhance={() => {
+				isLoading = true;
+				return async ({ update }) => {
+					await update();
+					isLoading = false;
+				};
+			}}
 		>
 			<Logo />
 			<h2 class="mt-1 auth-heading">{title}</h2>
