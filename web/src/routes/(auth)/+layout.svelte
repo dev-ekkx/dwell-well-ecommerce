@@ -1,23 +1,27 @@
 <script lang="ts">
-    import AuthBackground from "$lib/assets/images/auth-bg.webp";
-    import {cn} from "$lib/utils";
-    import Logo from "$lib/components/logo.svelte";
-    import {Checkbox} from "$lib/components/ui/checkbox";
-    import {Label} from "$lib/components/ui/label";
-    import {onMount, setContext} from "svelte";
-    import {MediaQuery} from "svelte/reactivity";
-    import {Button} from "$lib/components/ui/button";
-    import {enhance} from "$app/forms";
-    import {Spinner} from "$lib/components/ui/spinner";
-    import {Description as AlertDescription, Root as AlertRoot, Title as AlertTitle} from "$lib/components/ui/alert";
-    import CheckCircle2Icon from "@lucide/svelte/icons/check-circle-2";
-    import type {AuthType} from "$lib/types";
-    import {goto} from "$app/navigation";
-    import type {LayoutProps} from "./$types";
-    import type {AmplifyAuthResponseI} from "$lib/interfaces";
-    import {userStore} from "$lib/store/user-store.svelte";
+	import AuthBackground from "$lib/assets/images/auth-bg.webp";
+	import { cn } from "$lib/utils";
+	import Logo from "$lib/components/logo.svelte";
+	import { Checkbox } from "$lib/components/ui/checkbox";
+	import { Label } from "$lib/components/ui/label";
+	import { onMount, setContext } from "svelte";
+	import { MediaQuery } from "svelte/reactivity";
+	import { Button } from "$lib/components/ui/button";
+	import { enhance } from "$app/forms";
+	import { Spinner } from "$lib/components/ui/spinner";
+	import {
+		Description as AlertDescription,
+		Root as AlertRoot,
+		Title as AlertTitle
+	} from "$lib/components/ui/alert";
+	import CheckCircle2Icon from "@lucide/svelte/icons/check-circle-2";
+	import type { AuthType } from "$lib/types";
+	import { goto } from "$app/navigation";
+	import type { LayoutProps } from "./$types";
+	import type { AmplifyAuthResponseI } from "$lib/interfaces";
+	import { userStore } from "$lib/store/user-store.svelte";
 
-    type Props = LayoutProps & {
+	type Props = LayoutProps & {
 		form: AmplifyAuthResponseI;
 	};
 	const { children, data, form }: Props = $props();

@@ -1,9 +1,9 @@
 import type { Actions } from "./$types";
 import { type ActionFailure, fail } from "@sveltejs/kit";
-import { signIn } from "aws-amplify/auth";
 import type { AmplifyAuthResponseI, UserAuthI } from "$lib/interfaces";
 import { initialState } from "$lib/store/user-store.svelte";
 import { getUserAndAuthData } from "$lib/utils";
+import { signIn, signOut } from "@aws-amplify/auth";
 
 export const actions = {
 	default: async ({
@@ -36,6 +36,7 @@ export const actions = {
 				oldPassword: String(password ?? "")
 			};
 		} catch (e) {
+			await signOut();
 			return fail(400, { error: (e as Error).message });
 		}
 	}
