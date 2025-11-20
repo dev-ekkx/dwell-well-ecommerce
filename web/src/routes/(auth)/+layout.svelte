@@ -130,7 +130,8 @@
 			console.log(userAuth);
 			if (userAuth && userAuth.auth.tokenExpiry > 0) {
 				userStore.updateUserStore(userAuth);
-				goto("/");
+				isLoading = true;
+				goto("/").then(() => (isLoading = false));
 			}
 		}
 	};
