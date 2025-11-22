@@ -5,7 +5,7 @@
     import {Checkbox} from "$lib/components/ui/checkbox";
     import {Label} from "$lib/components/ui/label";
 
-    const cookieTypes: {
+    const cookies: {
 		value: string;
 		label: string;
 	}[] = [
@@ -31,17 +31,28 @@
 		}
 	];
 
-    let showCookieTypes = $state(false)
+    let showCookies = $state(false)
+    const localStoredCookieTypes = JSON.parse(localStorage.getItem("cookieTypes") as string) as string[]
+    let selectedCookies = $state( localStoredCookieTypes ?? ["test"])
 
 
     const handleCookies = () => {
-        if (showCookieTypes) {
+        if (showCookies) {
             // TODO: Handle cookies
         }
+            showCookies = !showCookies;
+    }
 
-        
-
-            showCookieTypes = !showCookieTypes;
+    const handleCheckboxChange = (value: string) => {
+        let newSelected: string[];
+        const isChecked = selectedCookies.includes(value);
+        if (isChecked) {
+            newSelected = selectedCookies.filter((s) => s !== value);
+        } else {
+            newSelected = [...selectedCookies, value];
+        }
+        selectedCookies = newSelected;
+        localStorage.setItem("cookieTypes", JSON.stringify(selectedCookies));
     }
 </script>
 
@@ -58,7 +69,7 @@
 			<X class="scale-125 transform" />
 		</button>
 
-		<div class="flex flex-col gap-6 md:flex-row">
+		<div class="flex flex-col gap-6 md:flex-row md:items-start">
 			<img alt="google partner" class="aspect-square w-[5.6rem]" src={GooglePartnerLogo} />
 
 			<!-- Text and buttons section -->
@@ -73,20 +84,29 @@
 				</div>
 
 				<!-- Cookie types -->
-                {#if showCookieTypes}
+                {#if showCookies}
                 <div class="flex flex-col gap-4">
-                    {#each cookieTypes as cookie(cookie.value)}
-                        <div class="flex items-start gap-2">
-                            <Checkbox id={cookie.value} />
-                            <Label for={cookie.value}>{cookie.label}</Label>
-                        </div>
+                    {#each cookies as cookie(cookie.value)}
+                        {@const checked = selectedCookies.includes(cookie.value)}
+                            <Label for={cookie.value}  class="flex items-start gap-2 cursor-pointer disabled:cursor-default">
+                            <Checkbox
+                                    disabled={cookie.value === "test"}
+                                    {checked}
+                                    id={cookie.value}
+                                    value={cookie.value}
+                                    onCheckedChange={() => handleCheckboxChange(cookie.value)}
+                            />
+                            <span>
+                                {cookie.label}
+                            </span>
+                            </Label>
                         {/each}
                 </div>
                 {/if}
 
 				<!-- Action buttons -->
 				<div class="flex flex-col gap-4 md:flex-row **:pointer-events-">
-					<Button class="cursor-pointer" onclick={handleCookies}> {showCookieTypes ? "Save and Close" : "Customize settings"}</Button>
+					<Button class="cursor-pointer" onclick={handleCookies}> {showCookies ? "Save and Close" : "Customize settings"}</Button>
 					<Button
 						class="cursor-pointer text-primary hover:bg-white hover:text-primary hover:opacity-80"
 						variant="outline">Reject all</Button
