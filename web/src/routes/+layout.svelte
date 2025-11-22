@@ -12,9 +12,17 @@
     let { children, data } = $props();
 	const activePage = $derived(page.route.id);
 
-    const storedBannerVisibility = browser ? Boolean(localStorage.getItem("displayCookieBanner") ?? true) : true
-	let isCookieBannerVisible = $state(storedBannerVisibility);
+    let storedValue: string | null = null;
 
+    if (browser) {
+        storedValue = localStorage.getItem("displayCookieBanner");
+    }
+
+    const initialVisibility = browser
+        ? (storedValue === null || storedValue !== "false")
+        : true;
+
+    let isCookieBannerVisible = $state(initialVisibility);
 	$effect(() => {
 			const html = document.documentElement;
 		if (isCookieBannerVisible) {
