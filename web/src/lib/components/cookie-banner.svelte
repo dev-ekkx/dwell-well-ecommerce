@@ -4,6 +4,9 @@
     import {Button} from "$lib/components/ui/button";
     import {Checkbox} from "$lib/components/ui/checkbox";
     import {Label} from "$lib/components/ui/label";
+    import {browser} from "$app/environment";
+
+    let {displayCookieBanner = $bindable(false)} = $props()
 
     const cookies: {
 		value: string;
@@ -32,13 +35,13 @@
 	];
 
     let showCookies = $state(false)
-    const localStoredCookieTypes = JSON.parse(localStorage.getItem("cookieTypes") as string) as string[]
+    const localStoredCookieTypes = browser ? JSON.parse(localStorage.getItem("cookieTypes") as string) as string[] : undefined
     let selectedCookies = $state( localStoredCookieTypes ?? ["test"])
 
 
     const handleCookies = () => {
         if (showCookies) {
-            // TODO: Handle cookies
+            displayCookieBanner = false
         }
             showCookies = !showCookies;
     }
@@ -52,7 +55,11 @@
             newSelected = [...selectedCookies, value];
         }
         selectedCookies = newSelected;
-        localStorage.setItem("cookieTypes", JSON.stringify(selectedCookies));
+    }
+
+    const rejectCookies = () => {
+        displayCookieBanner = false
+        localStorage.setItem("cookieTypes", JSON.stringify(["test"]));
     }
 </script>
 
@@ -65,7 +72,10 @@
 	<div
 		class="relative flex h-max w-full flex-col gap-6 bg-muted g-px py-7 shadow-lg"
 	>
-		<button class="absolute right-0 g-mx cursor-pointer">
+		<button
+                class="absolute right-0 g-mx cursor-pointer"
+                onclick={() => displayCookieBanner = false}
+        >
 			<X class="scale-125 transform" />
 		</button>
 
@@ -109,7 +119,9 @@
 					<Button class="cursor-pointer" onclick={handleCookies}> {showCookies ? "Save and Close" : "Customize settings"}</Button>
 					<Button
 						class="cursor-pointer text-primary hover:bg-white hover:text-primary hover:opacity-80"
-						variant="outline">Reject all</Button
+						onclick={rejectCookies}
+                        variant="outline"
+                    >Reject all</Button
 					>
 				</div>
 			</section>
