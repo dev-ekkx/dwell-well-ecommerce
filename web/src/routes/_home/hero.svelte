@@ -1,14 +1,13 @@
 <script lang="ts">
-	import HeroCarousel from "./hero-carousel.svelte";
-	import { Button } from "$lib/components/ui/button";
-	import { cn } from "$lib/utils";
-	import { goto } from "$app/navigation";
+    import HeroCarousel from "./hero-carousel.svelte";
+    import {Button} from "$lib/components/ui/button";
+    import {cn} from "$lib/utils";
+    import {goto} from "$app/navigation";
 
-	const { heroData } = $props();
+    const { heroData } = $props();
 	const ctaButtons = heroData.ctaButtons;
 
 	const handleCta = (cta: "shop now" | "learn more") => {
-		console.log(cta);
 		if (cta === "shop now") {
 			goto("/shop");
 		}
