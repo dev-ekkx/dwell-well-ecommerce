@@ -6,9 +6,32 @@
 	import { page } from "$app/state";
 	import { cn } from "$lib/utils";
 	import { AUTH_ROUTES } from "$lib/constants";
+	import CookieBanner from "$lib/components/cookie-banner.svelte";
+	import { browser } from "$app/environment";
 
 	let { children, data } = $props();
 	const activePage = $derived(page.route.id);
+
+	let storedValue: string | null = null;
+
+	if (browser) {
+		storedValue = localStorage.getItem("displayCookieBanner");
+	}
+
+	const initialVisibility = browser ? storedValue === null || storedValue !== "false" : true;
+
+	let isCookieBannerVisible = $state(initialVisibility);
+	$effect(() => {
+		const html = document.documentElement;
+		if (isCookieBannerVisible) {
+			html.classList.add("overflow-hidden");
+		}
+		html.classList.remove("overflow-hidden");
+	});
+
+	$effect(() => {
+		localStorage.setItem("displayCookieBanner", String(isCookieBannerVisible));
+	});
 
 	const isAuthPage = $derived(AUTH_ROUTES.some((r) => page.url.pathname.endsWith(`/${r}`)));
 </script>
@@ -16,6 +39,10 @@
 <svelte:head>
 	<link href={favicon} rel="icon" />
 </svelte:head>
+
+{#if isCookieBannerVisible}
+	<CookieBanner bind:displayCookieBanner={isCookieBannerVisible} />
+{/if}
 
 <!--Header component-->
 {#if !isAuthPage}

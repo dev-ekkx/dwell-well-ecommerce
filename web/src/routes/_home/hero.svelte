@@ -1,11 +1,17 @@
 <script lang="ts">
-	import HeroCarousel from "./hero-carousel.svelte";
-	import { Button } from "$lib/components/ui/button";
-	import type { PageProps } from "./$types";
-	import { cn } from "$lib/utils";
+    import HeroCarousel from "./hero-carousel.svelte";
+    import {Button} from "$lib/components/ui/button";
+    import {cn} from "$lib/utils";
+    import {goto} from "$app/navigation";
 
-	const { heroData }: PageProps = $props();
+    const { heroData } = $props();
 	const ctaButtons = heroData.ctaButtons;
+
+	const handleCta = (cta: "shop now" | "learn more") => {
+		if (cta === "shop now") {
+			goto("/shop");
+		}
+	};
 </script>
 
 <div class="grid grid-cols-1 gap-20 lg:grid-cols-2 lg:gap-14">
@@ -22,6 +28,7 @@
 		<div class="flex flex-col gap-2 sm:flex-row sm:gap-5 md:gap-6">
 			{#each ctaButtons as cta (cta.id)}
 				<Button
+					onclick={() => handleCta(cta.text)}
 					aria-label={cta.text}
 					variant={cta.text === "learn more" ? "outline" : "default"}
 					class={cn("cursor-pointer font-semibold capitalize", {
