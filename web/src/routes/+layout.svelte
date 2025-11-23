@@ -1,39 +1,37 @@
 <script lang="ts">
-    import "../app.css";
-    import favicon from "$lib/assets/favicon.ico";
-    import HeaderComponent from "$lib/components/header.svelte";
-    import FooterComponent from "$lib/components/footer.svelte";
-    import {page} from "$app/state";
-    import {cn} from "$lib/utils";
-    import {AUTH_ROUTES} from "$lib/constants";
-    import CookieBanner from "$lib/components/cookie-banner.svelte";
-    import {browser} from "$app/environment";
+	import "../app.css";
+	import favicon from "$lib/assets/favicon.ico";
+	import HeaderComponent from "$lib/components/header.svelte";
+	import FooterComponent from "$lib/components/footer.svelte";
+	import { page } from "$app/state";
+	import { cn } from "$lib/utils";
+	import { AUTH_ROUTES } from "$lib/constants";
+	import CookieBanner from "$lib/components/cookie-banner.svelte";
+	import { browser } from "$app/environment";
 
-    let { children, data } = $props();
+	let { children, data } = $props();
 	const activePage = $derived(page.route.id);
 
-    let storedValue: string | null = null;
+	let storedValue: string | null = null;
 
-    if (browser) {
-        storedValue = localStorage.getItem("displayCookieBanner");
-    }
+	if (browser) {
+		storedValue = localStorage.getItem("displayCookieBanner");
+	}
 
-    const initialVisibility = browser
-        ? (storedValue === null || storedValue !== "false")
-        : true;
+	const initialVisibility = browser ? storedValue === null || storedValue !== "false" : true;
 
-    let isCookieBannerVisible = $state(initialVisibility);
+	let isCookieBannerVisible = $state(initialVisibility);
 	$effect(() => {
-			const html = document.documentElement;
+		const html = document.documentElement;
 		if (isCookieBannerVisible) {
 			html.classList.add("overflow-hidden");
 		}
-			html.classList.remove("overflow-hidden");
+		html.classList.remove("overflow-hidden");
 	});
 
-    $effect(() => {
-        localStorage.setItem("displayCookieBanner", String(isCookieBannerVisible));
-    })
+	$effect(() => {
+		localStorage.setItem("displayCookieBanner", String(isCookieBannerVisible));
+	});
 
 	const isAuthPage = $derived(AUTH_ROUTES.some((r) => page.url.pathname.endsWith(`/${r}`)));
 </script>
