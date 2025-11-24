@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { Label } from "$lib/components/ui/label";
-	import { Input } from "$lib/components/ui/input";
-	import { z } from "zod";
-	import { getContext } from "svelte";
-	import { Eye, EyeOff } from "@lucide/svelte/icons";
+    import {Label} from "$lib/components/ui/label";
+    import {Input} from "$lib/components/ui/input";
+    import {z} from "zod";
+    import {getContext} from "svelte";
+    import {Eye, EyeOff} from "@lucide/svelte/icons";
+    import {Select} from "bits-ui";
 
-	const { data } = $props();
+    const { data } = $props();
 
 	const authState = getContext<{
 		form: Record<string, string>;
@@ -13,22 +14,6 @@
 	}>("authState");
 
 	let viewPassword = $state<Record<string, boolean>>({});
-
-	/*
-	function handleBlur(field: string) {
-		try {
-			const fieldSchema = z.object({ [field]: data.schema.shape[field] });
-			fieldSchema.parse({ [field]: authState.form[field] });
-			authState.errors[field] = "";
-		} catch (e) {
-			if (e instanceof z.ZodError && e.issues.length > 0) {
-				authState.errors[field] = e.issues[0].message;
-			} else {
-				authState.errors[field] = "Invalid value";
-			}
-		}
-	}
-        **/
 
 	function handleBlur(field: string) {
 		try {
@@ -58,6 +43,10 @@
 	{#each data.formInputs as input (input)}
 		<div class="relative flex w-full flex-col gap-1.5">
 			<Label for={input.name}>{input.label}</Label>
+
+            <div class="flex items-center gap-2">
+                <Select></Select>
+            </div>
 			<Input
 				name={input.name}
 				id={input.name}
@@ -80,6 +69,7 @@
 					{/if}
 				</button>
 			{/if}
+
 			{#if authState.errors[input.name]}
 				<p class="text-sm text-red-500">{authState.errors[input.name]}</p>
 			{/if}

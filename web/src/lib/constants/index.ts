@@ -32,6 +32,7 @@ export const FORM_FIELDS = {
 	signup: [
 		{ name: "name", label: "Full Name", type: "text", placeholder: "Enter your name" },
 		{ name: "email", label: "Email", type: "email", placeholder: "Enter your email" },
+		{ name: "phone", label: "Phone Number", type: "tel", placeholder: "241 234 567" },
 		{ name: "password", label: "Password", type: "password", placeholder: "Enter password" },
 		{
 			name: "confirmPassword",
