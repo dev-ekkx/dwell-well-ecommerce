@@ -2,9 +2,8 @@
     import {Label} from "$lib/components/ui/label";
     import {Input} from "$lib/components/ui/input";
     import {z} from "zod";
-    import {getContext} from "svelte";
+    import {getContext, onMount} from "svelte";
     import {Eye, EyeOff} from "@lucide/svelte/icons";
-    import {Select} from "bits-ui";
 
     const { data } = $props();
 
@@ -14,6 +13,14 @@
 	}>("authState");
 
 	let viewPassword = $state<Record<string, boolean>>({});
+    let countries = $state<{
+        code: string;
+        flag: {
+            alt: string;
+            svg: string;
+            png: string
+        }
+    }[]>([])
 
 	function handleBlur(field: string) {
 		try {
@@ -37,15 +44,42 @@
 	function togglePassword(name: string) {
 		viewPassword[name] = !viewPassword[name];
 	}
+
+  async  function fetchCountries(){
+       const res = await fetch("https://restcountries.com/v3.1/all?fields=flags,cca2")
+      const data = await res.json() as {
+           cca2: string,
+          flags: {
+               alt: string;
+               png: string;
+               svg: string
+          }
+      }[]
+       countries = data.map((country) => {
+            return {
+                code: country.cca2,
+                flag: country.flags
+            }
+       })
+
+      console.log(countries)
+    }
+
+    onMount(() => {
+        if (data["route"] === "signup") {
+            fetchCountries()
+        }
+    })
+
 </script>
 
 <div class="mt-4 flex w-full flex-col gap-4">
 	{#each data.formInputs as input (input)}
 		<div class="relative flex w-full flex-col gap-1.5">
 			<Label for={input.name}>{input.label}</Label>
-
+            {new Date().toISOString()}
             <div class="flex items-center gap-2">
-                <Select></Select>
+
             </div>
 			<Input
 				name={input.name}
