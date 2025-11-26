@@ -15,7 +15,7 @@
 	let viewPassword = $state<Record<string, boolean>>({});
     let countries = $state<{
         code: string;
-        flag: {
+        flags: {
             alt: string;
             svg: string;
             png: string
@@ -58,12 +58,16 @@
        countries = data.map((country) => {
             return {
                 code: country.cca2,
-                flag: country.flags
+                flags: country.flags
             }
        })
 
+
       console.log(countries)
     }
+
+    const userCountry = getContext("userCountry")
+    console.log(userCountry)
 
     onMount(() => {
         if (data["route"] === "signup") {

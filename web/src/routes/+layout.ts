@@ -4,7 +4,7 @@ import { AUTH_ROUTES } from "$lib/constants";
 import { userStore } from "$lib/store/user-store.svelte";
 import { browser } from "$app/environment";
 
-export const load: LayoutLoad = async ({ fetch, url }) => {
+export const load: LayoutLoad = async ({ fetch, url, data }) => {
 	// Fetch user data from cookies
 	if (browser) {
 		const data = await cookieStore.get("userAuth");
@@ -26,8 +26,6 @@ export const load: LayoutLoad = async ({ fetch, url }) => {
 			};
 		}
 
-		console.log("fetching footer and homepage data");
-
 		const footerData = await fetch(import.meta.env.VITE_CMS_URL + "/api/footer?populate=all");
 		const footer = (await footerData.json()).data as FooterI;
 
@@ -38,7 +36,8 @@ export const load: LayoutLoad = async ({ fetch, url }) => {
 
 		return {
 			footer,
-			homepage
+			homepage,
+			userCountry: data.userCountry
 		};
 	} catch (error) {
 		console.error("Error loading footer data: ", error);

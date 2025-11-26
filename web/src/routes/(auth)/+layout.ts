@@ -4,9 +4,8 @@ import type { AuthType, FormInputT } from "$lib/types";
 import type { ZodObject } from "zod";
 import { FORM_FIELDS } from "$lib/constants";
 
-export const load: LayoutLoad = async ({ url }) => {
+export const load: LayoutLoad = async ({ url, data }) => {
 	const route = url.pathname.split("/").pop() as AuthType;
-
 	const formInputs: FormInputT = {
 		login: FORM_FIELDS.login,
 		signup: FORM_FIELDS.signup,
@@ -19,7 +18,6 @@ export const load: LayoutLoad = async ({ url }) => {
 		reset_password: resetPasswordSchema,
 		otp: loginSchema
 	};
-
 	return {
 		route,
 		formInputs: formInputs[route],

@@ -1,16 +1,20 @@
 <script lang="ts">
-	import "../app.css";
-	import favicon from "$lib/assets/favicon.ico";
-	import HeaderComponent from "$lib/components/header.svelte";
-	import FooterComponent from "$lib/components/footer.svelte";
-	import { page } from "$app/state";
-	import { cn } from "$lib/utils";
-	import { AUTH_ROUTES } from "$lib/constants";
-	import CookieBanner from "$lib/components/cookie-banner.svelte";
-	import { browser } from "$app/environment";
+    import "../app.css";
+    import favicon from "$lib/assets/favicon.ico";
+    import HeaderComponent from "$lib/components/header.svelte";
+    import FooterComponent from "$lib/components/footer.svelte";
+    import {page} from "$app/state";
+    import {cn} from "$lib/utils";
+    import {AUTH_ROUTES} from "$lib/constants";
+    import CookieBanner from "$lib/components/cookie-banner.svelte";
+    import {browser} from "$app/environment";
+    import {setContext} from "svelte";
 
-	let { children, data } = $props();
+    let { children, data } = $props();
 	const activePage = $derived(page.route.id);
+
+    $inspect(data)
+    setContext("userCountry", data.userCountry)
 
 	let storedValue: string | null = null;
 
