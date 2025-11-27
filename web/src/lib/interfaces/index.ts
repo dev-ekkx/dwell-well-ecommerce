@@ -368,4 +368,5 @@ export interface CountryAndFlagI {
 		svg: string;
 		png: string;
 	};
+	callingCode: string;
 }
