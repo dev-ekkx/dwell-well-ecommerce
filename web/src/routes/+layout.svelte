@@ -1,16 +1,16 @@
 <script lang="ts">
-    import "../app.css";
-    import favicon from "$lib/assets/favicon.ico";
-    import HeaderComponent from "$lib/components/header.svelte";
-    import FooterComponent from "$lib/components/footer.svelte";
-    import {page} from "$app/state";
-    import {cn} from "$lib/utils";
-    import {AUTH_ROUTES} from "$lib/constants";
-    import CookieBanner from "$lib/components/cookie-banner.svelte";
-    import {browser} from "$app/environment";
-    import {onMount} from "svelte";
+	import "../app.css";
+	import favicon from "$lib/assets/favicon.ico";
+	import HeaderComponent from "$lib/components/header.svelte";
+	import FooterComponent from "$lib/components/footer.svelte";
+	import { page } from "$app/state";
+	import { cn } from "$lib/utils";
+	import { AUTH_ROUTES } from "$lib/constants";
+	import CookieBanner from "$lib/components/cookie-banner.svelte";
+	import { browser } from "$app/environment";
+	import { onMount } from "svelte";
 
-    let { children, data } = $props();
+	let { children, data } = $props();
 	const activePage = $derived(page.route.id);
 
 	let storedValue: string | null = null;
@@ -36,12 +36,12 @@
 
 	const isAuthPage = $derived(AUTH_ROUTES.some((r) => page.url.pathname.endsWith(`/${r}`)));
 
-    onMount(async () => {
-        if (browser) {
-            console.log(data)
-            // await cookieStore.set("userCountry", JSON.stringify(data.userCountry))
-        }
-    })
+	onMount(async () => {
+		if (browser) {
+			console.log(data);
+			// await cookieStore.set("userCountry", JSON.stringify(data.userCountry))
+		}
+	});
 </script>
 
 <svelte:head>
