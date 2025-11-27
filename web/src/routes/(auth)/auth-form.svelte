@@ -22,6 +22,7 @@
 	} from "$lib/components/ui/command";
 	import Button from "$lib/components/ui/button/button.svelte";
 	import { cn } from "$lib/utils";
+	import { parsePhoneNumberWithError, type CountryCode } from "libphonenumber-js";
 
 	const { data } = $props();
 
@@ -31,16 +32,19 @@
 	}>("authState");
 
 	const userCountry = $derived(userStore.countryData as UserCountryI);
-	$inspect(userCountry);
 
 	let viewPassword = $state<Record<string, boolean>>({});
 	let countries = $state<CountryAndFlagI[]>([]);
-    	let openCountryDropdown = $state(false);
-	let countryValue = $state(userCountry.name);
+	let openCountryDropdown = $state(false);
+	let countryValue = $derived(userCountry?.name ?? "");
 	let triggerRef = $state<HTMLButtonElement>(null!);
-
 	const selectedCountry = $derived(countries.find((f) => f.name === countryValue));
 
+	$effect(() => {
+		if (selectedCountry?.code) {
+			authState.form.country = selectedCountry?.code;
+		}
+	});
 
 	function handleBlur(field: string) {
 		try {
@@ -104,9 +108,7 @@
 				callingCode: callingCode
 			};
 		});
-
 	}
-
 
 	function closeAndFocusTrigger() {
 		openCountryDropdown = false;
@@ -120,16 +122,29 @@
 			fetchCountries();
 		}
 	});
-
-
 </script>
 
 <div class="mt-4 flex w-full flex-col gap-4">
 	{#each data.formInputs as input (input)}
 		<div class="relative flex w-full flex-col gap-1.5">
-			<Label for={input.name}>{input.label}</Label>
-			{#if input.type === "tel"}
-				<div class="relative flex items-center gap-2">
+			<Label
+				hidden={input.name === "country"}
+				class={input.type === "tel" ? "-mt-4" : ""}
+				for={input.name}>{input.label}</Label
+			>
+			{#if input.name === "country"}
+				<Input
+					hidden
+					name={input.name}
+					id={input.name}
+					type={input.type}
+					placeholder={input.placeholder}
+					bind:value={authState.form[input.name]}
+					onblur={() => handleBlur(input.name)}
+					oninput={() => handleBlur(input.name)}
+				/>
+			{:else if input.type === "tel"}
+				<div class="relative flex items-center gap-3">
 					<PopoverRoot bind:open={openCountryDropdown}>
 						<PopoverTrigger bind:ref={triggerRef}>
 							{#snippet child({ props })}
@@ -140,10 +155,14 @@
 									role="combobox"
 									aria-expanded={openCountryDropdown}
 								>
-                <div class="flex gap-2 items-center">
-                  <img class="w-7 h-6" src={selectedCountry?.flags.svg} alt={selectedCountry?.name} />
-                  <span>{selectedCountry?.callingCode}</span>
-                </div>
+									<div class="flex items-center gap-2">
+										<img
+											class="h-6 w-7"
+											src={selectedCountry?.flags.svg}
+											alt={selectedCountry?.name}
+										/>
+										<span>{selectedCountry?.callingCode}</span>
+									</div>
 									<ChevronsUpDownIcon class="opacity-50" />
 								</Button>
 							{/snippet}
@@ -156,18 +175,20 @@
 									<CommandGroup>
 										{#each countries as country (country.code)}
 											<CommandItem
-                      class="cursor-pointer"
+												class="cursor-pointer"
 												value={country.name}
 												onSelect={() => {
 													countryValue = country.name;
 													closeAndFocusTrigger();
 												}}
 											>
-												<CheckIcon class={cn(countryValue !== country.code && "text-transparent")} />
-                                        <div class="flex gap-2 items-center">
-                  <img class="w-7 h-6" src={country?.flags.svg} alt={country?.name} />
-                  <span>{country?.name}</span>
-                </div>
+												<CheckIcon
+													class={cn(countryValue !== country.name && "text-transparent")}
+												/>
+												<div class="flex items-center gap-2">
+													<img class="h-6 w-7" src={country?.flags.svg} alt={country?.name} />
+													<span>{country?.name}</span>
+												</div>
 											</CommandItem>
 										{/each}
 									</CommandGroup>

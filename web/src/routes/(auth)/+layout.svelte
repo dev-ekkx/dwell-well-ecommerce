@@ -87,6 +87,9 @@
 		return baseIsValid && agreeToTermsAndConditions;
 	});
 
+	$inspect(authState.form);
+	$inspect(authState.errors);
+
 	$effect(() => {
 		// Handle form errors
 		if (form?.error) {
@@ -127,7 +130,6 @@
 		}
 
 		if (authResponse.nextStep.signInStep === "DONE") {
-			console.log(userAuth);
 			if (userAuth && userAuth.auth.tokenExpiry > 0) {
 				userStore.updateUserStore(userAuth);
 				isLoading = true;
