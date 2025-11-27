@@ -8,13 +8,10 @@
     import {AUTH_ROUTES} from "$lib/constants";
     import CookieBanner from "$lib/components/cookie-banner.svelte";
     import {browser} from "$app/environment";
-    import {setContext} from "svelte";
+    import {onMount} from "svelte";
 
     let { children, data } = $props();
 	const activePage = $derived(page.route.id);
-
-    $inspect(data)
-    setContext("userCountry", data.userCountry)
 
 	let storedValue: string | null = null;
 
@@ -38,6 +35,13 @@
 	});
 
 	const isAuthPage = $derived(AUTH_ROUTES.some((r) => page.url.pathname.endsWith(`/${r}`)));
+
+    onMount(async () => {
+        if (browser) {
+            console.log(data)
+            // await cookieStore.set("userCountry", JSON.stringify(data.userCountry))
+        }
+    })
 </script>
 
 <svelte:head>

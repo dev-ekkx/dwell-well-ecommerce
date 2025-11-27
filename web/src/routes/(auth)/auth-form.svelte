@@ -4,6 +4,9 @@
     import {z} from "zod";
     import {getContext, onMount} from "svelte";
     import {Eye, EyeOff} from "@lucide/svelte/icons";
+    import {userStore} from "$lib/store/user-store.svelte";
+    import {browser} from "$app/environment";
+    import type {CountryAndFlagI, UserCountryI} from "$lib/interfaces";
 
     const { data } = $props();
 
@@ -12,15 +15,11 @@
 		errors: Record<string, string>;
 	}>("authState");
 
+    const userCountry = $derived(userStore.countryData as UserCountryI)
+    $inspect(userCountry);
+
 	let viewPassword = $state<Record<string, boolean>>({});
-    let countries = $state<{
-        code: string;
-        flags: {
-            alt: string;
-            svg: string;
-            png: string
-        }
-    }[]>([])
+    let countries = $state<CountryAndFlagI[]>([])
 
 	function handleBlur(field: string) {
 		try {
@@ -46,8 +45,9 @@
 	}
 
   async  function fetchCountries(){
-       const res = await fetch("https://restcountries.com/v3.1/all?fields=flags,cca2")
+       const res = await fetch("https://restcountries.com/v3.1/all?fields=name,flags,cca2")
       const data = await res.json() as {
+           name: {common: string},
            cca2: string,
           flags: {
                alt: string;
@@ -57,6 +57,7 @@
       }[]
        countries = data.map((country) => {
             return {
+                name: country.name.common,
                 code: country.cca2,
                 flags: country.flags
             }
@@ -64,13 +65,13 @@
 
 
       console.log(countries)
+      const userCountryData = countries.find(country => country.code === userCountry["country"])
+      console.log(userCountryData)
     }
 
-    const userCountry = getContext("userCountry")
-    console.log(userCountry)
 
     onMount(() => {
-        if (data["route"] === "signup") {
+        if (data["route"] === "signup" && browser) {
             fetchCountries()
         }
     })
@@ -81,7 +82,6 @@
 	{#each data.formInputs as input (input)}
 		<div class="relative flex w-full flex-col gap-1.5">
 			<Label for={input.name}>{input.label}</Label>
-            {new Date().toISOString()}
             <div class="flex items-center gap-2">
 
             </div>

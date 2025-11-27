@@ -7,12 +7,16 @@ import { browser } from "$app/environment";
 export const load: LayoutLoad = async ({ fetch, url, data }) => {
 	// Fetch user data from cookies
 	if (browser) {
-		const data = await cookieStore.get("userAuth");
-		if (data?.value) {
-			const userAuth = JSON.parse(data?.value as string) as UserAuthI;
+		const cookieData = await cookieStore.get("userAuth");
+		if (cookieData?.value) {
+			const userAuth = JSON.parse(cookieData?.value as string) as UserAuthI;
 			if (userAuth && userAuth.auth.tokenExpiry > 0) {
 				await userStore.updateUserStore(userAuth);
 			}
+		}
+
+		if (data?.userCountry) {
+			userStore.updateCountryData(data.userCountry);
 		}
 	}
 
@@ -36,8 +40,7 @@ export const load: LayoutLoad = async ({ fetch, url, data }) => {
 
 		return {
 			footer,
-			homepage,
-			userCountry: data.userCountry
+			homepage
 		};
 	} catch (error) {
 		console.error("Error loading footer data: ", error);

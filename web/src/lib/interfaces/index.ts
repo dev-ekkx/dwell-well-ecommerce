@@ -309,6 +309,7 @@ export interface AuthI {
 export interface UserAuthI {
 	user: UserI;
 	auth: AuthI;
+	countryDetails?: UserCountryI;
 }
 
 // Interface for User Store
@@ -349,3 +350,22 @@ export interface AmplifyAuthResponseI {
 
 // interface for the user store
 export interface UserStoreI {}
+
+// interface for UserCountry
+export interface UserCountryI {
+	name: string;
+	country_3: string;
+	country: string;
+	ip: string;
+}
+
+// Interface for Country dropdown
+export interface CountryAndFlagI {
+	name: string;
+	code: string;
+	flags: {
+		alt: string;
+		svg: string;
+		png: string;
+	};
+}
