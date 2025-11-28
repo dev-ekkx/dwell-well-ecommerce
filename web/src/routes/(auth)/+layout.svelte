@@ -17,7 +17,7 @@
 	import type { AuthType } from "$lib/types";
 	import { cn } from "$lib/utils";
 	import CheckCircle2Icon from "@lucide/svelte/icons/check-circle-2";
-	import type { ConfirmSignInOutput } from "aws-amplify/auth";
+	import type { ConfirmSignInOutput, SignUpOutput } from "aws-amplify/auth";
 	import { onMount, setContext } from "svelte";
 	import { MediaQuery } from "svelte/reactivity";
 	import type { LayoutProps } from "./$types";
@@ -38,15 +38,20 @@
 		"Welcome back! Please enter your details to continue.": "login",
 		"Please enter your new password.": "reset_password",
 		"Join us to enjoy personalized features.": "signup",
-		"Please enter the code sent to your email": "otp"
+		// "Please enter the code sent to your email": "otp"
 	};
 
 	const route = $derived(data.route || "");
 	const title = $derived(Object.entries(titleMap).find(([_, r]) => r === route)?.[0] || "Login");
-	const description = $derived(
-		Object.entries(descriptionMap).find(([_, r]) => r === route)?.[0] ||
-			"Welcome back! Please enter your details to continue."
-	);
+
+	let otpResponseEmail = $state("");
+	const description = $derived(() => {
+    if (route === 'otp') {
+        return `Please enter the one-time password (OTP) sent to ${otpResponseEmail}`;
+    }
+    const customDesc = Object.entries(descriptionMap).find(([_, r]) => r === route)?.[0];
+    return customDesc || "Welcome back! Please enter your details to continue.";
+});
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const isMobile = $derived(mediaQuery.current);
@@ -97,28 +102,22 @@
 		if (route === "login") {
 			handleLoginSteps();
 		}
+		if (route === "signup") {
+			handleSignUpSteps();
+		}
 
 		if (route === "reset_password") {
 			if (!form?.authResponse) return;
 			const { authResponse } = form;
 			const res = authResponse as ConfirmSignInOutput;
 			if (res.nextStep.signInStep === "DONE") {
-				goto("/login");
+				handlePersistUserData()
 			}
 		}
 	});
-
-	const handleError = () => {
-		isError = true;
-		errorMessage = form.error ?? "";
-
-		const timer = setTimeout(() => {
-			isError = false;
-		}, 5000);
-
-		return () => clearTimeout(timer);
-	};
-
+	
+	
+	
 	const handleLoginSteps = () => {
 		if (!form?.authResponse) return;
 		const { oldPassword: password, authResponse, userAuth } = form;
@@ -128,14 +127,50 @@
 			cookieStore.set("oldPassword", oldPassword);
 			goto("/reset_password");
 		}
-
+		
 		if (res.nextStep.signInStep === "DONE") {
-			if (userAuth && userAuth.auth.tokenExpiry > 0) {
-				userStore.updateUserStore(userAuth);
-				isLoading = true;
-				goto("/").then(() => (isLoading = false));
-			}
+			// if (userAuth && userAuth.auth.tokenExpiry > 0) {
+				// 	userStore.updateUserStore(userAuth);
+			// 	isLoading = true;
+			// 	goto("/").then(() => (isLoading = false));
+			// }
+			handlePersistUserData()
 		}
+	};
+	
+	const handleSignUpSteps = () => {
+		if (!form?.authResponse) return;
+		const { authResponse } = form;
+		console.log(authResponse);
+		const res = authResponse as SignUpOutput;
+		if(res.nextStep.signUpStep === "CONFIRM_SIGN_UP") {
+			otpResponseEmail = res.nextStep.codeDeliveryDetails.destination ?? "";
+			goto("/otp");
+		}
+		
+		if (res.nextStep.signUpStep === "DONE") {
+			handlePersistUserData()
+		}
+	};
+
+
+	const handlePersistUserData = () => {
+		if (!form?.userAuth) return;
+		const { userAuth } = form;
+		userStore.updateUserStore(userAuth);
+		isLoading = true;
+		goto("/").then(() => (isLoading = false));
+	};
+
+		const handleError = () => {
+		isError = true;
+		errorMessage = form.error ?? "";
+
+		const timer = setTimeout(() => {
+			isError = false;
+		}, 5000);
+
+		return () => clearTimeout(timer);
 	};
 
 	onMount(async () => {
@@ -170,7 +205,7 @@
 		>
 			<Logo />
 			<h2 class="mt-1 auth-heading">{title}</h2>
-			<p>{description}</p>
+			<p>{description()}</p>
 
 			<!-- Alert component -->
 			{#if isError}

@@ -20,10 +20,10 @@ export const actions = {
 				password: String(password ?? "")
 			};
 			const authResponse = await signIn(user);
-			let res: UserAuthI = initialState;
+			let userAuth: UserAuthI = initialState;
 			if (authResponse.nextStep.signInStep === "DONE") {
-				res = await getUserAndAuthData();
-				cookies.set("authRes", JSON.stringify(res), {
+				userAuth = await getUserAndAuthData();
+				cookies.set("authRes", JSON.stringify(userAuth), {
 					path: "/",
 					httpOnly: true,
 					sameSite: "lax",
@@ -31,7 +31,7 @@ export const actions = {
 				});
 			}
 			return {
-				userAuth: res,
+				userAuth,
 				authResponse,
 				oldPassword: String(password ?? "")
 			};
