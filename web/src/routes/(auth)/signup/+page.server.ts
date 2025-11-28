@@ -22,19 +22,17 @@ export const actions = {
 			username: email,
 			password,
 			options: {
-				userAttributes:{
+				userAttributes: {
 					email,
 					phone_number,
-					name,
-					
+					name
 				}
 			}
-		}
-
+		};
 
 		try {
 			const authResponse = await signUp(user);
-			return {authResponse};
+			return { authResponse };
 		} catch (e) {
 			return fail(400, { error: (e as Error).message });
 		}

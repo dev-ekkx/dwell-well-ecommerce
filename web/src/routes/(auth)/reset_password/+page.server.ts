@@ -13,19 +13,19 @@ export const actions = {
 		const data = await request.formData();
 		const password = data.get("newPassword");
 		try {
-				const authResponse = await confirmSignIn({
-					challengeResponse: String(password ?? "")
+			const authResponse = await confirmSignIn({
+				challengeResponse: String(password ?? "")
+			});
+			let userAuth: UserAuthI = initialState;
+			if (authResponse.nextStep.signInStep === "DONE") {
+				userAuth = await getUserAndAuthData();
+				cookies.set("authRes", JSON.stringify(userAuth), {
+					path: "/",
+					httpOnly: true,
+					sameSite: "lax",
+					secure: true
 				});
-						let userAuth: UserAuthI = initialState;
-						if (authResponse.nextStep.signInStep === "DONE") {
-							userAuth = await getUserAndAuthData();
-							cookies.set("authRes", JSON.stringify(userAuth), {
-								path: "/",
-								httpOnly: true,
-								sameSite: "lax",
-								secure: true
-							});
-						}
+			}
 			return {
 				authResponse,
 				userAuth
