@@ -1,25 +1,26 @@
 <script lang="ts">
-	import AuthBackground from "$lib/assets/images/auth-bg.webp";
-	import { cn } from "$lib/utils";
-	import Logo from "$lib/components/logo.svelte";
-	import { Checkbox } from "$lib/components/ui/checkbox";
-	import { Label } from "$lib/components/ui/label";
-	import { onMount, setContext } from "svelte";
-	import { MediaQuery } from "svelte/reactivity";
-	import { Button } from "$lib/components/ui/button";
 	import { enhance } from "$app/forms";
-	import { Spinner } from "$lib/components/ui/spinner";
+	import { goto } from "$app/navigation";
+	import AuthBackground from "$lib/assets/images/auth-bg.webp";
+	import Logo from "$lib/components/logo.svelte";
 	import {
 		Description as AlertDescription,
 		Root as AlertRoot,
 		Title as AlertTitle
 	} from "$lib/components/ui/alert";
-	import CheckCircle2Icon from "@lucide/svelte/icons/check-circle-2";
-	import type { AuthType } from "$lib/types";
-	import { goto } from "$app/navigation";
-	import type { LayoutProps } from "./$types";
+	import { Button } from "$lib/components/ui/button";
+	import { Checkbox } from "$lib/components/ui/checkbox";
+	import { Label } from "$lib/components/ui/label";
+	import { Spinner } from "$lib/components/ui/spinner";
 	import type { AmplifyAuthResponseI } from "$lib/interfaces";
 	import { userStore } from "$lib/store/user-store.svelte";
+	import type { AuthType } from "$lib/types";
+	import { cn } from "$lib/utils";
+	import CheckCircle2Icon from "@lucide/svelte/icons/check-circle-2";
+	import type { ConfirmSignInOutput } from "aws-amplify/auth";
+	import { onMount, setContext } from "svelte";
+	import { MediaQuery } from "svelte/reactivity";
+	import type { LayoutProps } from "./$types";
 
 	type Props = LayoutProps & {
 		form: AmplifyAuthResponseI;
@@ -87,9 +88,6 @@
 		return baseIsValid && agreeToTermsAndConditions;
 	});
 
-	$inspect(authState.form);
-	$inspect(authState.errors);
-
 	$effect(() => {
 		// Handle form errors
 		if (form?.error) {
@@ -103,7 +101,8 @@
 		if (route === "reset_password") {
 			if (!form?.authResponse) return;
 			const { authResponse } = form;
-			if (authResponse.nextStep.signInStep === "DONE") {
+			const res = authResponse as ConfirmSignInOutput;
+			if (res.nextStep.signInStep === "DONE") {
 				goto("/login");
 			}
 		}
@@ -123,13 +122,14 @@
 	const handleLoginSteps = () => {
 		if (!form?.authResponse) return;
 		const { oldPassword: password, authResponse, userAuth } = form;
-		if (authResponse?.nextStep.signInStep === "CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED") {
+		const res = authResponse as ConfirmSignInOutput;
+		if (res.nextStep.signInStep === "CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED") {
 			oldPassword = password ?? "";
 			cookieStore.set("oldPassword", oldPassword);
 			goto("/reset_password");
 		}
 
-		if (authResponse.nextStep.signInStep === "DONE") {
+		if (res.nextStep.signInStep === "DONE") {
 			if (userAuth && userAuth.auth.tokenExpiry > 0) {
 				userStore.updateUserStore(userAuth);
 				isLoading = true;

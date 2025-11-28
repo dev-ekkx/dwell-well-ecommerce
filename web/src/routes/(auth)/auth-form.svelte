@@ -1,28 +1,27 @@
 <script lang="ts">
-	import { Label } from "$lib/components/ui/label";
-	import { Input } from "$lib/components/ui/input";
-	import { z } from "zod";
-	import { getContext, onMount, tick } from "svelte";
-	import { CheckIcon, ChevronsUpDownIcon, Eye, EyeOff } from "@lucide/svelte/icons";
-	import { userStore } from "$lib/store/user-store.svelte";
 	import { browser } from "$app/environment";
-	import type { CountryAndFlagI, UserCountryI } from "$lib/interfaces";
-	import {
-		Root as PopoverRoot,
-		Trigger as PopoverTrigger,
-		Content as PopoverContent
-	} from "$lib/components/ui/popover";
-	import {
-		Root as CommandRoot,
-		Input as CommandInput,
-		List as CommandList,
-		Group as CommandGroup,
-		Item as CommandItem,
-		Empty as CommandEmpty
-	} from "$lib/components/ui/command";
 	import Button from "$lib/components/ui/button/button.svelte";
+	import {
+		Empty as CommandEmpty,
+		Group as CommandGroup,
+		Input as CommandInput,
+		Item as CommandItem,
+		List as CommandList,
+		Root as CommandRoot
+	} from "$lib/components/ui/command";
+	import { Input } from "$lib/components/ui/input";
+	import { Label } from "$lib/components/ui/label";
+	import {
+		Content as PopoverContent,
+		Root as PopoverRoot,
+		Trigger as PopoverTrigger
+	} from "$lib/components/ui/popover";
+	import type { CountryAndFlagI, UserCountryI } from "$lib/interfaces";
+	import { userStore } from "$lib/store/user-store.svelte";
 	import { cn } from "$lib/utils";
-	import { parsePhoneNumberWithError, type CountryCode } from "libphonenumber-js";
+	import { CheckIcon, ChevronsUpDownIcon, Eye, EyeOff } from "@lucide/svelte/icons";
+	import { getContext, onMount, tick } from "svelte";
+	import { z } from "zod";
 
 	const { data } = $props();
 

@@ -1,24 +1,40 @@
-import type { Actions } from "./$types";
 import type { AmplifyAuthResponseI } from "$lib/interfaces";
 import { type ActionFailure, fail } from "@sveltejs/kit";
+import { signUp, type SignUpInput } from "aws-amplify/auth";
 import parsePhoneNumber, { type CountryCode } from "libphonenumber-js";
+import type { Actions } from "./$types";
 
 export const actions = {
 	default: async ({
 		request
 	}): Promise<AmplifyAuthResponseI | ActionFailure<{ error: string }>> => {
 		const data = await request.formData();
-		console.log(data);
-		const name = data.get("name");
-		const email = data.get("email");
-		const password = data.get("password");
-		const phone = data.get("phone");
-		const countryCode = data.get("country");
+		const name = String(data.get("name") ?? "");
+		const email = String(data.get("email") ?? "");
+		const password = String(data.get("password") ?? "");
+		const phone = String(data.get("phone") ?? "");
+		const countryCode = data.get("country") as CountryCode;
 
-		const parsedNumber = parsePhoneNumber(phone as string, countryCode as CountryCode);
-		console.log(parsedNumber);
+		const parsedNumber = parsePhoneNumber(phone, countryCode);
+		const phone_number = parsedNumber?.number ?? "";
+
+		const user: SignUpInput = {
+			username: email,
+			password,
+			options: {
+				userAttributes:{
+					email,
+					phone_number,
+					name,
+					
+				}
+			}
+		}
+
+
 		try {
-			return {};
+			const authResponse = await signUp(user);
+			return {authResponse};
 		} catch (e) {
 			return fail(400, { error: (e as Error).message });
 		}
