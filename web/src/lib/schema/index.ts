@@ -49,6 +49,6 @@ export const resetPasswordSchema = z
 		path: ["confirmPassword"]
 	});
 
-	export const otpSchema = z.object({
-		otp: z.string().nonempty("OTP is required")
-	});
+export const otpSchema = z.object({
+	otp: z.string().nonempty("OTP is required")
+});

@@ -31,13 +31,13 @@
 		Login: "login",
 		"Reset Password": "reset_password",
 		"Create an Account": "signup",
-		"Verify OTP": "otp"
+		"Verify OTP": "verify_otp"
 	};
 
 	const descriptionMap: Record<string, AuthType> = {
 		"Welcome back! Please enter your details to continue.": "login",
 		"Please enter your new password.": "reset_password",
-		"Join us to enjoy personalized features.": "signup",
+		"Join us to enjoy personalized features.": "signup"
 		// "Please enter the code sent to your email": "otp"
 	};
 
@@ -46,12 +46,12 @@
 
 	let otpResponseEmail = $state("");
 	const description = $derived(() => {
-    if (route === 'otp') {
-        return `Please enter the one-time password (OTP) sent to ${otpResponseEmail}`;
-    }
-    const customDesc = Object.entries(descriptionMap).find(([_, r]) => r === route)?.[0];
-    return customDesc || "Welcome back! Please enter your details to continue.";
-});
+		if (route === "verify_otp") {
+			return `Please enter the one-time password (OTP) sent to ${otpResponseEmail}`;
+		}
+		const customDesc = Object.entries(descriptionMap).find(([_, r]) => r === route)?.[0];
+		return customDesc || "Welcome back! Please enter your details to continue.";
+	});
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const isMobile = $derived(mediaQuery.current);
@@ -103,7 +103,11 @@
 			handleLoginSteps();
 		}
 		if (route === "signup") {
-			handleSignUpSteps();
+			if (authState.form.email) {
+				localStorage.setItem("email", authState.form.email);
+			}
+			// handleSignUpSteps();
+			goto("/verify_otp");
 		}
 
 		if (route === "reset_password") {
@@ -111,13 +115,11 @@
 			const { authResponse } = form;
 			const res = authResponse as ConfirmSignInOutput;
 			if (res.nextStep.signInStep === "DONE") {
-				handlePersistUserData()
+				handlePersistUserData();
 			}
 		}
 	});
-	
-	
-	
+
 	const handleLoginSteps = () => {
 		if (!form?.authResponse) return;
 		const { oldPassword: password, authResponse, userAuth } = form;
@@ -127,32 +129,32 @@
 			cookieStore.set("oldPassword", oldPassword);
 			goto("/reset_password");
 		}
-		
+
 		if (res.nextStep.signInStep === "DONE") {
 			// if (userAuth && userAuth.auth.tokenExpiry > 0) {
-				// 	userStore.updateUserStore(userAuth);
+			// 	userStore.updateUserStore(userAuth);
 			// 	isLoading = true;
 			// 	goto("/").then(() => (isLoading = false));
 			// }
-			handlePersistUserData()
+			handlePersistUserData();
 		}
 	};
-	
-	const handleSignUpSteps = () => {
+
+	const handleSignUpSteps = async () => {
 		if (!form?.authResponse) return;
 		const { authResponse } = form;
 		console.log(authResponse);
 		const res = authResponse as SignUpOutput;
-		if(res.nextStep.signUpStep === "CONFIRM_SIGN_UP") {
+		if (res.nextStep.signUpStep === "CONFIRM_SIGN_UP") {
 			otpResponseEmail = res.nextStep.codeDeliveryDetails.destination ?? "";
-			goto("/otp");
+			await cookieStore.set("otpEmail", otpResponseEmail);
+			goto("/verify_otp");
 		}
-		
+
 		if (res.nextStep.signUpStep === "DONE") {
-			handlePersistUserData()
+			handlePersistUserData();
 		}
 	};
-
 
 	const handlePersistUserData = () => {
 		if (!form?.userAuth) return;
@@ -162,7 +164,7 @@
 		goto("/").then(() => (isLoading = false));
 	};
 
-		const handleError = () => {
+	const handleError = () => {
 		isError = true;
 		errorMessage = form.error ?? "";
 
@@ -177,6 +179,11 @@
 		if (route === "reset_password") {
 			const oldP = await cookieStore.get("oldPassword");
 			oldPassword = oldP?.value ?? "";
+		}
+
+		if (route === "verify_otp") {
+			const otpEmail = await cookieStore.get("otpEmail");
+			otpResponseEmail = otpEmail?.value ?? "";
 		}
 	});
 </script>
@@ -255,7 +262,7 @@
 					></Label
 				>
 			{/if}
-			{#if ["signup", "reset_password"].includes(route)}
+			{#if ["signup", "reset_password", "verify_otp"].includes(route)}
 				<Label
 					>Already have an account?<a class="text-primary underline" href="/login">Login</a></Label
 				>

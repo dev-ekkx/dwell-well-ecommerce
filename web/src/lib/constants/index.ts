@@ -62,9 +62,7 @@ export const FORM_FIELDS = {
 			placeholder: "Confirm password"
 		}
 	],
-	otp: [
-		{ name: "otp", label: "OTP", type: "text", placeholder: "Enter your OTP" }
-	]
+	verify_otp: [{ name: "otp", label: "OTP", type: "text", placeholder: "Enter your OTP" }]
 };
 
-export const AUTH_ROUTES = ["login", "signup", "otp", "reset_password"] as const;
+export const AUTH_ROUTES = ["login", "signup", "verify_otp", "reset_password"] as const;

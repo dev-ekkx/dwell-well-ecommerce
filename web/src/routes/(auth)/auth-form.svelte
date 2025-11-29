@@ -10,6 +10,12 @@
 		Root as CommandRoot
 	} from "$lib/components/ui/command";
 	import { Input } from "$lib/components/ui/input";
+	import {
+		InputOTP,
+		InputOTPGroup,
+		InputOTPSeparator,
+		InputOTPSlot
+	} from "$lib/components/ui/input-otp";
 	import { Label } from "$lib/components/ui/label";
 	import {
 		Content as PopoverContent,
@@ -20,6 +26,7 @@
 	import { userStore } from "$lib/store/user-store.svelte";
 	import { cn } from "$lib/utils";
 	import { CheckIcon, ChevronsUpDownIcon, Eye, EyeOff } from "@lucide/svelte/icons";
+	import { REGEXP_ONLY_DIGITS_AND_CHARS } from "bits-ui";
 	import { getContext, onMount, tick } from "svelte";
 	import { z } from "zod";
 
@@ -37,7 +44,9 @@
 	let openCountryDropdown = $state(false);
 	let countryValue = $derived(userCountry?.name ?? "");
 	let triggerRef = $state<HTMLButtonElement>(null!);
+	let email = $state("");
 	const selectedCountry = $derived(countries.find((f) => f.name === countryValue));
+	const formInputs = $derived(data.formInputs);
 
 	$effect(() => {
 		if (selectedCountry?.code) {
@@ -120,14 +129,19 @@
 		if (data["route"] === "signup" && browser) {
 			fetchCountries();
 		}
+		if (data["route"] === "otp" && browser) {
+			const el = localStorage.getItem("email") ?? "";
+			console.log(el);
+		}
 	});
+	$inspect(authState.form);
 </script>
 
 <div class="mt-4 flex w-full flex-col gap-4">
-	{#each data.formInputs as input (input)}
+	{#each formInputs as input (input)}
 		<div class="relative flex w-full flex-col gap-1.5">
 			<Label
-				hidden={input.name === "country"}
+				hidden={["country", "otp"].includes(input.name)}
 				class={input.type === "tel" ? "-mt-4" : ""}
 				for={input.name}>{input.label}</Label
 			>
@@ -205,6 +219,32 @@
 						oninput={() => handleBlur(input.name)}
 					/>
 				</div>
+			{:else if input.name === "otp" && authState.form[input.name] !== undefined}
+				<input hidden type="text" value={email} name="email" id="email" />
+				<InputOTP
+				bind:value={authState.form[input.name]}
+				name={input.name}
+				id={input.name}
+					maxlength={6}
+					pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
+					onblur={() => handleBlur(input.name)}
+					oninput={() => handleBlur(input.name)}
+					class="flex justify-center"
+				>
+					{#snippet children({ cells })}
+						<InputOTPGroup>
+							{#each cells.slice(0, 3) as cell (cell)}
+								<InputOTPSlot {cell} />
+							{/each}
+						</InputOTPGroup>
+						<InputOTPSeparator />
+						<InputOTPGroup>
+							{#each cells.slice(3, 6) as cell (cell)}
+								<InputOTPSlot {cell} />
+							{/each}
+						</InputOTPGroup>
+					{/snippet}
+				</InputOTP>
 			{:else}
 				<Input
 					name={input.name}
