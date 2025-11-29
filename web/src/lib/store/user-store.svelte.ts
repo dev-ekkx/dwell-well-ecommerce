@@ -36,7 +36,7 @@ class UserStore {
 
 	public async logout() {
 		const tasks: Promise<void>[] = [];
-		const keys = ["oldPassword", "userAuth"];
+		const keys = ["oldPassword", "userAuth", "otpEmail"];
 		for (const key of keys) {
 			tasks.push(cookieStore.delete(key));
 		}
