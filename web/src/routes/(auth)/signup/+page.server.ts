@@ -1,6 +1,6 @@
 import type { AmplifyAuthResponseI, UserAuthI } from "$lib/interfaces";
 import { initialState } from "$lib/store/user-store.svelte";
-import { getUserAndAuthData } from "$lib/utils";
+import { getUserAndAuthData, persistSessionData } from "$lib/utils";
 import { type ActionFailure, fail } from "@sveltejs/kit";
 import { signUp, type SignUpInput } from "aws-amplify/auth";
 import parsePhoneNumber, { type CountryCode } from "libphonenumber-js";
@@ -38,12 +38,7 @@ export const actions = {
 			let userAuth: UserAuthI = initialState;
 			if (authResponse.nextStep.signUpStep === "DONE") {
 				userAuth = await getUserAndAuthData();
-				cookies.set("authRes", JSON.stringify(userAuth), {
-					path: "/",
-					httpOnly: true,
-					sameSite: "lax",
-					secure: true
-				});
+				persistSessionData(userAuth, cookies);
 			}
 			return { authResponse, userAuth };
 		} catch (e) {

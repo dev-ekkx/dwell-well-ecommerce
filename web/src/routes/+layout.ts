@@ -1,37 +1,17 @@
-import { browser } from "$app/environment";
 import { AUTH_ROUTES } from "$lib/constants";
-import type { FooterI, PageI, UserAuthI } from "$lib/interfaces";
-import { userStore } from "$lib/store/user-store.svelte";
+import type { FooterI, PageI } from "$lib/interfaces";
 import type { LayoutLoad } from "./$types";
 
 export const load: LayoutLoad = async ({ fetch, url, data }) => {
-	// Fetch user data from cookies
-	if (browser) {
-		const cookieData = await cookieStore.get("userAuth");
-		if (cookieData?.value) {
-			const userAuth = JSON.parse(cookieData?.value as string) as UserAuthI;
-			if (userAuth && userAuth.auth.tokenExpiry > 0) {
-				await userStore.updateUserStore(userAuth);
-			}
-		}
-
-		if (data?.userCountry) {
-			userStore.updateCountryData(data.userCountry);
-		}
-
-		// Auto clear userstore after logout
-		if (url.searchParams.get("isTokenExpired") === "true") {
-			userStore.logout();
-		}
-	}
-
 	const isAuthPage = AUTH_ROUTES.some((r) => url.pathname.endsWith(`/${r}`));
 
 	try {
 		if (isAuthPage) {
 			return {
 				footer: null,
-				homepage: null
+				homepage: null,
+				isAuthenticated: data.isAuthenticated,
+				countryDetails: data.countryDetails
 			};
 		}
 
@@ -45,7 +25,11 @@ export const load: LayoutLoad = async ({ fetch, url, data }) => {
 
 		return {
 			footer,
-			homepage
+			homepage,
+			user: data.user,
+			// auth: data.auth,
+			isAuthenticated: data.isAuthenticated,
+			countryDetails: data.countryDetails
 		};
 	} catch (error) {
 		console.error("Error loading footer data: ", error);

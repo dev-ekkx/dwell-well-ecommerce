@@ -13,7 +13,6 @@
 	import { Label } from "$lib/components/ui/label";
 	import { Spinner } from "$lib/components/ui/spinner";
 	import type { AmplifyAuthResponseI } from "$lib/interfaces";
-	import { userStore } from "$lib/store/user-store.svelte";
 	import type { AuthType } from "$lib/types";
 	import { cn } from "$lib/utils";
 	import CheckCircle2Icon from "@lucide/svelte/icons/check-circle-2";
@@ -104,17 +103,21 @@
 		}
 		if (route === "signup") {
 			if (authState.form.email) {
-				localStorage.setItem("email", authState.form.email);
+				sessionStorage.setItem("email", authState.form.email);
 			}
 			handleSignUpSteps();
 		}
 
 		if (route === "reset_password") {
 			if (!form?.authResponse) return;
-			const { authResponse } = form;
+			const { authResponse, userAuth } = form;
 			const res = authResponse as ConfirmSignInOutput;
 			if (res.nextStep.signInStep === "DONE") {
-				handlePersistUserData();
+				if (userAuth?.user?.role === "customer") {
+					goto("/");
+				} else {
+					goto("/admin");
+				}
 			}
 		}
 
@@ -145,7 +148,7 @@
 			// 	isLoading = true;
 			// 	goto("/").then(() => (isLoading = false));
 			// }
-			handlePersistUserData();
+			handleNavigate();
 		}
 	};
 
@@ -161,16 +164,20 @@
 		}
 
 		if (res.nextStep.signUpStep === "DONE") {
-			handlePersistUserData();
+			handleNavigate();
 		}
 	};
 
-	const handlePersistUserData = () => {
+	const handleNavigate = () => {
 		if (!form?.userAuth) return;
 		const { userAuth } = form;
-		userStore.updateUserStore(userAuth);
+		// userStore.updateUserStore(userAuth);
 		isLoading = true;
-		goto("/").then(() => (isLoading = false));
+		if (userAuth?.user?.role === "customer") {
+			goto("/").then(() => (isLoading = false));
+		} else {
+			goto("/admin").then(() => (isLoading = false));
+		}
 	};
 
 	const handleError = () => {

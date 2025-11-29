@@ -130,7 +130,7 @@
 			fetchCountries();
 		}
 		if (data["route"] === "verify_otp" && browser) {
-			const el = localStorage.getItem("email") ?? "";
+			const el = sessionStorage.getItem("email") ?? "";
 			email = el;
 			console.log(el);
 		}

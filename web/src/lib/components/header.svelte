@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
+	import { enhance } from "$app/forms";
+	import { goto, invalidateAll } from "$app/navigation";
 	import { resolve } from "$app/paths";
 	import { page } from "$app/state";
 	import CloseIcon from "$lib/assets/close.svg";
@@ -23,8 +24,8 @@
 	import { Input } from "$lib/components/ui/input";
 	import { ROUTE_NAVS } from "$lib/constants";
 	import { cartStore } from "$lib/store/cart-store.svelte";
-	import { userStore } from "$lib/store/user-store.svelte";
 	import { cn, createInitial, setRouteParams } from "$lib/utils";
+	import type { SubmitFunction } from "@sveltejs/kit";
 	import { gsap } from "gsap";
 	import { onMount, tick } from "svelte";
 	import { MediaQuery } from "svelte/reactivity";
@@ -52,6 +53,9 @@
 	let searchInput = $state<HTMLInputElement | null>(null);
 	let searchTerm = $state("");
 	const totalCartItems = $derived(() => cartStore.totalItems());
+
+	const userData = $derived(page.data.user);
+	const isAuthenticated = $derived(page.data.isAuthenticated);
 
 	$effect(() => {
 		if (isSearchOpen && searchInput) {
@@ -140,14 +144,13 @@
 		goto(resolve("/login"));
 	};
 
-	const logout = async (event: Event) => {
-		event.preventDefault();
-		fetch("/logout", {
-			body: "logout",
-			method: "POST"
-		}).then(() => {
-			userStore.logout();
-		});
+	const logoutEnhance: SubmitFunction = () => {
+		return async ({ result, update }) => {
+			await update();
+			if (result.type === "redirect") {
+				await invalidateAll();
+			}
+		};
 	};
 
 	const handleDropdownItem = (item: string) => {
@@ -235,7 +238,7 @@
 		</button>
 
 		<!-- Authenticated section -->
-		{#if userStore.isAuthenticated}
+		{#if isAuthenticated}
 			{@render cartAndAvatar()}
 		{/if}
 
@@ -255,7 +258,7 @@
 			</button>
 		{:else}
 			<!-- Desktop Login -->
-			{#if !userStore.isAuthenticated}
+			{#if !isAuthenticated}
 				<Button
 					class="hidden h-full cursor-pointer px-6 lg:inline-flex"
 					onclick={loginAndResetDropdown}
@@ -301,7 +304,7 @@
 		<div class="flex flex-col gap-8 pt-6">
 			{@render navigation(true)}
 
-			{#if !userStore.isAuthenticated}
+			{#if !isAuthenticated}
 				<a
 					onclick={isMenuOpen ? toggleMenu : null}
 					href="/login"
@@ -360,8 +363,8 @@
 						"ml-2": totalCartItems() > 0
 					})}
 				>
-					<AvatarImage src={userStore.userData.image} alt={userStore.userData.name} />
-					<AvatarFallback>{createInitial(userStore.userData.name)}</AvatarFallback>
+					<AvatarImage src={userData.image} alt={userData.name} />
+					<AvatarFallback>{createInitial(userData.name)}</AvatarFallback>
 				</AvatarRoot>
 			</DropdownMenuTrigger>
 
@@ -369,7 +372,7 @@
 				<DropdownMenuLabel>My Account</DropdownMenuLabel>
 				{#each dropdownItems as item (item)}
 					{#if item === "logout"}
-						<form onsubmit={logout}>
+						<form use:enhance={logoutEnhance} method="POST" action="/logout">
 							<button class="w-full">
 								<DropdownMenuItem class="cursor-pointer capitalize">
 									{item}

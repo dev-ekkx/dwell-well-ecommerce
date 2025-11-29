@@ -1,6 +1,6 @@
 import type { AmplifyAuthResponseI, UserAuthI } from "$lib/interfaces";
 import { initialState } from "$lib/store/user-store.svelte";
-import { getUserAndAuthData } from "$lib/utils";
+import { getUserAndAuthData, persistSessionData } from "$lib/utils";
 import { signIn } from "@aws-amplify/auth";
 import { type ActionFailure, fail } from "@sveltejs/kit";
 import type { Actions } from "./$types";
@@ -23,12 +23,7 @@ export const actions = {
 			let userAuth: UserAuthI = initialState;
 			if (authResponse.nextStep.signInStep === "DONE") {
 				userAuth = await getUserAndAuthData();
-				cookies.set("authRes", JSON.stringify(userAuth), {
-					path: "/",
-					httpOnly: true,
-					sameSite: "lax",
-					secure: true
-				});
+				persistSessionData(userAuth, cookies);
 			}
 			return {
 				userAuth,
