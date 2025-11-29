@@ -1,7 +1,7 @@
 import type { AmplifyAuthResponseI, UserAuthI } from "$lib/interfaces";
 import { initialState } from "$lib/store/user-store.svelte";
 import { getUserAndAuthData, persistSessionData } from "$lib/utils";
-import { type ActionFailure, fail, redirect } from "@sveltejs/kit";
+import { type ActionFailure, fail } from "@sveltejs/kit";
 import { signUp, type SignUpInput } from "aws-amplify/auth";
 import parsePhoneNumber, { type CountryCode } from "libphonenumber-js";
 import type { Actions } from "./$types";
@@ -39,12 +39,6 @@ export const actions = {
 			if (authResponse.nextStep.signUpStep === "DONE") {
 				userAuth = await getUserAndAuthData();
 				persistSessionData(userAuth, cookies);
-
-				if (userAuth.user.role === "customer") {
-					redirect(302, "/");
-				} else {
-					redirect(302, "/admin");
-				}
 			}
 			return { authResponse, userAuth };
 		} catch (e) {

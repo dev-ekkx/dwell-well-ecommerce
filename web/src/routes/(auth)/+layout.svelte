@@ -110,11 +110,15 @@
 
 		if (route === "reset_password") {
 			if (!form?.authResponse) return;
-			const { authResponse } = form;
+			const { authResponse, userAuth } = form;
 			const res = authResponse as ConfirmSignInOutput;
-			// if (res.nextStep.signInStep === "DONE") {
-			// 	handlePersistUserData();
-			// }
+			if (res.nextStep.signInStep === "DONE") {
+				if (userAuth?.user?.role === "customer") {
+					goto("/");
+				} else {
+					goto("/admin");
+				}
+			}
 		}
 
 		if (route === "verify_otp") {
@@ -131,20 +135,21 @@
 		if (!form?.authResponse) return;
 		const { oldPassword: password, authResponse } = form;
 		const loginRes = authResponse as ConfirmSignInOutput;
+		const signUpRes = authResponse as ConfirmSignUpOutput;
 		if (loginRes.nextStep?.signInStep === "CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED") {
 			oldPassword = password ?? "";
 			cookieStore.set("oldPassword", oldPassword);
 			goto("/reset_password");
 		}
 
-		// if (loginRes.nextStep.signInStep === "DONE" || signUpRes.nextStep.signUpStep === "DONE") {
-		// 	// if (userAuth && userAuth.auth.tokenExpiry > 0) {
-		// 	// 	userStore.updateUserStore(userAuth);
-		// 	// 	isLoading = true;
-		// 	// 	goto("/").then(() => (isLoading = false));
-		// 	// }
-		// 	handlePersistUserData();
-		// }
+		if (loginRes.nextStep.signInStep === "DONE" || signUpRes.nextStep.signUpStep === "DONE") {
+			// if (userAuth && userAuth.auth.tokenExpiry > 0) {
+			// 	userStore.updateUserStore(userAuth);
+			// 	isLoading = true;
+			// 	goto("/").then(() => (isLoading = false));
+			// }
+			handleNavigate();
+		}
 	};
 
 	const handleSignUpSteps = async () => {
@@ -158,18 +163,22 @@
 			goto("/verify_otp");
 		}
 
-		// if (res.nextStep.signUpStep === "DONE") {
-		// 	handlePersistUserData();
-		// }
+		if (res.nextStep.signUpStep === "DONE") {
+			handleNavigate();
+		}
 	};
 
-	// const handlePersistUserData = () => {
-	// 	if (!form?.userAuth) return;
-	// 	const { userAuth } = form;
-	// 	userStore.updateUserStore(userAuth);
-	// 	isLoading = true;
-	// 	goto("/").then(() => (isLoading = false));
-	// };
+	const handleNavigate = () => {
+		if (!form?.userAuth) return;
+		const { userAuth } = form;
+		// userStore.updateUserStore(userAuth);
+		isLoading = true;
+		if (userAuth?.user?.role === "customer") {
+			goto("/").then(() => (isLoading = false));
+		} else {
+			goto("/admin").then(() => (isLoading = false));
+		}
+	};
 
 	const handleError = () => {
 		isError = true;

@@ -8,16 +8,27 @@ import { signOut } from "aws-amplify/auth";
 const handleTokenExpiry: Handle = async ({ event, resolve }) => {
 	const { cookies } = event;
 	const { auth } = JSON.parse(event.cookies.get("session") ?? "{}") as UserAuthI;
-
-	const tokenExpiry = auth.tokenExpiry;
+	const route = event.route.id;
+	const tokenExpiry = auth?.tokenExpiry ?? 0;
 	const isTokenExpired = checkTokenExpiry(tokenExpiry);
+
+	if (route?.includes("(auth)")) {
+		return resolve(event);
+	}
 
 	if (isTokenExpired) {
 		await signOut();
 		cookies.delete("session", {
-			path: "/"
+			path: "/",
+			httpOnly: true,
+			sameSite: "lax",
+			secure: true
 		});
-		return redirect(303, "/?isTokenExpired=true");
+		event.locals.user = null;
+		event.locals.auth = null;
+		if (route !== "/") {
+			redirect(303, "/");
+		}
 	}
 
 	return resolve(event);
@@ -28,7 +39,7 @@ const handleAuthCheck: Handle = async ({ event, resolve }) => {
 	event.locals.auth = null;
 	const { auth, user } = JSON.parse(event.cookies.get("session") ?? "{}") as UserAuthI;
 	const route = event.route.id;
-	const isAuthenticated = !!auth.idToken;
+	const isAuthenticated = !!auth?.idToken;
 
 	event.locals.isAuthenticated = isAuthenticated;
 	if (isAuthenticated) {
@@ -36,8 +47,10 @@ const handleAuthCheck: Handle = async ({ event, resolve }) => {
 		event.locals.auth = auth;
 	}
 
-	if (route?.includes("(auth)") && isAuthenticated) {
-		return redirect(303, "/");
+	const authRoutes = ["/login", "/register", "/reset-password", "/verify_otp"];
+
+	if (route && authRoutes.includes(route) && isAuthenticated) {
+		redirect(303, "/");
 	}
 
 	return resolve(event);
