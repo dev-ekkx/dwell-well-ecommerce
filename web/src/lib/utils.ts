@@ -124,12 +124,11 @@ export const getUserAndAuthData = async () => {
 	};
 };
 
-
 export const persistSessionData = (userAuth: UserAuthI, cookies: Cookies) => {
 	cookies.set("session", JSON.stringify(userAuth), {
-					path: "/",
-					httpOnly: true,
-					sameSite: "lax",
-					secure: true
-				});
-}
+		path: "/",
+		httpOnly: true,
+		sameSite: "lax",
+		secure: true
+	});
+};

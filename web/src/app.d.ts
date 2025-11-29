@@ -16,31 +16,21 @@
 
 // export {};
 
-
 // src/app.d.ts
 
 // Import your user interface (adjust path as needed)
-import type { UserAuthI } from '$lib/interfaces';
+import type { UserAuthI } from "$lib/interfaces";
 
-// See https://kit.svelte.dev/docs/types#app
-// for information about these interfaces
 declare global {
 	namespace App {
-		// interface Error {}
 		interface Locals {
-			// CRITICAL: Define the structure of your session data
-            // It should be your full user object or null/undefined if not authenticated.
-			user: UserAuthI["user"] | null; 
-            
-            // If you store the full session data as well
-            session: UserAuthI["auth"] | null; 
-            
-            // If you track a simple isAuthenticated boolean
-            isAuthenticated: boolean;
+			user: UserAuthI["user"] | null;
+			auth: UserAuthI["auth"] | null;
+			isAuthenticated: boolean;
 		}
 		// interface PageData {}
 		// interface Platform {}
 	}
 }
 
-export { };
+export {};

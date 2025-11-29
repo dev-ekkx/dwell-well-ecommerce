@@ -22,7 +22,7 @@ export const actions = {
 				persistSessionData(userAuth, cookies);
 				if (userAuth.user.role === "customer") {
 					redirect(302, "/");
-				}else {
+				} else {
 					redirect(302, "/admin");
 				}
 			}

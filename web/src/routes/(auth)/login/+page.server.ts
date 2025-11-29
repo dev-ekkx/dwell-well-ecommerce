@@ -24,11 +24,11 @@ export const actions = {
 			if (authResponse.nextStep.signInStep === "DONE") {
 				userAuth = await getUserAndAuthData();
 				persistSessionData(userAuth, cookies);
-				console.log("user role: ", userAuth.user.role)
+				console.log("user role: ", userAuth.user.role);
 
 				if (userAuth.user.role === "customer") {
 					redirect(303, "/");
-				}else {
+				} else {
 					redirect(303, "/admin");
 				}
 			}
