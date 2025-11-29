@@ -363,8 +363,8 @@
 						"ml-2": totalCartItems() > 0
 					})}
 				>
-					<AvatarImage src={userData.image} alt={userData.name} />
-					<AvatarFallback>{createInitial(userData.name)}</AvatarFallback>
+					<AvatarImage src={userData?.image} alt={userData?.name} />
+					<AvatarFallback>{createInitial(userData?.name)}</AvatarFallback>
 				</AvatarRoot>
 			</DropdownMenuTrigger>
 

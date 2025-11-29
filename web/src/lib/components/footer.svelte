@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { Input } from "$lib/components/ui/input/index.js";
-	import { Button } from "$lib/components/ui/button";
 	import { resolve } from "$app/paths";
 	import type { RouteId } from "$app/types";
+	import { Button } from "$lib/components/ui/button";
+	import { Input } from "$lib/components/ui/input/index.js";
 	import type { FooterI } from "$lib/interfaces";
-	import { onMount } from "svelte";
-	import { marked } from "marked";
 	import DOMPurify from "dompurify";
+	import { marked } from "marked";
+	import { onMount } from "svelte";
 
 	const { footer } = $props();
 	const footerData = footer as FooterI;
@@ -32,8 +32,8 @@
 			class="flex flex-col gap-2 text-center md:text-left lg:flex-row lg:items-center lg:justify-between"
 		>
 			<div class="flex flex-col gap-4">
-				<span class="text-lg font-semibold">{footerData.newsletterTitle}</span>
-				<p class="max-w-lg">{footerData.newsletterDescription}</p>
+				<span class="text-lg font-semibold">{footerData?.newsletterTitle}</span>
+				<p class="max-w-lg">{footerData?.newsletterDescription}</p>
 			</div>
 
 			<div class="flex flex-col gap-2">
@@ -87,7 +87,7 @@
 
 	<!--	Copyright and socials section-->
 	<section class="flex flex-col items-center justify-center gap-4 lg:flex-row lg:justify-between">
-		<span>&copy; {new Date().getFullYear()} {footerData.copyrightText}</span>
+		<span>&copy; {new Date().getFullYear()} {footerData?.copyrightText}</span>
 		<div class="flex items-center gap-4">
 			{#each socials as social (social)}
 				<img class="h-5 w-5" src={`${social.icon.url}`} alt={social.icon.alternativeText} />
