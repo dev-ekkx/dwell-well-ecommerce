@@ -56,6 +56,24 @@ const handleAuthCheck: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
+const handleAuthGuards: Handle = async ({ event, resolve }) => {
+	const route = event.route.id;
+	const locals = event.locals;
+	const isAuthenticated = locals.isAuthenticated;
+	const user = locals.user;
+	const hasAccess = user?.role !== "customer";
+
+	if (!isAuthenticated) {
+		redirect(303, "/login");
+	}
+
+	if (!hasAccess && route?.includes("(sales_support)")) {
+		redirect(303, "/");
+	}
+
+	return resolve(event);
+};
+
 const handleParaglide: Handle = ({ event, resolve }) =>
 	paraglideMiddleware(event.request, ({ request, locale }) => {
 		event.request = request;
@@ -65,4 +83,9 @@ const handleParaglide: Handle = ({ event, resolve }) =>
 		});
 	});
 
-export const handle: Handle = sequence(handleTokenExpiry, handleAuthCheck, handleParaglide);
+export const handle: Handle = sequence(
+	handleTokenExpiry,
+	handleAuthCheck,
+	handleAuthGuards,
+	handleParaglide
+);
