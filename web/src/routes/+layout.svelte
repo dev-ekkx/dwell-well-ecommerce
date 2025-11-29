@@ -34,6 +34,9 @@
 	});
 
 	const isAuthPage = $derived(AUTH_ROUTES.some((r) => page.url.pathname.endsWith(`/${r}`)));
+	const shouldDisplayComponent = $derived(
+		!isAuthPage || !page.url.pathname.includes("/sales_support")
+	);
 </script>
 
 <svelte:head>
@@ -45,7 +48,7 @@
 {/if}
 
 <!--Header component-->
-{#if !isAuthPage}
+{#if shouldDisplayComponent}
 	<HeaderComponent />
 {/if}
 
@@ -59,6 +62,6 @@
 </div>
 
 <!--Footer component-->
-{#if !isAuthPage}
+{#if shouldDisplayComponent}
 	<FooterComponent footer={data.footer} />
 {/if}
