@@ -103,7 +103,7 @@
 		}
 		if (route === "signup") {
 			if (authState.form.email) {
-				localStorage.setItem("email", authState.form.email);
+				sessionStorage.setItem("email", authState.form.email);
 			}
 			handleSignUpSteps();
 		}
@@ -131,7 +131,6 @@
 		if (!form?.authResponse) return;
 		const { oldPassword: password, authResponse } = form;
 		const loginRes = authResponse as ConfirmSignInOutput;
-		const signUpRes = authResponse as ConfirmSignUpOutput;
 		if (loginRes.nextStep?.signInStep === "CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED") {
 			oldPassword = password ?? "";
 			cookieStore.set("oldPassword", oldPassword);

@@ -1,7 +1,4 @@
-// import { paraglideMiddleware } from "$lib/paraglide/server";
-// import { checkTokenExpiry } from "$lib/utils";
-// import type { Handle } from "@sveltejs/kit";
-
+import type { UserAuthI } from "$lib/interfaces";
 import { paraglideMiddleware } from "$lib/paraglide/server";
 import { checkTokenExpiry } from "$lib/utils";
 import { redirect, type Handle } from "@sveltejs/kit";
@@ -15,7 +12,6 @@ const handleTokenExpiry: Handle = async ({ event, resolve }) => {
 	const authRes = JSON.parse(cookies.get("authRes") ?? "{}");
 	const tokenExpiry = authRes?.auth?.tokenExpiry;
 	const isTokenExpired = checkTokenExpiry(tokenExpiry);
-	console.log(isTokenExpired);
 
 	if (isTokenExpired) {
 		await signOut();
@@ -30,16 +26,21 @@ const handleTokenExpiry: Handle = async ({ event, resolve }) => {
 
 
 const handleAuthCheck: Handle = async ({ event, resolve }) => {
-    // In a real app, you'd verify a session cookie and set event.locals.user
-    const sessionCookie = event.cookies.get('authRes'); 
+    event.locals.user = null;
+    event.locals.session = null;
+    const {auth, user} = JSON.parse(event.cookies.get('session') ?? "{}") as UserAuthI; 
+	const route = event.route.id
+    const isAuthenticated = !!auth.idToken; 
     
-    // Assume isAuthenticated is a boolean after checking the cookie
-    const isAuthenticated = !!sessionCookie; // Replace with actual verification
-    
-    // Store authentication status (or user data) in locals
-    // event.locals.isAuthenticated = isAuthenticated; 
+	event.locals.isAuthenticated = isAuthenticated; 
+	if (isAuthenticated) {
+		event.locals.user = user;
+		event.locals.session = auth;
+	}
 
-	console.log(sessionCookie, isAuthenticated);
+	if (route?.includes("(auth)") && isAuthenticated) {
+		return redirect(303, "/");
+	}
 
     return resolve(event);
 };
