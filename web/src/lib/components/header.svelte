@@ -1,26 +1,18 @@
 <script lang="ts">
-	import { resolve } from "$app/paths";
-	import { cn, createInitial, setRouteParams } from "$lib/utils";
-	import { page } from "$app/state";
-	import SearchIcon from "$lib/assets/search.svg";
-	import { Button } from "$lib/components/ui/button";
-	import LogoComponent from "$lib/components/logo.svelte";
-	import HamburgerIcon from "$lib/assets/menu.svg";
-	import CloseIcon from "$lib/assets/close.svg";
-	import { gsap } from "gsap";
-	import { onMount, tick } from "svelte";
 	import { goto } from "$app/navigation";
-	import { Input } from "$lib/components/ui/input";
-	import { MediaQuery } from "svelte/reactivity";
-	import { ROUTE_NAVS } from "$lib/constants";
+	import { resolve } from "$app/paths";
+	import { page } from "$app/state";
+	import CloseIcon from "$lib/assets/close.svg";
 	import MenuCartIcon from "$lib/assets/menu-cart.svg";
+	import HamburgerIcon from "$lib/assets/menu.svg";
+	import SearchIcon from "$lib/assets/search.svg";
+	import LogoComponent from "$lib/components/logo.svelte";
 	import {
 		Fallback as AvatarFallback,
 		Image as AvatarImage,
 		Root as AvatarRoot
 	} from "$lib/components/ui/avatar/index.js";
-	import { userStore } from "$lib/store/user-store.svelte";
-	import { cartStore } from "$lib/store/cart-store.svelte";
+	import { Button } from "$lib/components/ui/button";
 	import {
 		Content as DropdownMenuContent,
 		Item as DropdownMenuItem,
@@ -28,6 +20,14 @@
 		Root as DropdownMenuRoot,
 		Trigger as DropdownMenuTrigger
 	} from "$lib/components/ui/dropdown-menu";
+	import { Input } from "$lib/components/ui/input";
+	import { ROUTE_NAVS } from "$lib/constants";
+	import { cartStore } from "$lib/store/cart-store.svelte";
+	import { userStore } from "$lib/store/user-store.svelte";
+	import { cn, createInitial, setRouteParams } from "$lib/utils";
+	import { gsap } from "gsap";
+	import { onMount, tick } from "svelte";
+	import { MediaQuery } from "svelte/reactivity";
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const isMobile = $derived(mediaQuery.current);
@@ -291,12 +291,12 @@
 
 <!--Mobile Menu component-->
 {#if showMenuOverlay}
-	<div class="fixed top-0 z-20 h-screen w-screen bg-black/60 backdrop-blur-xs"></div>
+	<div class="fixed top-0 z-30 h-screen w-screen bg-black/60 backdrop-blur-xs"></div>
 {/if}
 {#if isMenuOpen}
 	<section
 		bind:this={menu}
-		class="fixed top-[8vh] left-0 z-20 h-max w-full bg-white g-px pb-4 shadow-md"
+		class="fixed top-[8vh] left-0 z-30 h-max w-full bg-white g-px pb-4 shadow-md"
 	>
 		<div class="flex flex-col gap-8 pt-6">
 			{@render navigation(true)}
@@ -370,7 +370,7 @@
 				{#each dropdownItems as item (item)}
 					{#if item === "logout"}
 						<form onsubmit={logout}>
-							<button>
+							<button class="w-full">
 								<DropdownMenuItem class="cursor-pointer capitalize">
 									{item}
 								</DropdownMenuItem>

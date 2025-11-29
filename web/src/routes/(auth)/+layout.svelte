@@ -1,25 +1,26 @@
 <script lang="ts">
-	import AuthBackground from "$lib/assets/images/auth-bg.webp";
-	import { cn } from "$lib/utils";
-	import Logo from "$lib/components/logo.svelte";
-	import { Checkbox } from "$lib/components/ui/checkbox";
-	import { Label } from "$lib/components/ui/label";
-	import { onMount, setContext } from "svelte";
-	import { MediaQuery } from "svelte/reactivity";
-	import { Button } from "$lib/components/ui/button";
 	import { enhance } from "$app/forms";
-	import { Spinner } from "$lib/components/ui/spinner";
+	import { goto } from "$app/navigation";
+	import AuthBackground from "$lib/assets/images/auth-bg.webp";
+	import Logo from "$lib/components/logo.svelte";
 	import {
 		Description as AlertDescription,
 		Root as AlertRoot,
 		Title as AlertTitle
 	} from "$lib/components/ui/alert";
-	import CheckCircle2Icon from "@lucide/svelte/icons/check-circle-2";
-	import type { AuthType } from "$lib/types";
-	import { goto } from "$app/navigation";
-	import type { LayoutProps } from "./$types";
+	import { Button } from "$lib/components/ui/button";
+	import { Checkbox } from "$lib/components/ui/checkbox";
+	import { Label } from "$lib/components/ui/label";
+	import { Spinner } from "$lib/components/ui/spinner";
 	import type { AmplifyAuthResponseI } from "$lib/interfaces";
 	import { userStore } from "$lib/store/user-store.svelte";
+	import type { AuthType } from "$lib/types";
+	import { cn } from "$lib/utils";
+	import CheckCircle2Icon from "@lucide/svelte/icons/check-circle-2";
+	import type { ConfirmSignInOutput, ConfirmSignUpOutput, SignUpOutput } from "aws-amplify/auth";
+	import { onMount, setContext } from "svelte";
+	import { MediaQuery } from "svelte/reactivity";
+	import type { LayoutProps } from "./$types";
 
 	type Props = LayoutProps & {
 		form: AmplifyAuthResponseI;
@@ -30,22 +31,27 @@
 		Login: "login",
 		"Reset Password": "reset_password",
 		"Create an Account": "signup",
-		"Verify OTP": "otp"
+		"Verify OTP": "verify_otp"
 	};
 
 	const descriptionMap: Record<string, AuthType> = {
 		"Welcome back! Please enter your details to continue.": "login",
 		"Please enter your new password.": "reset_password",
-		"Join us to enjoy personalized features.": "signup",
-		"Please enter the code sent to your email": "otp"
+		"Join us to enjoy personalized features.": "signup"
+		// "Please enter the code sent to your email": "otp"
 	};
 
 	const route = $derived(data.route || "");
 	const title = $derived(Object.entries(titleMap).find(([_, r]) => r === route)?.[0] || "Login");
-	const description = $derived(
-		Object.entries(descriptionMap).find(([_, r]) => r === route)?.[0] ||
-			"Welcome back! Please enter your details to continue."
-	);
+
+	let otpResponseEmail = $state("");
+	const description = $derived(() => {
+		if (route === "verify_otp") {
+			return `Please enter the one-time password (OTP) sent to ${otpResponseEmail}`;
+		}
+		const customDesc = Object.entries(descriptionMap).find(([_, r]) => r === route)?.[0];
+		return customDesc || "Welcome back! Please enter your details to continue.";
+	});
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const isMobile = $derived(mediaQuery.current);
@@ -96,15 +102,76 @@
 		if (route === "login") {
 			handleLoginSteps();
 		}
+		if (route === "signup") {
+			if (authState.form.email) {
+				localStorage.setItem("email", authState.form.email);
+			}
+			handleSignUpSteps();
+		}
 
 		if (route === "reset_password") {
 			if (!form?.authResponse) return;
 			const { authResponse } = form;
-			if (authResponse.nextStep.signInStep === "DONE") {
+			const res = authResponse as ConfirmSignInOutput;
+			if (res.nextStep.signInStep === "DONE") {
+				handlePersistUserData();
+			}
+		}
+
+		if (route === "verify_otp") {
+			if (!form?.authResponse) return;
+			const { authResponse } = form;
+			const res = authResponse as ConfirmSignUpOutput;
+			if (res.nextStep.signUpStep === "DONE") {
 				goto("/login");
 			}
 		}
 	});
+
+	const handleLoginSteps = () => {
+		if (!form?.authResponse) return;
+		const { oldPassword: password, authResponse } = form;
+		const loginRes = authResponse as ConfirmSignInOutput;
+		const signUpRes = authResponse as ConfirmSignUpOutput;
+		if (loginRes.nextStep?.signInStep === "CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED") {
+			oldPassword = password ?? "";
+			cookieStore.set("oldPassword", oldPassword);
+			goto("/reset_password");
+		}
+
+		if (loginRes.nextStep.signInStep === "DONE" || signUpRes.nextStep.signUpStep === "DONE") {
+			// if (userAuth && userAuth.auth.tokenExpiry > 0) {
+			// 	userStore.updateUserStore(userAuth);
+			// 	isLoading = true;
+			// 	goto("/").then(() => (isLoading = false));
+			// }
+			handlePersistUserData();
+		}
+	};
+
+	const handleSignUpSteps = async () => {
+		if (!form?.authResponse) return;
+		const { authResponse } = form;
+		console.log(authResponse);
+		const res = authResponse as SignUpOutput;
+		if (res.nextStep.signUpStep === "CONFIRM_SIGN_UP") {
+			otpResponseEmail = res.nextStep.codeDeliveryDetails.destination ?? "";
+			await cookieStore.set("otpEmail", otpResponseEmail);
+			goto("/verify_otp");
+		}
+
+		if (res.nextStep.signUpStep === "DONE") {
+			handlePersistUserData();
+		}
+	};
+
+	const handlePersistUserData = () => {
+		if (!form?.userAuth) return;
+		const { userAuth } = form;
+		userStore.updateUserStore(userAuth);
+		isLoading = true;
+		goto("/").then(() => (isLoading = false));
+	};
 
 	const handleError = () => {
 		isError = true;
@@ -117,29 +184,15 @@
 		return () => clearTimeout(timer);
 	};
 
-	const handleLoginSteps = () => {
-		if (!form?.authResponse) return;
-		const { oldPassword: password, authResponse, userAuth } = form;
-		if (authResponse?.nextStep.signInStep === "CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED") {
-			oldPassword = password ?? "";
-			cookieStore.set("oldPassword", oldPassword);
-			goto("/reset_password");
-		}
-
-		if (authResponse.nextStep.signInStep === "DONE") {
-			console.log(userAuth);
-			if (userAuth && userAuth.auth.tokenExpiry > 0) {
-				userStore.updateUserStore(userAuth);
-				isLoading = true;
-				goto("/").then(() => (isLoading = false));
-			}
-		}
-	};
-
 	onMount(async () => {
 		if (route === "reset_password") {
 			const oldP = await cookieStore.get("oldPassword");
 			oldPassword = oldP?.value ?? "";
+		}
+
+		if (route === "verify_otp") {
+			const otpEmail = await cookieStore.get("otpEmail");
+			otpResponseEmail = otpEmail?.value ?? "";
 		}
 	});
 </script>
@@ -168,7 +221,7 @@
 		>
 			<Logo />
 			<h2 class="mt-1 auth-heading">{title}</h2>
-			<p>{description}</p>
+			<p>{description()}</p>
 
 			<!-- Alert component -->
 			{#if isError}
@@ -218,7 +271,7 @@
 					></Label
 				>
 			{/if}
-			{#if ["signup", "reset_password"].includes(route)}
+			{#if ["signup", "reset_password", "verify_otp"].includes(route)}
 				<Label
 					>Already have an account?<a class="text-primary underline" href="/login">Login</a></Label
 				>

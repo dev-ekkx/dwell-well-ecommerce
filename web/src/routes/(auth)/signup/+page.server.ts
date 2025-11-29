@@ -1,8 +1,9 @@
 import type { AmplifyAuthResponseI, UserAuthI } from "$lib/interfaces";
 import { initialState } from "$lib/store/user-store.svelte";
 import { getUserAndAuthData } from "$lib/utils";
-import { signIn } from "@aws-amplify/auth";
 import { type ActionFailure, fail } from "@sveltejs/kit";
+import { signUp, type SignUpInput } from "aws-amplify/auth";
+import parsePhoneNumber, { type CountryCode } from "libphonenumber-js";
 import type { Actions } from "./$types";
 
 export const actions = {
@@ -11,17 +12,31 @@ export const actions = {
 		cookies
 	}): Promise<AmplifyAuthResponseI | ActionFailure<{ error: string }>> => {
 		const data = await request.formData();
-		const email = data.get("email");
-		const password = data.get("password");
+		const name = String(data.get("name") ?? "");
+		const email = String(data.get("email") ?? "");
+		const password = String(data.get("password") ?? "");
+		const phone = String(data.get("phone") ?? "");
+		const countryCode = data.get("country") as CountryCode;
+
+		const parsedNumber = parsePhoneNumber(phone, countryCode);
+		const phone_number = parsedNumber?.number ?? "";
+
+		const user: SignUpInput = {
+			username: email,
+			password,
+			options: {
+				userAttributes: {
+					email,
+					phone_number,
+					name
+				}
+			}
+		};
 
 		try {
-			const user = {
-				username: String(email ?? ""),
-				password: String(password ?? "")
-			};
-			const authResponse = await signIn(user);
+			const authResponse = await signUp(user);
 			let userAuth: UserAuthI = initialState;
-			if (authResponse.nextStep.signInStep === "DONE") {
+			if (authResponse.nextStep.signUpStep === "DONE") {
 				userAuth = await getUserAndAuthData();
 				cookies.set("authRes", JSON.stringify(userAuth), {
 					path: "/",
@@ -30,11 +45,7 @@ export const actions = {
 					secure: true
 				});
 			}
-			return {
-				userAuth,
-				authResponse,
-				oldPassword: String(password ?? "")
-			};
+			return { authResponse, userAuth };
 		} catch (e) {
 			return fail(400, { error: (e as Error).message });
 		}

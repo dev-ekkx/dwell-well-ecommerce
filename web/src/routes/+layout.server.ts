@@ -2,7 +2,7 @@ import type { LayoutServerLoad } from "./$types";
 import { Amplify } from "aws-amplify";
 import { IDENTITY_POOL_ID, USER_CLIENT_POOL_ID, USER_POOL_ID } from "$env/static/private";
 
-export const load: LayoutServerLoad = () => {
+export const load: LayoutServerLoad = async ({ fetch }) => {
 	Amplify.configure({
 		Auth: {
 			Cognito: {
@@ -12,4 +12,11 @@ export const load: LayoutServerLoad = () => {
 			}
 		}
 	});
+
+	const res = await fetch("https://get.geojs.io/v1/ip/country.json");
+	const userCountry = await res.json();
+
+	return {
+		userCountry
+	};
 };

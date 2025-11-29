@@ -1,6 +1,11 @@
-import type { HTMLButtonAttributes } from "svelte/elements";
 import type { ContentSectionT } from "$lib/types";
-import type { ConfirmSignInOutput, SignInOutput } from "@aws-amplify/auth";
+import type {
+	ConfirmSignInOutput,
+	ConfirmSignUpOutput,
+	SignInOutput,
+	SignUpOutput
+} from "@aws-amplify/auth";
+import type { HTMLButtonAttributes } from "svelte/elements";
 
 export interface ButtonI extends HTMLButtonAttributes {
 	direction: "left" | "right";
@@ -309,6 +314,7 @@ export interface AuthI {
 export interface UserAuthI {
 	user: UserI;
 	auth: AuthI;
+	countryDetails?: UserCountryI;
 }
 
 // Interface for User Store
@@ -343,9 +349,29 @@ export interface AmplifyAuthResponseI {
 	error?: string;
 	oldPassword?: string;
 	isLogout?: boolean;
-	authResponse?: SignInOutput | ConfirmSignInOutput;
+	authResponse?: SignInOutput | ConfirmSignInOutput | SignUpOutput | ConfirmSignUpOutput;
 	userAuth?: UserAuthI;
 }
 
 // interface for the user store
 export interface UserStoreI {}
+
+// interface for UserCountry
+export interface UserCountryI {
+	name: string;
+	country_3: string;
+	country: string;
+	ip: string;
+}
+
+// Interface for Country dropdown
+export interface CountryAndFlagI {
+	name: string;
+	code: string;
+	flags: {
+		alt: string;
+		svg: string;
+		png: string;
+	};
+	callingCode: string;
+}

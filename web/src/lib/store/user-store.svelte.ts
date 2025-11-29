@@ -1,4 +1,4 @@
-import type { UserAuthI } from "$lib/interfaces";
+import type { UserAuthI, UserCountryI } from "$lib/interfaces";
 
 export const initialState = {
 	user: {
@@ -22,6 +22,7 @@ class UserStore {
 	private store = $state<UserAuthI>(initialState);
 	public userData = $derived(this.store.user);
 	public authData = $derived(this.store.auth);
+	public countryData = $derived(this.store.countryDetails);
 
 	public async updateUserStore(userAuth: UserAuthI) {
 		await cookieStore.set("userAuth", JSON.stringify(userAuth));
@@ -29,9 +30,13 @@ class UserStore {
 		this.authenticated = true;
 	}
 
+	public updateCountryData(data: UserCountryI) {
+		this.store = { ...this.store, countryDetails: data };
+	}
+
 	public async logout() {
 		const tasks: Promise<void>[] = [];
-		const keys = ["oldPassword", "userAuth"];
+		const keys = ["oldPassword", "userAuth", "otpEmail"];
 		for (const key of keys) {
 			tasks.push(cookieStore.delete(key));
 		}

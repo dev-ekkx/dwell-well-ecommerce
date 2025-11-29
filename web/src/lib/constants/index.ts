@@ -32,6 +32,8 @@ export const FORM_FIELDS = {
 	signup: [
 		{ name: "name", label: "Full Name", type: "text", placeholder: "Enter your name" },
 		{ name: "email", label: "Email", type: "email", placeholder: "Enter your email" },
+		{ name: "country", label: "Country", type: "text", placeholder: "Enter your country" },
+		{ name: "phone", label: "Phone Number", type: "tel", placeholder: "Enter your phone number" },
 		{ name: "password", label: "Password", type: "password", placeholder: "Enter password" },
 		{
 			name: "confirmPassword",
@@ -60,10 +62,7 @@ export const FORM_FIELDS = {
 			placeholder: "Confirm password"
 		}
 	],
-	otp: [
-		{ name: "email", label: "Email", type: "email", placeholder: "Enter your email" },
-		{ name: "password", label: "Password", type: "password", placeholder: "Enter your password" }
-	]
+	verify_otp: [{ name: "otp", label: "OTP", type: "text", placeholder: "Enter your OTP" }]
 };
 
-export const AUTH_ROUTES = ["login", "signup", "otp", "reset_password"] as const;
+export const AUTH_ROUTES = ["login", "signup", "verify_otp", "reset_password"] as const;
