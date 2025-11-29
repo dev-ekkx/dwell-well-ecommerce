@@ -1,13 +1,14 @@
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
-import { SvelteURLSearchParams } from "svelte/reactivity";
-import { page } from "$app/state";
 import { goto } from "$app/navigation";
 import { resolve } from "$app/paths";
+import { page } from "$app/state";
 import type { RouteId } from "$app/types";
-import { marked } from "marked";
-import { fetchAuthSession, getCurrentUser } from "aws-amplify/auth";
 import type { UserAuthI } from "$lib/interfaces";
+import type { Cookies } from "@sveltejs/kit";
+import { fetchAuthSession, getCurrentUser } from "aws-amplify/auth";
+import { type ClassValue, clsx } from "clsx";
+import { marked } from "marked";
+import { SvelteURLSearchParams } from "svelte/reactivity";
+import { twMerge } from "tailwind-merge";
 
 // SHADCN SVELTE TYPES (DON'T DELETE)
 export type WithoutChild<T> = T extends { child?: unknown } ? Omit<T, "child"> : T;
@@ -122,3 +123,13 @@ export const getUserAndAuthData = async () => {
 		}
 	};
 };
+
+
+export const persistServerCookie = (userAuth: UserAuthI, cookies: Cookies) => {
+	cookies.set("authRes", JSON.stringify(userAuth), {
+					path: "/",
+					httpOnly: true,
+					sameSite: "strict",
+					secure: true
+				});
+}
