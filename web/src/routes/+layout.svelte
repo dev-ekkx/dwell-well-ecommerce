@@ -33,15 +33,11 @@
 		localStorage.setItem("displayCookieBanner", String(isCookieBannerVisible));
 	});
 
-
 	const isAuthPage = $derived(AUTH_ROUTES.some((r) => page.url.pathname.endsWith(`/${r}`)));
-	
-	const shouldDisplayComponent = $derived(
-    !isAuthPage && 
-    (!page?.route?.id || !page.route.id.includes("(sales_support)"))
-);
 
-	$inspect(shouldDisplayComponent)
+	const shouldDisplayComponent = $derived(
+		!isAuthPage && (!page?.route?.id || !page.route.id.includes("(sales_support)"))
+	);
 </script>
 
 <svelte:head>
@@ -60,7 +56,7 @@
 <!--Main content (pages)-->
 <div
 	class={cn("flex flex-col ", {
-		"pt-[6.5rem] md:pt-[7rem] xl:pt-[8rem]": activePage !== "/about" && !isAuthPage
+		"pt-[6.5rem] md:pt-[7rem] xl:pt-[8rem]": activePage !== "/about" && shouldDisplayComponent
 	})}
 >
 	{@render children?.()}

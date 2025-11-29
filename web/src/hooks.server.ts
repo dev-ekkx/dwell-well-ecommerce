@@ -65,7 +65,7 @@ const handleAuthGuards: Handle = async ({ event, resolve }) => {
 
 	// Sales support guard
 	if (route?.includes("(sales_support)")) {
-		console.log("sales support")
+		console.log("sales support");
 		if (!isAuthenticated) {
 			redirect(303, "/login");
 		}
