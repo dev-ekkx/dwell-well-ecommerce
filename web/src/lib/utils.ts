@@ -125,11 +125,11 @@ export const getUserAndAuthData = async () => {
 };
 
 
-export const persistServerCookie = (userAuth: UserAuthI, cookies: Cookies) => {
-	cookies.set("authRes", JSON.stringify(userAuth), {
+export const persistSessionData = (userAuth: UserAuthI, cookies: Cookies) => {
+	cookies.set("session", JSON.stringify(userAuth), {
 					path: "/",
 					httpOnly: true,
-					sameSite: "strict",
+					sameSite: "lax",
 					secure: true
 				});
 }

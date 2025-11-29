@@ -13,7 +13,6 @@
 	import { Label } from "$lib/components/ui/label";
 	import { Spinner } from "$lib/components/ui/spinner";
 	import type { AmplifyAuthResponseI } from "$lib/interfaces";
-	import { userStore } from "$lib/store/user-store.svelte";
 	import type { AuthType } from "$lib/types";
 	import { cn } from "$lib/utils";
 	import CheckCircle2Icon from "@lucide/svelte/icons/check-circle-2";
@@ -113,9 +112,9 @@
 			if (!form?.authResponse) return;
 			const { authResponse } = form;
 			const res = authResponse as ConfirmSignInOutput;
-			if (res.nextStep.signInStep === "DONE") {
-				handlePersistUserData();
-			}
+			// if (res.nextStep.signInStep === "DONE") {
+			// 	handlePersistUserData();
+			// }
 		}
 
 		if (route === "verify_otp") {
@@ -139,14 +138,14 @@
 			goto("/reset_password");
 		}
 
-		if (loginRes.nextStep.signInStep === "DONE" || signUpRes.nextStep.signUpStep === "DONE") {
-			// if (userAuth && userAuth.auth.tokenExpiry > 0) {
-			// 	userStore.updateUserStore(userAuth);
-			// 	isLoading = true;
-			// 	goto("/").then(() => (isLoading = false));
-			// }
-			handlePersistUserData();
-		}
+		// if (loginRes.nextStep.signInStep === "DONE" || signUpRes.nextStep.signUpStep === "DONE") {
+		// 	// if (userAuth && userAuth.auth.tokenExpiry > 0) {
+		// 	// 	userStore.updateUserStore(userAuth);
+		// 	// 	isLoading = true;
+		// 	// 	goto("/").then(() => (isLoading = false));
+		// 	// }
+		// 	handlePersistUserData();
+		// }
 	};
 
 	const handleSignUpSteps = async () => {
@@ -160,18 +159,18 @@
 			goto("/verify_otp");
 		}
 
-		if (res.nextStep.signUpStep === "DONE") {
-			handlePersistUserData();
-		}
+		// if (res.nextStep.signUpStep === "DONE") {
+		// 	handlePersistUserData();
+		// }
 	};
 
-	const handlePersistUserData = () => {
-		if (!form?.userAuth) return;
-		const { userAuth } = form;
-		userStore.updateUserStore(userAuth);
-		isLoading = true;
-		goto("/").then(() => (isLoading = false));
-	};
+	// const handlePersistUserData = () => {
+	// 	if (!form?.userAuth) return;
+	// 	const { userAuth } = form;
+	// 	userStore.updateUserStore(userAuth);
+	// 	isLoading = true;
+	// 	goto("/").then(() => (isLoading = false));
+	// };
 
 	const handleError = () => {
 		isError = true;

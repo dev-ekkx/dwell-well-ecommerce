@@ -5,7 +5,6 @@ import { confirmSignUp } from "aws-amplify/auth";
 export const actions = {
 	default: async ({
 		request,
-		cookies
 	}): Promise<AmplifyAuthResponseI | ActionFailure<{ error: string }>> => {
 		const data = await request.formData();
 		const confirmationCode = data.get("otp") as string;
