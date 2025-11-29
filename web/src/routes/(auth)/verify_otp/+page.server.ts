@@ -1,5 +1,6 @@
 import type { AmplifyAuthResponseI } from "$lib/interfaces";
 import { fail, type ActionFailure, type Actions } from "@sveltejs/kit";
+import { confirmSignUp } from "aws-amplify/auth";
 
 export const actions = {
 	default: async ({
@@ -7,30 +8,12 @@ export const actions = {
 		cookies
 	}): Promise<AmplifyAuthResponseI | ActionFailure<{ error: string }>> => {
 		const data = await request.formData();
-		const otp = data.get("otp");
-		const username = data.get("email");
-		console.log(otp);
-		console.log(username);
+		const confirmationCode = data.get("otp") as string;
+		const username = data.get("email") as string;
 		try {
-			// const user = {
-			//     username: String(email ?? ""),
-			//     password: String(password ?? "")
-			// };
-			// const authResponse = await signIn(user);
-			// let userAuth: UserAuthI = initialState;
-			// if (authResponse.nextStep.signInStep === "DONE") {
-			//     userAuth = await getUserAndAuthData();
-			//     cookies.set("authRes", JSON.stringify(userAuth), {
-			//         path: "/",
-			//         httpOnly: true,
-			//         sameSite: "lax",
-			//         secure: true
-			//     });
-			// }
+			const authResponse = await confirmSignUp({ username, confirmationCode });
 			return {
-				// userAuth,
-				// authResponse,
-				// oldPassword: String(password ?? "")
+				authResponse
 			};
 		} catch (e) {
 			return fail(400, { error: (e as Error).message });

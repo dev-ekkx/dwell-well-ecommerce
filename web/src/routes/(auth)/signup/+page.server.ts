@@ -1,6 +1,8 @@
-import type { AmplifyAuthResponseI } from "$lib/interfaces";
+import type { AmplifyAuthResponseI, UserAuthI } from "$lib/interfaces";
+import { initialState } from "$lib/store/user-store.svelte";
+import { getUserAndAuthData } from "$lib/utils";
 import { type ActionFailure, fail } from "@sveltejs/kit";
-import { type SignUpInput } from "aws-amplify/auth";
+import { signUp, type SignUpInput } from "aws-amplify/auth";
 import parsePhoneNumber, { type CountryCode } from "libphonenumber-js";
 import type { Actions } from "./$types";
 
@@ -32,19 +34,18 @@ export const actions = {
 		};
 
 		try {
-			// const authResponse = await signUp(user);
-			// let userAuth: UserAuthI = initialState;
-			// if (authResponse.nextStep.signUpStep === "DONE") {
-			// 	userAuth = await getUserAndAuthData();
-			// 	cookies.set("authRes", JSON.stringify(userAuth), {
-			// 		path: "/",
-			// 		httpOnly: true,
-			// 		sameSite: "lax",
-			// 		secure: true
-			// 	});
-			// }
-			// return { authResponse, userAuth };
-			return {};
+			const authResponse = await signUp(user);
+			let userAuth: UserAuthI = initialState;
+			if (authResponse.nextStep.signUpStep === "DONE") {
+				userAuth = await getUserAndAuthData();
+				cookies.set("authRes", JSON.stringify(userAuth), {
+					path: "/",
+					httpOnly: true,
+					sameSite: "lax",
+					secure: true
+				});
+			}
+			return { authResponse, userAuth };
 		} catch (e) {
 			return fail(400, { error: (e as Error).message });
 		}

@@ -17,7 +17,7 @@
 	import type { AuthType } from "$lib/types";
 	import { cn } from "$lib/utils";
 	import CheckCircle2Icon from "@lucide/svelte/icons/check-circle-2";
-	import type { ConfirmSignInOutput, SignUpOutput } from "aws-amplify/auth";
+	import type { ConfirmSignInOutput, ConfirmSignUpOutput, SignUpOutput } from "aws-amplify/auth";
 	import { onMount, setContext } from "svelte";
 	import { MediaQuery } from "svelte/reactivity";
 	import type { LayoutProps } from "./$types";
@@ -106,8 +106,7 @@
 			if (authState.form.email) {
 				localStorage.setItem("email", authState.form.email);
 			}
-			// handleSignUpSteps();
-			goto("/verify_otp");
+			handleSignUpSteps();
 		}
 
 		if (route === "reset_password") {
@@ -118,19 +117,29 @@
 				handlePersistUserData();
 			}
 		}
+
+		if (route === "verify_otp") {
+			if (!form?.authResponse) return;
+			const { authResponse } = form;
+			const res = authResponse as ConfirmSignUpOutput;
+			if (res.nextStep.signUpStep === "DONE") {
+				goto("/login");
+			}
+		}
 	});
 
 	const handleLoginSteps = () => {
 		if (!form?.authResponse) return;
-		const { oldPassword: password, authResponse, userAuth } = form;
-		const res = authResponse as ConfirmSignInOutput;
-		if (res.nextStep.signInStep === "CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED") {
+		const { oldPassword: password, authResponse } = form;
+		const loginRes = authResponse as ConfirmSignInOutput;
+		const signUpRes = authResponse as ConfirmSignUpOutput;
+		if (loginRes.nextStep?.signInStep === "CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED") {
 			oldPassword = password ?? "";
 			cookieStore.set("oldPassword", oldPassword);
 			goto("/reset_password");
 		}
 
-		if (res.nextStep.signInStep === "DONE") {
+		if (loginRes.nextStep.signInStep === "DONE" || signUpRes.nextStep.signUpStep === "DONE") {
 			// if (userAuth && userAuth.auth.tokenExpiry > 0) {
 			// 	userStore.updateUserStore(userAuth);
 			// 	isLoading = true;

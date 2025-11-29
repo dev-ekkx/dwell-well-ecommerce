@@ -129,12 +129,12 @@
 		if (data["route"] === "signup" && browser) {
 			fetchCountries();
 		}
-		if (data["route"] === "otp" && browser) {
+		if (data["route"] === "verify_otp" && browser) {
 			const el = localStorage.getItem("email") ?? "";
+			email = el;
 			console.log(el);
 		}
 	});
-	$inspect(authState.form);
 </script>
 
 <div class="mt-4 flex w-full flex-col gap-4">
@@ -222,9 +222,9 @@
 			{:else if input.name === "otp" && authState.form[input.name] !== undefined}
 				<input hidden type="text" value={email} name="email" id="email" />
 				<InputOTP
-				bind:value={authState.form[input.name]}
-				name={input.name}
-				id={input.name}
+					bind:value={authState.form[input.name]}
+					name={input.name}
+					id={input.name}
 					maxlength={6}
 					pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
 					onblur={() => handleBlur(input.name)}
