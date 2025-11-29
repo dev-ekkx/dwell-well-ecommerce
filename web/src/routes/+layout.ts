@@ -1,8 +1,8 @@
-import type { LayoutLoad } from "./$types";
-import type { FooterI, PageI, UserAuthI } from "$lib/interfaces";
-import { AUTH_ROUTES } from "$lib/constants";
-import { userStore } from "$lib/store/user-store.svelte";
 import { browser } from "$app/environment";
+import { AUTH_ROUTES } from "$lib/constants";
+import type { FooterI, PageI, UserAuthI } from "$lib/interfaces";
+import { userStore } from "$lib/store/user-store.svelte";
+import type { LayoutLoad } from "./$types";
 
 export const load: LayoutLoad = async ({ fetch, url, data }) => {
 	// Fetch user data from cookies
@@ -17,6 +17,11 @@ export const load: LayoutLoad = async ({ fetch, url, data }) => {
 
 		if (data?.userCountry) {
 			userStore.updateCountryData(data.userCountry);
+		}
+
+		// Auto clear userstore after logout
+		if (url.searchParams.get("isTokenExpired") === "true") {
+			userStore.logout();
 		}
 	}
 
