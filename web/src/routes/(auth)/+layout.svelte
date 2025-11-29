@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
 	import { goto } from "$app/navigation";
+	import { page } from "$app/state";
 	import AuthBackground from "$lib/assets/images/auth-bg.webp";
 	import Logo from "$lib/components/logo.svelte";
 	import {
@@ -173,11 +174,16 @@
 		const { userAuth } = form;
 		// userStore.updateUserStore(userAuth);
 		isLoading = true;
-		if (userAuth?.user?.role === "customer") {
-			goto("/").then(() => (isLoading = false));
-		} else {
-			goto("/admin").then(() => (isLoading = false));
-		}
+
+		const redirecTo = page.url.searchParams.get("redirectTo") ?? (userAuth?.user?.role === "customer" ? "/" : "/products");
+
+
+		goto(redirecTo).then(() => (isLoading = false));
+		// if (userAuth?.user?.role === "customer") {
+		// 	goto(redirecTo).then(() => (isLoading = false));
+		// } else {
+		// 	goto("/admin").then(() => (isLoading = false));
+		// }
 	};
 
 	const handleError = () => {

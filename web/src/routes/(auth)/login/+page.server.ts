@@ -8,7 +8,7 @@ import type { Actions } from "./$types";
 export const actions = {
 	default: async ({
 		request,
-		cookies
+		cookies,
 	}): Promise<AmplifyAuthResponseI | ActionFailure<{ error: string }>> => {
 		const data = await request.formData();
 		const email = data.get("email");

@@ -107,7 +107,7 @@
 {#snippet listItem(item: ListItemI)}
 {#if item.route === "/logout"}
 	<form method="POST" use:enhance={logoutEnhance} action={item.route}>
-		<button class="cursor-pointer w-full flex items-center gap-3 rounded-md p-2 font-medium text-muted-foreground transition-all duration-200 ease-linear hover:bg-primary-foreground" type="submit">
+		<button class="cursor-pointer   w-full flex items-center gap-3 rounded-md p-2 font-medium text-muted-foreground transition-all duration-200 ease-linear hover:bg-primary-foreground" type="submit">
             <item.icon />    
             {item.label}
         </button>

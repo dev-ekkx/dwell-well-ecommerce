@@ -62,12 +62,13 @@ const handleAuthGuards: Handle = async ({ event, resolve }) => {
 	const isAuthenticated = locals.isAuthenticated;
 	const user = locals.user;
 	const hasAccess = user?.role !== "customer";
+	const redirectTo = event.url.pathname + event.url.search;
 
 	// Sales support guard
 	if (route?.includes("(sales_support)")) {
 		console.log("sales support");
 		if (!isAuthenticated) {
-			redirect(303, "/login");
+			redirect(303, `/login?redirectTo=${encodeURIComponent(redirectTo)}`);
 		}
 		if (!hasAccess) {
 			redirect(303, "/");
