@@ -6,8 +6,8 @@
 
 <div class="flex gap-4 bg-muted">
 	<Sidebar />
-	<div class="flex flex-col w-full">
-        <Header />
+	<div class="flex w-full flex-col">
+		<Header />
 		<main>
 			{@render children()}
 		</main>

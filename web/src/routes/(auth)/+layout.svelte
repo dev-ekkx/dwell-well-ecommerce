@@ -175,8 +175,9 @@
 		// userStore.updateUserStore(userAuth);
 		isLoading = true;
 
-		const redirecTo = page.url.searchParams.get("redirectTo") ?? (userAuth?.user?.role === "customer" ? "/" : "/products");
-
+		const redirecTo =
+			page.url.searchParams.get("redirectTo") ??
+			(userAuth?.user?.role === "customer" ? "/" : "/products");
 
 		goto(redirecTo).then(() => (isLoading = false));
 		// if (userAuth?.user?.role === "customer") {

@@ -18,12 +18,11 @@
 	import type { SubmitFunction } from "@sveltejs/kit";
 	import type { Component } from "svelte";
 
-
-    interface ListItemI {
-        label: string;
-        route: string;
-        icon: Component<IconProps, {}, "">;
-    }
+	interface ListItemI {
+		label: string;
+		route: string;
+		icon: Component<IconProps, {}, "">;
+	}
 
 	const sidebarItems: ListItemI[] = [
 		{
@@ -70,7 +69,7 @@
 		return page?.route?.id?.includes(route);
 	};
 
-    	const logoutEnhance: SubmitFunction = () => {
+	const logoutEnhance: SubmitFunction = () => {
 		return async ({ result, update }) => {
 			await update();
 			if (result.type === "redirect") {
@@ -78,7 +77,6 @@
 			}
 		};
 	};
-
 </script>
 
 <aside class="border-border-red-600 flex h-screen w-[15rem] flex-col justify-between bg-white p-4">
@@ -105,25 +103,28 @@
 </aside>
 
 {#snippet listItem(item: ListItemI)}
-{#if item.route === "/logout"}
-	<form method="POST" use:enhance={logoutEnhance} action={item.route}>
-		<button class="cursor-pointer   w-full flex items-center gap-3 rounded-md p-2 font-medium text-muted-foreground transition-all duration-200 ease-linear hover:bg-primary-foreground" type="submit">
-            <item.icon />    
-            {item.label}
-        </button>
-	</form>
-{:else}
-	<a
-		href={item.route}
-		class={cn(
-			"flex items-center gap-3 rounded-md p-2 font-medium text-muted-foreground transition-all duration-200 ease-linear hover:bg-primary-foreground",
-			{
-				"bg-primary-foreground text-primary": isActive(item.route)
-			}
-		)}
-	>
-		<item.icon />
-		{item.label}
-	</a>
-{/if}
+	{#if item.route === "/logout"}
+		<form method="POST" use:enhance={logoutEnhance} action={item.route}>
+			<button
+				class="flex w-full cursor-pointer items-center gap-3 rounded-md p-2 font-medium text-muted-foreground transition-all duration-200 ease-linear hover:bg-primary-foreground"
+				type="submit"
+			>
+				<item.icon />
+				{item.label}
+			</button>
+		</form>
+	{:else}
+		<a
+			href={item.route}
+			class={cn(
+				"flex items-center gap-3 rounded-md p-2 font-medium text-muted-foreground transition-all duration-200 ease-linear hover:bg-primary-foreground",
+				{
+					"bg-primary-foreground text-primary": isActive(item.route)
+				}
+			)}
+		>
+			<item.icon />
+			{item.label}
+		</a>
+	{/if}
 {/snippet}
