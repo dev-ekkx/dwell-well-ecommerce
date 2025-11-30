@@ -8,7 +8,7 @@
 	<Sidebar />
 	<div class="flex w-full flex-col">
 		<Header />
-		<main class="border-2 border-red-600 p-4 h-full overflow-y-auto">
+		<main class="h-full overflow-y-auto border-2 border-red-600 p-4">
 			{@render children()}
 		</main>
 	</div>
