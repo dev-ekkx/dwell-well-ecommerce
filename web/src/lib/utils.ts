@@ -444,12 +444,12 @@ export const fetchAndTransformProducts = async ({
             // Log the error but continue with default data if possible,
             // or re-throw an error if the data is essential.
             // Keeping the original implementation's leniency here.
-            error(500, "Failed to fetch operational product data: " + operationalDataResponse.statusText);
+            console.error("Failed to fetch operational product data: " + operationalDataResponse.statusText);
         } else {
             productDataMap = await operationalDataResponse.json();
         }
     } catch (e) {
-        error(500, "Error fetching operational product data: " + (e as Error).message);
+        console.error("Error fetching operational product data: " + (e as Error).message);
     }
 
     // Transform and Merge Data

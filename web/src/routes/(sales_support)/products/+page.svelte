@@ -106,6 +106,9 @@
 
 	<!-- Table section -->
 	<CardRoot>
+		<CardHeader>
+			<CardTitle>Products</CardTitle>
+		</CardHeader>
 		<CardContent>
 			<TableRoot>
 				<TableCaption>A list of your recent invoices.</TableCaption>

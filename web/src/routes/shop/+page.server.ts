@@ -6,7 +6,7 @@ import type { PageServerLoad } from "./$types";
 export const load: PageServerLoad = async ({ fetch, url }) => {
 	const searchTerm = url.searchParams.get("q");
 	const page = Number(url.searchParams.get("page") ?? "1");
-	const pageSize = Number(url.searchParams.get("perPage") ?? "5");
+	const pageSize = Number(url.searchParams.get("perPage") ?? "10");
 	const sort = url.searchParams.get("sort");
 	const categoriesFilter = url.searchParams.get("categories")?.split(",").filter(Boolean);
 	const sizesFilter = url.searchParams.get("sizes")?.split(",").filter(Boolean);
@@ -14,7 +14,7 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	const availabilitiesFilter = url.searchParams.get("availabilities")?.split(",").filter(Boolean);
 	const priceRangeFilter = url.searchParams.get("priceRange");
 
-	const { totalProducts, products: mergedProducts } = await fetchAndTransformProducts({
+	const { totalProducts, products } = await fetchAndTransformProducts({
 		fetch,
 		searchTerm,
 		page,
@@ -29,6 +29,6 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 
 	return {
 		totalProducts,
-		products: mergedProducts
+		products
 	};
 };
