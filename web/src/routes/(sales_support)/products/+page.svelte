@@ -10,6 +10,11 @@
 
 	const productsSummary = [
 		{
+			label: "Total Products",
+			value: 0,
+			description: "Total number of products"
+		},
+		{
 			label: "Total Available Stock",
 			value: 0,
 			description: "Total number of products"
@@ -24,11 +29,7 @@
 			value: 0,
 			description: "Total number of products"
 		},
-        {
-            label: "Total Products",
-            value: 0,
-            description: "Total number of products"
-        }
+
 	];
 </script>
 
