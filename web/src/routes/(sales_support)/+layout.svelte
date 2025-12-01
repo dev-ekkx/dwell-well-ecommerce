@@ -4,11 +4,11 @@
 	const { children } = $props();
 </script>
 
-<div class="flex gap-4 bg-muted">
+<div class="flex bg-muted">
 	<Sidebar />
 	<div class="flex w-full flex-col">
 		<Header />
-		<main class="h-full overflow-y-auto border-2 border-red-600 p-4">
+		<main class="h-full overflow-y-auto px-4 py-6">
 			{@render children()}
 		</main>
 	</div>

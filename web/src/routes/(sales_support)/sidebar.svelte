@@ -79,8 +79,8 @@
 	};
 </script>
 
-<aside class="border-border-red-600 flex h-screen w-[15rem] flex-col justify-between bg-white p-4">
-	<div class="flex flex-col gap-10">
+<aside class="flex h-screen w-[15rem] flex-col shadow justify-between bg-sidebar">
+	<div class="flex flex-col gap-10 p-4 pr-0">
 		<div class="flex items-center justify-between gap-4">
 			<Logo />
 			<button class="cursor-pointer">
@@ -88,14 +88,14 @@
 			</button>
 		</div>
 
-		<div class="flex flex-col gap-2">
+		<div class="flex flex-col gap-2 pr-4">
 			{#each sidebarItems as item}
 				{@render listItem(item)}
 			{/each}
 		</div>
 	</div>
 
-	<div class="flex flex-col gap-2">
+	<div class="flex flex-col gap-2 p-4">
 		{#each settingsAndLogOut as item}
 			{@render listItem(item)}
 		{/each}

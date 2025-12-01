@@ -1,10 +1,7 @@
+import { fetchAndTransformProducts } from "$lib/utils";
 import type { PageServerLoad } from "./$types";
-import { GET_PRODUCTS } from "../../graphql.queries";
-import { client } from "../../graphql.config";
-import { error } from "@sveltejs/kit";
-import type { ProductI } from "$lib/interfaces";
-import type { ProductDataMapT } from "$lib/types";
-import { BACKEND_URL } from "$lib/constants";
+
+
 
 export const load: PageServerLoad = async ({ fetch, url }) => {
 	const searchTerm = url.searchParams.get("q");
@@ -17,132 +14,18 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	const availabilitiesFilter = url.searchParams.get("availabilities")?.split(",").filter(Boolean);
 	const priceRangeFilter = url.searchParams.get("priceRange");
 
-	let strapiSort: string | undefined;
-	switch (sort) {
-		case "name-asc":
-			strapiSort = "name:asc";
-			break;
-		case "name-desc":
-			strapiSort = "name:desc";
-			break;
-		case "newest":
-			strapiSort = "publishedAt:desc";
-			break;
-		default:
-			strapiSort = undefined;
-	}
-
-	const variables: {
-		pagination: { page: number; pageSize: number };
-		filters: Record<string, unknown>;
-		productsConnectionFilters2: Record<string, unknown>;
-		sort?: string[];
-	} = {
-		pagination: { page, pageSize },
-		filters: {},
-		productsConnectionFilters2: {}
-	};
-
-	// Build query variables
-	if (strapiSort) variables.sort = [strapiSort];
-
-	const allProductFilters: Record<string, unknown>[] = [];
-	if (searchTerm) {
-		const searchBlock = {
-			or: [{ name: { containsi: searchTerm } }, { categories: { name: { containsi: searchTerm } } }]
-		};
-		allProductFilters.push(searchBlock);
-	}
-
-	// Add all other filters as separate "and" conditions
-	if (categoriesFilter?.length) {
-		allProductFilters.push({ categories: { slug: { in: categoriesFilter } } });
-	}
-	if (sizesFilter?.length) {
-		allProductFilters.push({ sizes: { slug: { in: sizesFilter } } });
-	}
-	if (stylesFilter?.length) {
-		allProductFilters.push({ styles: { slug: { in: stylesFilter } } });
-	}
-	if (availabilitiesFilter?.length) {
-		allProductFilters.push({ availability: { slug: { in: availabilitiesFilter } } });
-	}
-
-	// 4. Orchestrate Price Filter
-	if (priceRangeFilter) {
-		const [min, max] = priceRangeFilter.split("-").map(Number);
-		if (!isNaN(min) && !isNaN(max)) {
-			try {
-				const skuResponse = await fetch(
-					`${BACKEND_URL}/products/skus-by-price?minPrice=${min}&maxPrice=${max}`
-				);
-				if (!skuResponse.ok) error(502, "Could not fetch price-filtered SKUs");
-				const priceFilteredSkus: string[] = await skuResponse.json();
-				if (priceFilteredSkus.length === 0) {
-					return { products: [], pagination: { total: 0 } };
-				}
-				// Add the SKU filter to the main list of filters
-				allProductFilters.push({ sku: { in: priceFilteredSkus } });
-			} catch (e) {
-				console.error("Price filter fetch failed:", e);
-				error(500, "Failed to apply price filter");
-			}
-		}
-	}
-
-	// Set the final filters object
-	if (allProductFilters.length > 0) {
-		variables.filters = { and: allProductFilters };
-		variables.productsConnectionFilters2 = { and: allProductFilters };
-	}
-
-	const strapiResult = await client.query(GET_PRODUCTS, variables).toPromise();
-
-	if (strapiResult.error) {
-		error(500, `GraphQL Error: ${strapiResult.error.message}`);
-	}
-
-	const totalProducts = strapiResult.data.products_connection.pageInfo.total as number;
-	const productsFromStrapi = (strapiResult.data.products || []) as ProductI[];
-	const skusToFetch = productsFromStrapi.map((product) => product.SKU);
-	let productDataMap: ProductDataMapT = {};
-	if (skusToFetch.length > 0) {
-		try {
-			const operationalDataResponse = await fetch(`${BACKEND_URL}/products`, {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ skus: skusToFetch })
-			});
-
-			if (!operationalDataResponse.ok) error(502, "Failed to fetch operational product data");
-			productDataMap = await operationalDataResponse.json();
-		} catch {
-			console.error("Error fetching operational product data");
-			// error(502, "Failed to fetch operational product data");
-		}
-	}
-
-	let mergedProducts = productsFromStrapi.map((item) => {
-		const opsProduct = productDataMap[item.SKU] || {
-			price: 0,
-			averageRating: 0,
-			reviewCount: 0,
-			inventory: 0
-		};
-		return {
-			...opsProduct,
-			SKU: item.SKU,
-			slug: item.slug,
-			images: item.images,
-			name: item.name
-		};
-	}) as ProductI[];
-
-	if (sort === "price-asc") {
-		mergedProducts.sort((a, b) => a.price - b.price);
-	} else if (sort === "price-desc") {
-		mergedProducts.sort((a, b) => b.price - a.price);
-	}
+	const { totalProducts, products: mergedProducts } = await fetchAndTransformProducts({
+		fetch,
+		searchTerm,
+		page,
+		pageSize,
+		sort,
+		categoriesFilter,
+		sizesFilter,
+		stylesFilter,
+		availabilitiesFilter,
+		priceRangeFilter
+	});
 
 	return {
 		totalProducts,
