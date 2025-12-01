@@ -8,7 +8,7 @@
 	<Sidebar />
 	<div class="flex w-full flex-col">
 		<Header />
-		<main class="h-full overflow-y-auto px-4 py-6">
+		<main class="h-[calc(100vh-5rem)] overflow-y-auto px-4 py-6 scrollbar-hidden">
 			{@render children()}
 		</main>
 	</div>
