@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Badge from "$lib/components/ui/badge/badge.svelte";
 	import {
 		CardContent,
 		CardDescription,
@@ -120,6 +121,11 @@
 							{#if column.value === "image"}
 								<TableCell>
 									<img class="w-20 h-16 rounded" src={product.images[0].url} alt={product.name} />
+								</TableCell>
+
+							{:else if column.value === "price" && product.price === 0}
+								<TableCell>
+									<Badge variant="secondary">Price not set</Badge>
 								</TableCell>
 							{:else if column.value === "actions"}
 								<TableCell>{product[column.value as keyof typeof product]}</TableCell>
