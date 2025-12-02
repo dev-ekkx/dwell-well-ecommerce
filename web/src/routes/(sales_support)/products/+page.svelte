@@ -16,6 +16,7 @@
 		Root as TableRoot,
 		Row as TableRow
 	} from "$lib/components/ui/table";
+	import { PencilIcon } from "@lucide/svelte";
 
 	const productsSummary = [
 		{
@@ -127,8 +128,12 @@
 								<TableCell>
 									<Badge variant="secondary">Price not set</Badge>
 								</TableCell>
-							{:else if column.value === "actions"}
-								<TableCell>{product[column.value as keyof typeof product]}</TableCell>
+							{:else if column.value === "action"}
+								<TableCell>
+									<button class="rounded-full p-2 hover:text-white cursor-pointer hover:bg-primary transition-all duration-200 ease-linear">
+										<PencilIcon class="size-5" />
+									</button>
+								</TableCell>
 							{:else}
 							<TableCell>{product[column.value as keyof typeof product]}</TableCell>
 							{/if}
