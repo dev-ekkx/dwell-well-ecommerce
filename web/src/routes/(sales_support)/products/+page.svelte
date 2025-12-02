@@ -69,8 +69,8 @@
 			value: "reviewCount"
 		},
 		{
-			label: "Actions",
-			value: "actions"
+			label: "Action",
+			value: "action"
 		}
 	];
 
@@ -119,7 +119,7 @@
 
 							{#if column.value === "image"}
 								<TableCell>
-									<img src={product.images[0].url} alt={product.name} />
+									<img class="w-20 h-16 rounded" src={product.images[0].url} alt={product.name} />
 								</TableCell>
 							{:else if column.value === "actions"}
 								<TableCell>{product[column.value as keyof typeof product]}</TableCell>
