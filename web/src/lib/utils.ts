@@ -293,188 +293,187 @@ export const fetchAndTransformProducts = async ({
 */
 
 const mapSortToStrapi = (sort: string | null): string[] | undefined => {
-    switch (sort) {
-        case "name-asc":
-            return ["name:asc"];
-        case "name-desc":
-            return ["name:desc"];
-        case "newest":
-            return ["publishedAt:desc"];
-        default:
-            return undefined;
-    }
+	switch (sort) {
+		case "name-asc":
+			return ["name:asc"];
+		case "name-desc":
+			return ["name:desc"];
+		case "newest":
+			return ["publishedAt:desc"];
+		default:
+			return undefined;
+	}
 };
 
 const buildStrapiFilters = (
-    searchTerm: string | null,
-    categoriesFilter: string[] | undefined,
-    sizesFilter: string[] | undefined,
-    stylesFilter: string[] | undefined,
-    availabilitiesFilter: string[] | undefined,
-    priceFilteredSkus: string[] | undefined
+	searchTerm: string | null,
+	categoriesFilter: string[] | undefined,
+	sizesFilter: string[] | undefined,
+	stylesFilter: string[] | undefined,
+	availabilitiesFilter: string[] | undefined,
+	priceFilteredSkus: string[] | undefined
 ) => {
-    const filters: Record<string, unknown>[] = [];
+	const filters: Record<string, unknown>[] = [];
 
-    // Search term filter
-    if (searchTerm) {
-        filters.push({
-            or: [
-                { name: { containsi: searchTerm } },
-                { categories: { name: { containsi: searchTerm } } }
-            ]
-        });
-    }
+	// Search term filter
+	if (searchTerm) {
+		filters.push({
+			or: [{ name: { containsi: searchTerm } }, { categories: { name: { containsi: searchTerm } } }]
+		});
+	}
 
-    // Attribute filters
-    if (categoriesFilter?.length) filters.push({ categories: { slug: { in: categoriesFilter } } });
-    if (sizesFilter?.length) filters.push({ sizes: { slug: { in: sizesFilter } } });
-    if (stylesFilter?.length) filters.push({ styles: { slug: { in: stylesFilter } } });
-    if (availabilitiesFilter?.length) filters.push({ availability: { slug: { in: availabilitiesFilter } } });
+	// Attribute filters
+	if (categoriesFilter?.length) filters.push({ categories: { slug: { in: categoriesFilter } } });
+	if (sizesFilter?.length) filters.push({ sizes: { slug: { in: sizesFilter } } });
+	if (stylesFilter?.length) filters.push({ styles: { slug: { in: stylesFilter } } });
+	if (availabilitiesFilter?.length)
+		filters.push({ availability: { slug: { in: availabilitiesFilter } } });
 
-    // SKU filter from price range
-    if (priceFilteredSkus?.length) filters.push({ sku: { in: priceFilteredSkus } });
+	// SKU filter from price range
+	if (priceFilteredSkus?.length) filters.push({ sku: { in: priceFilteredSkus } });
 
-    return filters.length > 0 ? { and: filters } : {};
+	return filters.length > 0 ? { and: filters } : {};
 };
 
 export const fetchAndTransformProducts = async ({
-    fetch,
-    sort,
-    page,
-    pageSize,
-    searchTerm,
-    categoriesFilter,
-    sizesFilter,
-    stylesFilter,
-    availabilitiesFilter,
-    priceRangeFilter
+	fetch,
+	sort,
+	page,
+	pageSize,
+	searchTerm,
+	categoriesFilter,
+	sizesFilter,
+	stylesFilter,
+	availabilitiesFilter,
+	priceRangeFilter
 }: {
-    fetch: FetchI;
-    searchTerm: string | null;
-    page: number;
-    pageSize: number;
-    sort: string | null;
-    categoriesFilter: string[] | undefined;
-    sizesFilter: string[] | undefined;
-    stylesFilter: string[] | undefined;
-    availabilitiesFilter: string[] | undefined;
-    priceRangeFilter: string | null;
+	fetch: FetchI;
+	searchTerm: string | null;
+	page: number;
+	pageSize: number;
+	sort: string | null;
+	categoriesFilter: string[] | undefined;
+	sizesFilter: string[] | undefined;
+	stylesFilter: string[] | undefined;
+	availabilitiesFilter: string[] | undefined;
+	priceRangeFilter: string | null;
 }) => {
+	// Price Filter Pre-Check and SKU Fetch
+	let priceFilteredSkus: string[] | undefined;
 
-    // Price Filter Pre-Check and SKU Fetch
-    let priceFilteredSkus: string[] | undefined;
+	if (priceRangeFilter) {
+		const [minStr, maxStr] = priceRangeFilter.split("-");
+		const min = Number(minStr);
+		const max = Number(maxStr);
 
-    if (priceRangeFilter) {
-        const [minStr, maxStr] = priceRangeFilter.split("-");
-        const min = Number(minStr);
-        const max = Number(maxStr);
+		if (!isNaN(min) && !isNaN(max)) {
+			try {
+				const skuUrl = `${BACKEND_URL}/products/skus-by-price?minPrice=${min}&maxPrice=${max}`;
+				const skuResponse = await fetch(skuUrl);
 
-        if (!isNaN(min) && !isNaN(max)) {
-            try {
-                const skuUrl = `${BACKEND_URL}/products/skus-by-price?minPrice=${min}&maxPrice=${max}`;
-                const skuResponse = await fetch(skuUrl);
+				if (!skuResponse.ok) {
+					error(502, "Could not fetch price-filtered SKUs");
+				}
 
-                if (!skuResponse.ok) {
-                    error(502, "Could not fetch price-filtered SKUs");
-                }
+				priceFilteredSkus = await skuResponse.json();
 
-                priceFilteredSkus = await skuResponse.json();
+				// Early exit: If no SKUs match the price filter, we know the final result is empty.
+				if (priceFilteredSkus?.length === 0) {
+					return { products: [], totalProducts: 0 };
+				}
+			} catch (e) {
+				console.error("Price filter fetch failed:", e);
+				error(500, "Failed to apply price filter");
+			}
+		}
+	}
 
-                // Early exit: If no SKUs match the price filter, we know the final result is empty.
-                if (priceFilteredSkus?.length === 0) {
-                    return { products: [], totalProducts: 0 };
-                }
-            } catch (e) {
-                console.error("Price filter fetch failed:", e);
-                error(500, "Failed to apply price filter");
-            }
-        }
-    }
+	// Build GraphQL Variables
+	const strapiSort = mapSortToStrapi(sort);
+	const filters = buildStrapiFilters(
+		searchTerm,
+		categoriesFilter,
+		sizesFilter,
+		stylesFilter,
+		availabilitiesFilter,
+		priceFilteredSkus
+	);
 
-    // Build GraphQL Variables
-    const strapiSort = mapSortToStrapi(sort);
-    const filters = buildStrapiFilters(
-        searchTerm,
-        categoriesFilter,
-        sizesFilter,
-        stylesFilter,
-        availabilitiesFilter,
-        priceFilteredSkus
-    );
+	const variables: {
+		pagination: { page: number; pageSize: number };
+		filters: Record<string, unknown>;
+		productsConnectionFilters2: Record<string, unknown>;
+		sort?: string[];
+	} = {
+		pagination: { page, pageSize },
+		filters,
+		productsConnectionFilters2: filters
+	};
 
-    const variables: {
-        pagination: { page: number; pageSize: number };
-        filters: Record<string, unknown>;
-        productsConnectionFilters2: Record<string, unknown>;
-        sort?: string[];
-    } = {
-        pagination: { page, pageSize },
-        filters,
-        productsConnectionFilters2: filters,
-    };
+	if (strapiSort) variables.sort = strapiSort;
 
-    if (strapiSort) variables.sort = strapiSort;
+	// Fetch Products (Strapi)
+	const strapiResult = await client.query(GET_PRODUCTS, variables).toPromise();
 
-    // Fetch Products (Strapi)
-    const strapiResult = await client.query(GET_PRODUCTS, variables).toPromise();
+	if (strapiResult.error) {
+		error(500, `GraphQL Error: ${strapiResult.error.message}`);
+	}
 
-    if (strapiResult.error) {
-        error(500, `GraphQL Error: ${strapiResult.error.message}`);
-    }
+	const totalProducts = strapiResult.data.products_connection.pageInfo.total as number;
+	const productsFromStrapi: ProductI[] = strapiResult.data.products || [];
+	const skusToFetch = productsFromStrapi.map((product) => product.SKU);
 
-    const totalProducts = strapiResult.data.products_connection.pageInfo.total as number;
-    const productsFromStrapi: ProductI[] = strapiResult.data.products || [];
-    const skusToFetch = productsFromStrapi.map((product) => product.SKU);
+	if (skusToFetch.length === 0) {
+		return { products: [], totalProducts };
+	}
 
-    if (skusToFetch.length === 0) {
-        return { products: [], totalProducts };
-    }
+	// Fetch Operational Data (Concurrent API Call)
+	let productDataMap: ProductDataMapT = {};
 
-    // Fetch Operational Data (Concurrent API Call)
-    let productDataMap: ProductDataMapT = {};
+	try {
+		const operationalDataResponse = await fetch(`${BACKEND_URL}/products`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ skus: skusToFetch })
+		});
 
-    try {
-        const operationalDataResponse = await fetch(`${BACKEND_URL}/products`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ skus: skusToFetch })
-        });
+		if (!operationalDataResponse.ok) {
+			// Log the error but continue with default data if possible,
+			// or re-throw an error if the data is essential.
+			// Keeping the original implementation's leniency here.
+			console.error(
+				"Failed to fetch operational product data: " + operationalDataResponse.statusText
+			);
+		} else {
+			productDataMap = await operationalDataResponse.json();
+		}
+	} catch (e) {
+		console.error("Error fetching operational product data: " + (e as Error).message);
+	}
 
-        if (!operationalDataResponse.ok) {
-            // Log the error but continue with default data if possible,
-            // or re-throw an error if the data is essential.
-            // Keeping the original implementation's leniency here.
-            console.error("Failed to fetch operational product data: " + operationalDataResponse.statusText);
-        } else {
-            productDataMap = await operationalDataResponse.json();
-        }
-    } catch (e) {
-        console.error("Error fetching operational product data: " + (e as Error).message);
-    }
+	// Transform and Merge Data
+	let mergedProducts = productsFromStrapi.map((item) => {
+		const opsProduct = productDataMap[item.SKU] || {
+			price: 0,
+			averageRating: 0,
+			reviewCount: 0,
+			inventory: 0
+		};
+		return {
+			...opsProduct,
+			SKU: item.SKU,
+			slug: item.slug,
+			images: item.images,
+			name: item.name
+		};
+	}) as ProductI[];
 
-    // Transform and Merge Data
-    let mergedProducts = productsFromStrapi.map((item) => {
-        const opsProduct = productDataMap[item.SKU] || {
-            price: 0,
-            averageRating: 0,
-            reviewCount: 0,
-            inventory: 0
-        };
-        return {
-            ...opsProduct,
-            SKU: item.SKU,
-            slug: item.slug,
-            images: item.images,
-            name: item.name
-        };
-    }) as ProductI[];
+	// Client-Side Price Sort (Required because Strapi only sorts by name/date)
+	if (sort === "price-asc") {
+		mergedProducts.sort((a, b) => a.price - b.price);
+	} else if (sort === "price-desc") {
+		mergedProducts.sort((a, b) => b.price - a.price);
+	}
 
-    // Client-Side Price Sort (Required because Strapi only sorts by name/date)
-    if (sort === "price-asc") {
-        mergedProducts.sort((a, b) => a.price - b.price);
-    } else if (sort === "price-desc") {
-        mergedProducts.sort((a, b) => b.price - a.price);
-    }
-
-    return { totalProducts, products: mergedProducts };
-}
+	return { totalProducts, products: mergedProducts };
+};

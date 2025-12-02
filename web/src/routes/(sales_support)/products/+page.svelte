@@ -76,11 +76,12 @@
 		}
 	];
 
+	import * as Tooltip from "$lib/components/ui/tooltip/index.js";
 
-	const {data} = $props()
-	const products = $derived(data.products || [])
-	$inspect(products[0])
-	const totalProducts = $derived(data.totalProducts || 0)
+	const { data } = $props();
+	const products = $derived(data.products || []);
+	$inspect(products[0]);
+	const totalProducts = $derived(data.totalProducts || 0);
 </script>
 
 <div class="flex flex-col gap-10">
@@ -118,25 +119,32 @@
 					{#each products as product, i (product)}
 						<TableRow>
 							{#each productColumns as column}
-
-							{#if column.value === "image"}
-								<TableCell>
-									<img class="w-20 h-16 rounded" src={product.images[0].url} alt={product.name} />
-								</TableCell>
-
-							{:else if column.value === "price" && product.price === 0}
-								<TableCell>
-									<Badge variant="secondary">Price not set</Badge>
-								</TableCell>
-							{:else if column.value === "action"}
-								<TableCell>
-									<button class="rounded-full p-2 hover:text-white cursor-pointer hover:bg-primary transition-all duration-200 ease-linear">
-										<PencilIcon class="size-5" />
-									</button>
-								</TableCell>
-							{:else}
-							<TableCell>{product[column.value as keyof typeof product]}</TableCell>
-							{/if}
+								{#if column.value === "image"}
+									<TableCell>
+										<img class="h-16 w-20 rounded" src={product.images[0].url} alt={product.name} />
+									</TableCell>
+								{:else if column.value === "price" && product.price === 0}
+									<TableCell>
+										<Badge variant="secondary">Price not set</Badge>
+									</TableCell>
+								{:else if column.value === "action"}
+									<TableCell>
+										<Tooltip.Provider>
+											<Tooltip.Root>
+												<Tooltip.Trigger class="cursor-pointer rounded-full p-2 transition-all duration-200 ease-linear hover:bg-primary hover:text-white"
+												>
+													<PencilIcon class="size-5" />
+												</Tooltip.Trigger
+												>
+												<Tooltip.Content class="bg-primary text-white">
+													<span>Update Price</span>
+												</Tooltip.Content>
+											</Tooltip.Root>
+										</Tooltip.Provider>
+									</TableCell>
+								{:else}
+									<TableCell>{product[column.value as keyof typeof product]}</TableCell>
+								{/if}
 							{/each}
 						</TableRow>
 					{/each}

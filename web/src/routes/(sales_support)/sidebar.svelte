@@ -79,7 +79,7 @@
 	};
 </script>
 
-<aside class="flex h-screen w-[15rem] flex-col shadow justify-between bg-sidebar">
+<aside class="flex h-screen w-[15rem] flex-col justify-between bg-sidebar shadow">
 	<div class="flex flex-col gap-10 p-4 pr-0">
 		<div class="flex items-center justify-between gap-4">
 			<Logo />

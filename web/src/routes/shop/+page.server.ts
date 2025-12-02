@@ -1,8 +1,6 @@
 import { fetchAndTransformProducts } from "$lib/utils";
 import type { PageServerLoad } from "./$types";
 
-
-
 export const load: PageServerLoad = async ({ fetch, url }) => {
 	const searchTerm = url.searchParams.get("q");
 	const page = Number(url.searchParams.get("page") ?? "1");
