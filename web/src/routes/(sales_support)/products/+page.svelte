@@ -9,6 +9,14 @@
 		CardTitle
 	} from "$lib/components/ui/card";
 	import {
+		Content as DialogContent,
+		Description as DialogDescription,
+		Header as DialogHeader,
+		Root as DialogRoot,
+		Title as DialogTitle,
+		Trigger as DialogTrigger
+	} from "$lib/components/ui/dialog/index.js";
+	import {
 		Body as TableBody,
 		Cell as TableCell,
 		Head as TableHead,
@@ -87,7 +95,7 @@
 <div class="flex flex-col gap-10">
 	<section class="grid grid-cols-4 gap-4">
 		{#each productsSummary as summary}
-			<CardRoot>
+		<CardRoot>
 				<CardHeader>
 					<CardTitle>{summary.label}</CardTitle>
 				</CardHeader>
@@ -100,56 +108,77 @@
 			</CardRoot>
 		{/each}
 	</section>
-
+	
 	<!-- Table section -->
+	<DialogRoot>
 	<CardRoot>
-		<CardHeader>
-			<CardTitle>Products</CardTitle>
-		</CardHeader>
-		<CardContent>
-			<TableRoot>
-				<TableHeader>
-					<TableRow>
-						{#each productColumns as column}
-							<TableHead>{column.label}</TableHead>
-						{/each}
-					</TableRow>
-				</TableHeader>
-				<TableBody>
-					{#each products as product, i (product)}
+			<CardHeader>
+				<CardTitle>Products</CardTitle>
+				{new Date().toISOString()}
+			</CardHeader>
+			<CardContent>
+				<TableRoot>
+					<TableHeader>
 						<TableRow>
 							{#each productColumns as column}
-								{#if column.value === "image"}
-									<TableCell>
-										<img class="h-16 w-20 rounded" src={product.images[0].url} alt={product.name} />
-									</TableCell>
-								{:else if column.value === "price" && product.price === 0}
-									<TableCell>
-										<Badge variant="secondary">Price not set</Badge>
-									</TableCell>
-								{:else if column.value === "action"}
-									<TableCell>
-										<Tooltip.Provider>
-											<Tooltip.Root>
-												<Tooltip.Trigger class="cursor-pointer rounded-full p-2 transition-all duration-200 ease-linear hover:bg-primary hover:text-white"
-												>
-													<PencilIcon class="size-5" />
-												</Tooltip.Trigger
-												>
-												<Tooltip.Content class="bg-primary text-white">
-													<span>Update Price</span>
-												</Tooltip.Content>
-											</Tooltip.Root>
-										</Tooltip.Provider>
-									</TableCell>
-								{:else}
-									<TableCell>{product[column.value as keyof typeof product]}</TableCell>
-								{/if}
+								<TableHead>{column.label}</TableHead>
 							{/each}
 						</TableRow>
-					{/each}
-				</TableBody>
-			</TableRoot>
-		</CardContent>
-	</CardRoot>
-</div>
+					</TableHeader>
+					<TableBody>
+						{#each products as product, i (product)}
+							<TableRow>
+								{#each productColumns as column}
+									{#if column.value === "image"}
+										<TableCell>
+											<img
+												class="h-16 w-20 rounded"
+												src={product.images[0].url}
+												alt={product.name}
+											/>
+										</TableCell>
+									{:else if column.value === "price" && product.price === 0}
+										<TableCell>
+											<Badge variant="secondary">Price not set</Badge>
+										</TableCell>
+									{:else if column.value === "action"}
+										<TableCell>
+											<Tooltip.Provider>
+												<Tooltip.Root>
+													<Tooltip.Trigger>
+													<DialogTrigger
+														class="cursor-pointer rounded-full p-2 transition-all duration-200 ease-linear hover:bg-primary hover:text-white"
+													>
+														<PencilIcon class="size-5" />
+													</DialogTrigger>
+													</Tooltip.Trigger>
+													<Tooltip.Content class="bg-primary text-white">
+														<span>Update Price</span>
+													</Tooltip.Content>
+												</Tooltip.Root>
+											</Tooltip.Provider>
+
+
+											<DialogContent>
+												<DialogHeader>
+													<DialogTitle>Are you sure absolutely sure?</DialogTitle>
+													<DialogDescription>
+														This action cannot be undone. This will permanently delete your account
+														and remove your data from our servers.
+													</DialogDescription>
+												</DialogHeader>
+											</DialogContent>
+
+										</TableCell>
+									{:else}
+										<TableCell>{product[column.value as keyof typeof product]}</TableCell>
+									{/if}
+								{/each}
+							</TableRow>
+						{/each}
+					</TableBody>
+				</TableRoot>
+			</CardContent>
+		</CardRoot>
+	</DialogRoot>
+	</div>
