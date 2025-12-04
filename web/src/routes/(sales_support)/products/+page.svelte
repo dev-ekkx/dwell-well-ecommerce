@@ -110,12 +110,19 @@
 		}
 	]
 
-	let newPrice = $state("")
+	let newPrice = $state(0)
 	
 	const isFormValid = $derived(() => {
-		return newPrice.length > 0;
+		return newPrice > 0;
 	})
-	$inspect(newPrice.length);
+
+const handleNewPriceInput = (e: Event) => {
+	const value = +((e.target as HTMLInputElement).value);
+if(value <= 0) return; 
+console.log(value)
+newPrice = value;
+}
+$inspect(newPrice);
 </script>
 
 <div class="flex flex-col gap-10">
@@ -218,10 +225,11 @@
 			<Input
 			name={input.name}
 				id={input.name}
-				value={input.name === "oldPrice" ? product.price : ""}
+				value={input.name === "oldPrice" ? product.price : newPrice}
 				readonly={input.name === "oldPrice"}
 				type="number"
-				oninput={(e) => newPrice = (e.target as HTMLInputElement).value}
+				min="0"
+				oninput={(e) => handleNewPriceInput(e)}
 				/>
 		</div>
 		{/each}
