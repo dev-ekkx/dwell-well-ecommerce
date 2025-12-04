@@ -109,6 +109,13 @@
 			placeholder: "Enter new price"
 		}
 	]
+
+	let newPrice = $state("")
+	
+	const isFormValid = $derived(() => {
+		return newPrice.length > 0;
+	})
+	$inspect(newPrice.length);
 </script>
 
 <div class="flex flex-col gap-10">
@@ -214,12 +221,14 @@
 				value={input.name === "oldPrice" ? product.price : ""}
 				readonly={input.name === "oldPrice"}
 				type="number"
+				oninput={(e) => newPrice = (e.target as HTMLInputElement).value}
 				/>
 		</div>
 		{/each}
 		<Button
-			class="mt-4"
+			class="mt-4 cursor-pointer"
 			type="submit"
+			disabled={!isFormValid()}
 			>Update Price</Button
 		>
 	</form>
