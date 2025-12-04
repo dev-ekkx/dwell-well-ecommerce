@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Badge from "$lib/components/ui/badge/badge.svelte";
+	import Button from "$lib/components/ui/button/button.svelte";
 	import {
 		CardContent,
 		CardDescription,
@@ -10,12 +11,13 @@
 	} from "$lib/components/ui/card";
 	import {
 		Content as DialogContent,
-		Description as DialogDescription,
 		Header as DialogHeader,
 		Root as DialogRoot,
 		Title as DialogTitle,
 		Trigger as DialogTrigger
 	} from "$lib/components/ui/dialog/index.js";
+	import Input from "$lib/components/ui/input/input.svelte";
+	import { Label } from "$lib/components/ui/label";
 	import {
 		Body as TableBody,
 		Cell as TableCell,
@@ -24,6 +26,8 @@
 		Root as TableRoot,
 		Row as TableRow
 	} from "$lib/components/ui/table";
+	import * as Tooltip from "$lib/components/ui/tooltip/index";
+	import type { ProductI } from "$lib/interfaces/index";
 	import { PencilIcon } from "@lucide/svelte";
 
 	const productsSummary = [
@@ -84,12 +88,27 @@
 		}
 	];
 
-	import * as Tooltip from "$lib/components/ui/tooltip/index.js";
+
 
 	const { data } = $props();
 	const products = $derived(data.products || []);
 	$inspect(products[0]);
 	const totalProducts = $derived(data.totalProducts || 0);
+
+	const productPriceForm = [
+		{
+			label: "Old Price",
+			name: "oldPrice",
+			productName: "",
+			readonly: true
+		},
+		{
+			label: "New Price",
+			name: "newPrice",
+			productName: "",
+			placeholder: "Enter new price"
+		}
+	]
 </script>
 
 <div class="flex flex-col gap-10">
@@ -161,11 +180,8 @@
 
 											<DialogContent>
 												<DialogHeader>
-													<DialogTitle>Are you sure absolutely sure?</DialogTitle>
-													<DialogDescription>
-														This action cannot be undone. This will permanently delete your account
-														and remove your data from our servers.
-													</DialogDescription>
+													<DialogTitle>Update Price</DialogTitle>
+													{@render updatePriceForm(product)}
 												</DialogHeader>
 											</DialogContent>
 
@@ -182,3 +198,29 @@
 		</CardRoot>
 	</DialogRoot>
 	</div>
+
+
+	{#snippet updatePriceForm(product: ProductI)}
+	<form action="" class="flex flex-col gap-4 mt-4">
+		{#each productPriceForm as input}
+		<div class="relative flex w-full flex-col gap-1.5">
+
+			<Label
+				for={input.name}>{input.label}</Label
+			>
+			<Input
+			name={input.name}
+				id={input.name}
+				value={input.name === "oldPrice" ? product.price : ""}
+				readonly={input.name === "oldPrice"}
+				type="number"
+				/>
+		</div>
+		{/each}
+		<Button
+			class="mt-4"
+			type="submit"
+			>Update Price</Button
+		>
+	</form>
+	{/snippet}
