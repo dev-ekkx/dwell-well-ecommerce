@@ -88,8 +88,6 @@
 		}
 	];
 
-
-
 	const { data } = $props();
 	const products = $derived(data.products || []);
 	$inspect(products[0]);
@@ -108,27 +106,26 @@
 			productName: "",
 			placeholder: "Enter new price"
 		}
-	]
+	];
 
-	let newPrice = $state(0)
-	
+	let newPrice = $state(0);
+
 	const isFormValid = $derived(() => {
 		return newPrice > 0;
-	})
+	});
 
-const handleNewPriceInput = (e: Event) => {
-	const value = +((e.target as HTMLInputElement).value);
-if(value <= 0) return; 
-console.log(value)
-newPrice = value;
-}
-$inspect(newPrice);
+	const handleNewPriceInput = (e: Event) => {
+		const value = +(e.target as HTMLInputElement).value;
+		if (value <= 0) return;
+		newPrice = value;
+	};
+	$inspect(newPrice);
 </script>
 
 <div class="flex flex-col gap-10">
 	<section class="grid grid-cols-4 gap-4">
 		{#each productsSummary as summary}
-		<CardRoot>
+			<CardRoot>
 				<CardHeader>
 					<CardTitle>{summary.label}</CardTitle>
 				</CardHeader>
@@ -141,10 +138,10 @@ $inspect(newPrice);
 			</CardRoot>
 		{/each}
 	</section>
-	
+
 	<!-- Table section -->
 	<DialogRoot>
-	<CardRoot>
+		<CardRoot>
 			<CardHeader>
 				<CardTitle>Products</CardTitle>
 				{new Date().toISOString()}
@@ -179,11 +176,11 @@ $inspect(newPrice);
 											<Tooltip.Provider>
 												<Tooltip.Root>
 													<Tooltip.Trigger>
-													<DialogTrigger
-														class="cursor-pointer rounded-full p-2 transition-all duration-200 ease-linear hover:bg-primary hover:text-white"
-													>
-														<PencilIcon class="size-5" />
-													</DialogTrigger>
+														<DialogTrigger
+															class="cursor-pointer rounded-full p-2 transition-all duration-200 ease-linear hover:bg-primary hover:text-white"
+														>
+															<PencilIcon class="size-5" />
+														</DialogTrigger>
 													</Tooltip.Trigger>
 													<Tooltip.Content class="bg-primary text-white">
 														<span>Update Price</span>
@@ -191,14 +188,12 @@ $inspect(newPrice);
 												</Tooltip.Root>
 											</Tooltip.Provider>
 
-
 											<DialogContent>
 												<DialogHeader>
 													<DialogTitle>Update Price</DialogTitle>
 													{@render updatePriceForm(product)}
 												</DialogHeader>
 											</DialogContent>
-
 										</TableCell>
 									{:else}
 										<TableCell>{product[column.value as keyof typeof product]}</TableCell>
@@ -211,33 +206,25 @@ $inspect(newPrice);
 			</CardContent>
 		</CardRoot>
 	</DialogRoot>
-	</div>
+</div>
 
-
-	{#snippet updatePriceForm(product: ProductI)}
-	<form action="" class="flex flex-col gap-4 mt-4">
+{#snippet updatePriceForm(product: ProductI)}
+	<form action="" class="mt-4 flex flex-col gap-4">
 		{#each productPriceForm as input}
-		<div class="relative flex w-full flex-col gap-1.5">
-
-			<Label
-				for={input.name}>{input.label}</Label
-			>
-			<Input
-			name={input.name}
-				id={input.name}
-				value={input.name === "oldPrice" ? product.price : newPrice}
-				readonly={input.name === "oldPrice"}
-				type="number"
-				min="0"
-				oninput={(e) => handleNewPriceInput(e)}
+			<div class="relative flex w-full flex-col gap-1.5">
+				<Label for={input.name}>{input.label}</Label>
+				<Input
+					name={input.name}
+					id={input.name}
+					value={input.name === "oldPrice" ? product.price : newPrice}
+					readonly={input.name === "oldPrice"}
+					type="number"
+					min="0"
+					oninput={(e) => handleNewPriceInput(e)}
 				/>
-		</div>
+			</div>
 		{/each}
-		<Button
-			class="mt-4 cursor-pointer"
-			type="submit"
-			disabled={!isFormValid()}
-			>Update Price</Button
+		<Button class="mt-4 cursor-pointer" type="submit" disabled={!isFormValid()}>Update Price</Button
 		>
 	</form>
-	{/snippet}
+{/snippet}
