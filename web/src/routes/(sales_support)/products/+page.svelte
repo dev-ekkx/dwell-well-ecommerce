@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { enhance } from "$app/forms";
 	import Badge from "$lib/components/ui/badge/badge.svelte";
 	import Button from "$lib/components/ui/button/button.svelte";
 	import {
@@ -88,11 +89,10 @@
 		}
 	];
 
-	const { data } = $props();
+	const { data, form } = $props();
 	const products = $derived(data.products || []);
-	$inspect(products[0]);
 	const totalProducts = $derived(data.totalProducts || 0);
-
+const priceUpdateError = $derived(form?.error ?? "");
 	const productPriceForm = [
 		{
 			label: "Old Price",
@@ -109,6 +109,7 @@
 	];
 
 	let newPrice = $state(0);
+	let isLoading = $state(false);
 
 	const isFormValid = $derived(() => {
 		return newPrice > 0;
@@ -119,7 +120,6 @@
 		if (value <= 0) return;
 		newPrice = value;
 	};
-	$inspect(newPrice);
 </script>
 
 <div class="flex flex-col gap-10">
@@ -209,7 +209,16 @@
 </div>
 
 {#snippet updatePriceForm(product: ProductI)}
-	<form action="" class="mt-4 flex flex-col gap-4">
+	<form action="?/updatePrice" 
+	method="POST"
+			use:enhance={() => {
+				isLoading = true;
+				return async ({ update }) => {
+					await update();
+					isLoading = false;
+				};
+			}}
+	class="mt-4 flex flex-col gap-4">
 		{#each productPriceForm as input}
 			<div class="relative flex w-full flex-col gap-1.5">
 				<Label for={input.name}>{input.label}</Label>
