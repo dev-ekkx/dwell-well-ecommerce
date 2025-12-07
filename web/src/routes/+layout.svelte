@@ -5,6 +5,7 @@
 	import CookieBanner from "$lib/components/cookie-banner.svelte";
 	import FooterComponent from "$lib/components/footer.svelte";
 	import HeaderComponent from "$lib/components/header.svelte";
+	import { Toaster } from "$lib/components/ui/sonner";
 	import { AUTH_ROUTES } from "$lib/constants";
 	import { cn } from "$lib/utils";
 	import "../app.css";
@@ -43,6 +44,8 @@
 <svelte:head>
 	<link href={favicon} rel="icon" />
 </svelte:head>
+
+<Toaster />
 
 {#if isCookieBannerVisible}
 	<CookieBanner bind:displayCookieBanner={isCookieBannerVisible} />

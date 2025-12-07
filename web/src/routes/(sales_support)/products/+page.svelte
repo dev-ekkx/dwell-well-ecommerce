@@ -92,7 +92,7 @@
 	const { data, form } = $props();
 	const products = $derived(data.products || []);
 	const totalProducts = $derived(data.totalProducts || 0);
-const priceUpdateError = $derived(form?.error ?? "");
+	const priceUpdateError = $derived(form?.error ?? "");
 	const productPriceForm = [
 		{
 			label: "Old Price",
@@ -209,16 +209,18 @@ const priceUpdateError = $derived(form?.error ?? "");
 </div>
 
 {#snippet updatePriceForm(product: ProductI)}
-	<form action="?/updatePrice" 
-	method="POST"
-			use:enhance={() => {
-				isLoading = true;
-				return async ({ update }) => {
-					await update();
-					isLoading = false;
-				};
-			}}
-	class="mt-4 flex flex-col gap-4">
+	<form
+		action="?/updatePrice"
+		method="POST"
+		use:enhance={() => {
+			isLoading = true;
+			return async ({ update }) => {
+				await update();
+				isLoading = false;
+			};
+		}}
+		class="mt-4 flex flex-col gap-4"
+	>
 		{#each productPriceForm as input}
 			<div class="relative flex w-full flex-col gap-1.5">
 				<Label for={input.name}>{input.label}</Label>
