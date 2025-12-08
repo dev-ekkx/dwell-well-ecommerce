@@ -5,6 +5,7 @@
 	import CookieBanner from "$lib/components/cookie-banner.svelte";
 	import FooterComponent from "$lib/components/footer.svelte";
 	import HeaderComponent from "$lib/components/header.svelte";
+	import { Toaster } from "$lib/components/ui/sonner";
 	import { AUTH_ROUTES } from "$lib/constants";
 	import { cn } from "$lib/utils";
 	import "../app.css";
@@ -34,31 +35,37 @@
 	});
 
 	const isAuthPage = $derived(AUTH_ROUTES.some((r) => page.url.pathname.endsWith(`/${r}`)));
+
+	const shouldDisplayComponent = $derived(
+		!isAuthPage && (!page?.route?.id || !page.route.id.includes("(sales_support)"))
+	);
 </script>
 
 <svelte:head>
 	<link href={favicon} rel="icon" />
 </svelte:head>
 
+<Toaster />
+
 {#if isCookieBannerVisible}
 	<CookieBanner bind:displayCookieBanner={isCookieBannerVisible} />
 {/if}
 
 <!--Header component-->
-{#if !isAuthPage}
+{#if shouldDisplayComponent}
 	<HeaderComponent />
 {/if}
 
 <!--Main content (pages)-->
 <div
 	class={cn("flex flex-col ", {
-		"pt-[6.5rem] md:pt-[7rem] xl:pt-[8rem]": activePage !== "/about" && !isAuthPage
+		"pt-[6.5rem] md:pt-[7rem] xl:pt-[8rem]": activePage !== "/about" && shouldDisplayComponent
 	})}
 >
 	{@render children?.()}
 </div>
 
 <!--Footer component-->
-{#if !isAuthPage}
+{#if shouldDisplayComponent}
 	<FooterComponent footer={data.footer} />
 {/if}

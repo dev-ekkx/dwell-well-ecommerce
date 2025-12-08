@@ -375,3 +375,9 @@ export interface CountryAndFlagI {
 	};
 	callingCode: string;
 }
+
+// SvelteKit fetch function interface
+export interface FetchI {
+	(input: URL | RequestInfo, init?: RequestInit): Promise<Response>;
+	(input: string | URL | Request, init?: RequestInit): Promise<Response>;
+}

@@ -166,7 +166,7 @@ Resources:
         DefaultAuthorizer: CognitoAuthorizer
         Authorizers:
           CognitoAuthorizer:
-            UserPoolArn: !GetAtt DwellWellCognitoUserPool.Arn # Updated GetAtt
+            UserPoolArn: !GetAtt DwellWellCognitoUserPool.Arn
 
 
   ############### EVENT BUS RESOURCE ###############
@@ -367,6 +367,29 @@ Resources:
             RestApiId: !Ref DwellWellApiGateway
             Path: api/products/skus-by-price
             Method: GET
+    
+  DwellWellUpdateProductPriceFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
+    Properties:
+      CodeUri: ../cmd/update-product-price/
+      Handler: update-product-price
+      Runtime: provided.al2023
+      Environment:
+        Variables:
+          PRODUCTS_TABLE_NAME: !Ref ProductsTableName
+      Policies:
+        - AWSXrayWriteOnlyAccess
+#        - CloudWatchLogsFullAccess
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Events:
+        ApiUpdateProductPrice:
+          Type: Api
+          Properties:
+            RestApiId: !Ref DwellWellApiGateway
+            Path: api/products/update-price
+            Method: POST
 
   # --- Webhooks Functions ---
   DwellWellStrapiWebhookFunction:

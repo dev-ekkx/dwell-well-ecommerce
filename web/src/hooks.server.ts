@@ -16,7 +16,7 @@ const handleTokenExpiry: Handle = async ({ event, resolve }) => {
 		return resolve(event);
 	}
 
-	if (isTokenExpired) {
+	if (auth?.accessToken && isTokenExpired) {
 		await signOut();
 		cookies.delete("session", {
 			path: "/",
@@ -38,7 +38,7 @@ const handleAuthCheck: Handle = async ({ event, resolve }) => {
 	event.locals.user = null;
 	event.locals.auth = null;
 	const { auth, user } = JSON.parse(event.cookies.get("session") ?? "{}") as UserAuthI;
-	const route = event.route.id;
+	const route = String(event.route.id).split("/").pop();
 	const isAuthenticated = !!auth?.idToken;
 
 	event.locals.isAuthenticated = isAuthenticated;
@@ -47,7 +47,7 @@ const handleAuthCheck: Handle = async ({ event, resolve }) => {
 		event.locals.auth = auth;
 	}
 
-	const authRoutes = ["/login", "/register", "/reset-password", "/verify_otp"];
+	const authRoutes = ["login", "register", "reset-password", "verify_otp"];
 
 	if (route && authRoutes.includes(route) && isAuthenticated) {
 		redirect(303, "/");
@@ -62,13 +62,16 @@ const handleAuthGuards: Handle = async ({ event, resolve }) => {
 	const isAuthenticated = locals.isAuthenticated;
 	const user = locals.user;
 	const hasAccess = user?.role !== "customer";
+	const redirectTo = event.url.pathname + event.url.search;
 
-	if (!isAuthenticated) {
-		redirect(303, "/login");
-	}
-
-	if (!hasAccess && route?.includes("(sales_support)")) {
-		redirect(303, "/");
+	// Sales support guard
+	if (route?.includes("(sales_support)")) {
+		if (!isAuthenticated) {
+			redirect(303, `/login?redirectTo=${encodeURIComponent(redirectTo)}`);
+		}
+		if (!hasAccess) {
+			redirect(303, "/");
+		}
 	}
 
 	return resolve(event);

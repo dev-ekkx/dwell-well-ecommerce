@@ -1,4 +1,5 @@
 import { fetchAndTransformProducts } from "$lib/utils";
+import { fail } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ fetch, url }) => {
@@ -29,4 +30,25 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 		totalProducts,
 		products
 	};
+};
+
+export const actions = {
+	updatePrice: async ({ request }) => {
+		const formData = await request.formData();
+		const productId = formData.get("productId");
+		const newPrice = formData.get("newPrice");
+
+		console.log("form data: ", formData);
+
+		try {
+			// return {
+			// 	productId,
+			// 	newPrice
+			// };
+
+			return fail(400, { error: "failed to update price" });
+		} catch (error) {
+			return fail(400, { error: (error as Error).message });
+		}
+	}
 };

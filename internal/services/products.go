@@ -107,3 +107,38 @@ func (s *ProductService) GetProducts(request events.APIGatewayProxyRequest) (eve
 		Body:       string(responseBody),
 	}, nil
 }
+
+// UpdateProductPrice is the handler method for updating the price of a single product.
+func (s *ProductService) UpdateProductPrice(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	var body models.UpdateProductPriceRequest
+	err := json.Unmarshal([]byte(request.Body), &body)
+	if err != nil {
+		log.Printf("ERROR: unmarshalling request body: %v", err)
+		return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Invalid request body"}, nil
+	}
+
+	// The database logic is abstracted away in the db package.
+	products, err := s.dynamoDB.UpdateProductPrice(body.SKU, body.Price)
+	if err != nil {
+		log.Printf("ERROR: updating item in DynamoDB: %v", err)
+		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error updating data"}, nil
+	}
+
+	// Convert the slice of products into a map for easy lookup by the frontend
+	responseMap := make(map[string]models.Product)
+	for _, p := range products {
+		responseMap[p.SKU] = p
+	}
+
+	responseBody, err := json.Marshal(responseMap)
+	if err != nil {
+		log.Printf("ERROR: marshalling response: %v", err)
+		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error creating response"}, nil
+	}
+
+	return events.APIGatewayProxyResponse{
+		StatusCode: 200,
+		Headers:    map[string]string{"Content-Type": "application/json"},
+		Body:       string(responseBody),
+	}, nil
+}

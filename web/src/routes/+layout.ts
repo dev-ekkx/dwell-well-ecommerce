@@ -2,16 +2,16 @@ import { AUTH_ROUTES } from "$lib/constants";
 import type { FooterI, PageI } from "$lib/interfaces";
 import type { LayoutLoad } from "./$types";
 
-export const load: LayoutLoad = async ({ fetch, url, data }) => {
+export const load: LayoutLoad = async ({ fetch, url, data, route }) => {
 	const isAuthPage = AUTH_ROUTES.some((r) => url.pathname.endsWith(`/${r}`));
-
 	try {
-		if (isAuthPage) {
+		if (isAuthPage || route?.id?.includes("(sales_support)")) {
 			return {
 				footer: null,
 				homepage: null,
 				isAuthenticated: data.isAuthenticated,
-				countryDetails: data.countryDetails
+				countryDetails: data.countryDetails,
+				user: data.user
 			};
 		}
 
