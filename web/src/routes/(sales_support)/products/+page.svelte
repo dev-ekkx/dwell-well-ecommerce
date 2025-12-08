@@ -30,6 +30,7 @@
 	import * as Tooltip from "$lib/components/ui/tooltip/index";
 	import type { ProductI } from "$lib/interfaces/index";
 	import { PencilIcon } from "@lucide/svelte";
+	import { toast } from "svelte-sonner";
 
 	const productsSummary = [
 		{
@@ -92,7 +93,6 @@
 	const { data, form } = $props();
 	const products = $derived(data.products || []);
 	const totalProducts = $derived(data.totalProducts || 0);
-	const priceUpdateError = $derived(form?.error ?? "");
 	const productPriceForm = [
 		{
 			label: "Old Price",
@@ -110,9 +110,10 @@
 
 	let newPrice = $state(0);
 	let isLoading = $state(false);
+	let dialogOpen = $state(false);
 
 	const isFormValid = $derived(() => {
-		return newPrice > 0;
+		return newPrice > 0 || isLoading;
 	});
 
 	const handleNewPriceInput = (e: Event) => {
@@ -120,6 +121,21 @@
 		if (value <= 0) return;
 		newPrice = value;
 	};
+
+
+	$effect(() => {
+		if (form?.error) {
+			console.log(form.error);
+			toast.error("Failure", {description: form.error, position: "top-right"});
+		}
+	});
+
+	$effect(() => {
+		if (dialogOpen) {
+			newPrice = 0;
+			isLoading = false;
+		}
+	});
 </script>
 
 <div class="flex flex-col gap-10">
@@ -140,7 +156,7 @@
 	</section>
 
 	<!-- Table section -->
-	<DialogRoot>
+	<DialogRoot bind:open={dialogOpen}>
 		<CardRoot>
 			<CardHeader>
 				<CardTitle>Products</CardTitle>
