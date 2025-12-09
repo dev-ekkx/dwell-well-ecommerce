@@ -1,7 +1,7 @@
-import { VITE_BACKEND_URL } from "$env/static/private";
 import { fetchAndTransformProducts } from "$lib/utils";
 import { fail } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
+import { BACKEND_URL } from "$lib/constants";
 
 export const load: PageServerLoad = async ({ fetch, url, request }) => {
 	const searchTerm = url.searchParams.get("q");
@@ -44,7 +44,7 @@ export const actions = {
 
 		try {
 
-			const res = await fetch(`${VITE_BACKEND_URL}/products/update-price`, {
+			const res = await fetch(`${BACKEND_URL}/products/update-price`, {
 				method: "POST",
 				body: JSON.stringify({ newPrice, sku })
 			});

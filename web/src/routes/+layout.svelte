@@ -3,7 +3,6 @@
 	import { page } from "$app/state";
 	import favicon from "$lib/assets/favicon.ico";
 	import CookieBanner from "$lib/components/cookie-banner.svelte";
-	import FooterComponent from "$lib/components/footer.svelte";
 	import HeaderComponent from "$lib/components/header.svelte";
 	import { Toaster } from "$lib/components/ui/sonner";
 	import { AUTH_ROUTES } from "$lib/constants";
@@ -64,14 +63,15 @@
 		"pt-[6.5rem] md:pt-[7rem] xl:pt-[8rem]": activePage !== "/about" && shouldDisplayComponent
 	})}
 >
-	{@render children?.()}
+	{@render children()}
 </div>
 
-<!--Footer component-->
-{#if shouldDisplayComponent}
-{#await data.footer then footer}
-{:then } 
-	
+<!-- Footer component -->
+<!-- {#if shouldDisplayComponent}
+{#await data?.footer}
+loading
+{:then}
+	fdf
 <FooterComponent footer={footer} />
 {/await}
-{/if}
+{/if} -->

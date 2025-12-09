@@ -22,6 +22,8 @@ export const ROUTE_NAVS = [
 ] as const;
 
 export const ITEMS_PER_PAGE_OPTIONS = [5, 10, 25, 50, 100];
+export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+export const CMS_URL = import.meta.env.VITE_CMS_URL;
 
 export const FORM_FIELDS = {
 	login: [

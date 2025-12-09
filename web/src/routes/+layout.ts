@@ -1,5 +1,4 @@
-import { VITE_CMS_URL } from "$env/static/private";
-import { AUTH_ROUTES } from "$lib/constants";
+import { AUTH_ROUTES, CMS_URL } from "$lib/constants";
 import type { LayoutLoad } from "./$types";
 
 export const load: LayoutLoad = async ({ fetch, url, data, route }) => {
@@ -15,9 +14,9 @@ export const load: LayoutLoad = async ({ fetch, url, data, route }) => {
 			};
 		}
 
-		const footerData = fetch(VITE_CMS_URL + "/api/footer?populate=all");
+		const footerData = await fetch(CMS_URL + "/api/footer?populate=all");
 		// const footer = (await footerData.json()).data as FooterI;
-		console.log(footerData)
+		console.log(await footerData.json().data)
 
 		// const homepageData = await fetch(
 		// 	CMS_URL + "/api/pages?filters[slug][$eq]=homepage&populate=all"
