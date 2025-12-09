@@ -20,7 +20,7 @@
 	const routeLink = (link: string) => link as RouteId;
 
 	onMount(() => {
-		const rawHtml = marked(footerData.newsletterDisclaimer).toString();
+		const rawHtml = marked(footerData?.newsletterDisclaimer ?? "").toString();
 		newsletterDisclaimer = DOMPurify.sanitize(rawHtml);
 	});
 </script>

@@ -1,8 +1,9 @@
+import { VITE_BACKEND_URL } from "$env/static/private";
 import { fetchAndTransformProducts } from "$lib/utils";
 import { fail } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
-export const load: PageServerLoad = async ({ fetch, url }) => {
+export const load: PageServerLoad = async ({ fetch, url, request }) => {
 	const searchTerm = url.searchParams.get("q");
 	const page = Number(url.searchParams.get("page") ?? "1");
 	const pageSize = Number(url.searchParams.get("perPage") ?? "10");
@@ -12,6 +13,7 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	const stylesFilter = url.searchParams.get("styles")?.split(",").filter(Boolean);
 	const availabilitiesFilter = url.searchParams.get("availabilities")?.split(",").filter(Boolean);
 	const priceRangeFilter = url.searchParams.get("priceRange");
+
 
 	const { totalProducts, products } = await fetchAndTransformProducts({
 		fetch,
@@ -33,21 +35,25 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 };
 
 export const actions = {
-	updatePrice: async ({ request }) => {
+	updatePrice: async ({ request, fetch }) => {
 		const formData = await request.formData();
-		const productId = formData.get("productId");
-		const newPrice = formData.get("newPrice");
+		const sku = formData.get("sku") as string;
+		const newPrice = Number(formData.get("newPrice"));
 
 		console.log("form data: ", formData);
 
 		try {
-			// return {
-			// 	productId,
-			// 	newPrice
-			// };
 
-			return fail(400, { error: "failed to update price" });
+			const res = await fetch(`${VITE_BACKEND_URL}/products/update-price`, {
+				method: "POST",
+				body: JSON.stringify({ newPrice, sku })
+			});
+
+			console.log("response: ", res);
+
+			return;
 		} catch (error) {
+			console.log("error: ", error);
 			return fail(400, { error: (error as Error).message });
 		}
 	}

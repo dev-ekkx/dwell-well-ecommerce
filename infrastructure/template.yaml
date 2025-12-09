@@ -389,7 +389,7 @@ Resources:
           Properties:
             RestApiId: !Ref DwellWellApiGateway
             Path: api/products/update-price
-            Method: POST
+            Method: PATCH
 
   # --- Webhooks Functions ---
   DwellWellStrapiWebhookFunction:

@@ -1,10 +1,10 @@
-import type { PageServerLoad } from "./$types";
-import { client } from "../../../graphql.config";
-import { GET_PRODUCT_BY_SLUG, GET_RELATED_PRODUCTS } from "../../../graphql.queries";
-import { error } from "@sveltejs/kit";
+import { VITE_BACKEND_URL } from "$env/static/private";
 import type { ProductI, ProductSummaryI } from "$lib/interfaces";
 import type { ProductDataMapT } from "$lib/types";
-import { BACKEND_URL } from "$lib/constants";
+import { error } from "@sveltejs/kit";
+import { client } from "../../../graphql.config";
+import { GET_PRODUCT_BY_SLUG, GET_RELATED_PRODUCTS } from "../../../graphql.queries";
+import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ params, url }) => {
 	const opsData = Object.fromEntries(url.searchParams);
@@ -51,7 +51,7 @@ export const load: PageServerLoad = async ({ params, url }) => {
 	const skusToFetch = relatedProducts.map((prod) => prod.SKU);
 	if (skusToFetch.length > 0) {
 		try {
-			const response = await fetch(`${BACKEND_URL}/products`, {
+			const response = await fetch(`${VITE_BACKEND_URL}/products`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json"

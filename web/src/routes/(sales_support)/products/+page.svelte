@@ -237,6 +237,7 @@
 		}}
 		class="mt-4 flex flex-col gap-4"
 	>
+		<input type="text" value={product.SKU} name="sku" hidden />
 		{#each productPriceForm as input}
 			<div class="relative flex w-full flex-col gap-1.5">
 				<Label for={input.name}>{input.label}</Label>

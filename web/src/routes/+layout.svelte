@@ -23,11 +23,13 @@
 
 	let isCookieBannerVisible = $state(initialVisibility);
 	$effect(() => {
-		const html = document.documentElement;
-		if (isCookieBannerVisible) {
-			html.classList.add("overflow-hidden");
+		if (browser){
+			const html = document.documentElement;
+			if (isCookieBannerVisible) {
+				html.classList.add("overflow-hidden");
+			}
+			html.classList.remove("overflow-hidden");
 		}
-		html.classList.remove("overflow-hidden");
 	});
 
 	$effect(() => {
@@ -41,7 +43,7 @@
 	);
 </script>
 
-<svelte:head>
+<svelte:head>s
 	<link href={favicon} rel="icon" />
 </svelte:head>
 
@@ -67,5 +69,9 @@
 
 <!--Footer component-->
 {#if shouldDisplayComponent}
-	<FooterComponent footer={data.footer} />
+{#await data.footer then footer}
+{:then } 
+	
+<FooterComponent footer={footer} />
+{/await}
 {/if}

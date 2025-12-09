@@ -2,6 +2,7 @@ import { goto } from "$app/navigation";
 import { resolve } from "$app/paths";
 import { page } from "$app/state";
 import type { RouteId } from "$app/types";
+import { VITE_BACKEND_URL } from "$env/static/private";
 import type { FetchI, ProductI, UserAuthI } from "$lib/interfaces";
 import { error, type Cookies } from "@sveltejs/kit";
 import { fetchAuthSession, getCurrentUser } from "aws-amplify/auth";
@@ -11,7 +12,6 @@ import { SvelteURLSearchParams } from "svelte/reactivity";
 import { twMerge } from "tailwind-merge";
 import { client } from "../graphql.config";
 import { GET_PRODUCTS } from "../graphql.queries";
-import { BACKEND_URL } from "./constants";
 import type { ProductDataMapT } from "./types";
 
 // SHADCN SVELTE TYPES (DON'T DELETE)
@@ -368,7 +368,7 @@ export const fetchAndTransformProducts = async ({
 
 		if (!isNaN(min) && !isNaN(max)) {
 			try {
-				const skuUrl = `${BACKEND_URL}/products/skus-by-price?minPrice=${min}&maxPrice=${max}`;
+				const skuUrl = `${VITE_BACKEND_URL}/products/skus-by-price?minPrice=${min}&maxPrice=${max}`;
 				const skuResponse = await fetch(skuUrl);
 
 				if (!skuResponse.ok) {
@@ -431,12 +431,11 @@ export const fetchAndTransformProducts = async ({
 	let productDataMap: ProductDataMapT = {};
 
 	try {
-		const operationalDataResponse = await fetch(`${BACKEND_URL}/products`, {
+		const operationalDataResponse = await fetch(`${VITE_BACKEND_URL}/products`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ skus: skusToFetch })
 		});
-
 		if (!operationalDataResponse.ok) {
 			// Log the error but continue with default data if possible,
 			// or re-throw an error if the data is essential.
