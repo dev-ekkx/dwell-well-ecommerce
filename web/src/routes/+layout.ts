@@ -1,7 +1,7 @@
 import { AUTH_ROUTES, CMS_URL } from "$lib/constants";
 import type { LayoutLoad } from "./$types";
 
-export const load: LayoutLoad = async ({ fetch, url, data, route }) => {
+export const load: LayoutLoad = ({ fetch, url, data, route }) => {
 	const isAuthPage = AUTH_ROUTES.some((r) => url.pathname.endsWith(`/${r}`));
 	try {
 		if (isAuthPage || route?.id?.includes("(sales_support)")) {
@@ -26,7 +26,7 @@ export const load: LayoutLoad = async ({ fetch, url, data, route }) => {
 
 		return {
 			footer,
-			homepage,
+			homepage: null,
 			user: data.user,
 			// auth: data.auth,
 			isAuthenticated: data.isAuthenticated,

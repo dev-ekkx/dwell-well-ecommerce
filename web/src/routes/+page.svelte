@@ -36,7 +36,9 @@
 	<meta content={seoData?.metaDescription || ""} />
 </svelte:head>
 
-<HeroSkeleton />
+<div class="g-px">
+	<HeroSkeleton />
+</div>
 <!-- <div class="g-px">
 	<Hero {heroData} />
 	<WhyChooseUs {whyChooseUsData} />
