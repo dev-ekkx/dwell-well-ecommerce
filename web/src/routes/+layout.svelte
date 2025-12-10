@@ -2,6 +2,7 @@
 	import { browser } from "$app/environment";
 	import { page } from "$app/state";
 	import favicon from "$lib/assets/favicon.ico";
+	import FooterSkeleton from "$lib/components/footer-skeleton.svelte";
 	import FooterComponent from "$lib/components/footer.svelte";
 	import HeaderComponent from "$lib/components/header.svelte";
 	import { Toaster } from "$lib/components/ui/sonner";
@@ -76,11 +77,11 @@
 <!-- Footer component -->
 {#if shouldDisplayComponent}
 	{#await data?.footer}
-		loading
+		<FooterSkeleton />
 	{:then footer}
 		{#if footer}
 			{#await footer?.json()}
-				loading
+				<FooterSkeleton />
 			{:then footerJson}
 				<FooterComponent footer={footerJson.data} />
 				{:catch}
