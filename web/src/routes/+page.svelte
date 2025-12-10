@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { PageI } from "$lib/interfaces";
 	import type { PageProps } from "./$types";
+	import HeroSkeleton from "./_home/hero-skeleton.svelte";
 
 	const { data }: PageProps = $props();
 	const homePageData = (data?.homepage ?? {}) as PageI;
@@ -35,6 +36,7 @@
 	<meta content={seoData?.metaDescription || ""} />
 </svelte:head>
 
+<HeroSkeleton />
 <!-- <div class="g-px">
 	<Hero {heroData} />
 	<WhyChooseUs {whyChooseUsData} />
