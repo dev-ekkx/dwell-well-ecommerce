@@ -14,7 +14,6 @@ export const load: PageServerLoad = async ({ fetch, url, request }) => {
 	const availabilitiesFilter = url.searchParams.get("availabilities")?.split(",").filter(Boolean);
 	const priceRangeFilter = url.searchParams.get("priceRange");
 
-
 	const { totalProducts, products } = await fetchAndTransformProducts({
 		fetch,
 		searchTerm,
@@ -43,7 +42,6 @@ export const actions = {
 		console.log("form data: ", formData);
 
 		try {
-
 			const res = await fetch(`${BACKEND_URL}/products/update-price`, {
 				method: "POST",
 				body: JSON.stringify({ newPrice, sku })

@@ -7,8 +7,7 @@
 	const seoData = homePageData?.seo ?? {};
 	// const heroData = homePageData?.contentSections.find(
 	// 	(item) => item.__component === "page-controls.hero"
-	// ) as HeroI;  
-
+	// ) as HeroI;
 
 	// const whyChooseUsData = homePageData?.contentSections.find(
 	// 	(item) => item.__component === "page-controls.why-choose-us"
@@ -26,7 +25,7 @@
 
 	// Provide hero images to the HeroCarousel component via context
 	// if (heroData?.images.length) {
-		
+
 	// 	setContext("hero-images", heroData.images);
 	// }
 </script>

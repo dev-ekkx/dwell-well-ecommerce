@@ -2,10 +2,11 @@
 	import { browser } from "$app/environment";
 	import { page } from "$app/state";
 	import favicon from "$lib/assets/favicon.ico";
-	import CookieBanner from "$lib/components/cookie-banner.svelte";
+	import FooterComponent from "$lib/components/footer.svelte";
 	import HeaderComponent from "$lib/components/header.svelte";
 	import { Toaster } from "$lib/components/ui/sonner";
 	import { AUTH_ROUTES } from "$lib/constants";
+	import type { FooterI } from "$lib/interfaces";
 	import { cn } from "$lib/utils";
 	import "../app.css";
 
@@ -22,7 +23,7 @@
 
 	let isCookieBannerVisible = $state(initialVisibility);
 	$effect(() => {
-		if (browser){
+		if (browser) {
 			const html = document.documentElement;
 			if (isCookieBannerVisible) {
 				html.classList.add("overflow-hidden");
@@ -40,17 +41,23 @@
 	const shouldDisplayComponent = $derived(
 		!isAuthPage && (!page?.route?.id || !page.route.id.includes("(sales_support)"))
 	);
+
+	const footerData = async (footer: Response | null) => {
+		if (!footer) return null;
+		const footerJson = await footer.json();
+		return footerJson?.data as FooterI;
+	};
 </script>
 
-<svelte:head>s
+<svelte:head>
 	<link href={favicon} rel="icon" />
 </svelte:head>
 
 <Toaster />
 
-{#if isCookieBannerVisible}
+<!-- {#if isCookieBannerVisible}
 	<CookieBanner bind:displayCookieBanner={isCookieBannerVisible} />
-{/if}
+{/if} -->
 
 <!--Header component-->
 {#if shouldDisplayComponent}
@@ -67,11 +74,20 @@
 </div>
 
 <!-- Footer component -->
-<!-- {#if shouldDisplayComponent}
-{#await data?.footer}
-loading
-{:then}
-	fdf
-<FooterComponent footer={footer} />
-{/await}
-{/if} -->
+{#if shouldDisplayComponent}
+	{#await data?.footer}
+		loading
+	{:then footer}
+		{#if footer}
+			{#await footer?.json()}
+				loading
+			{:then footerJson}
+				<FooterComponent footer={footerJson.data} />
+				{:catch}
+				<span>No footer data available</span>
+			{/await}
+		{/if}
+		{:catch}
+		<span>No footer data available</span>
+	{/await}
+{/if}

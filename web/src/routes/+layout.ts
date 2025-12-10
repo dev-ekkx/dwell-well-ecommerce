@@ -14,9 +14,8 @@ export const load: LayoutLoad = async ({ fetch, url, data, route }) => {
 			};
 		}
 
-		const footerData = await fetch(CMS_URL + "/api/footer?populate=all");
+		const footer = fetch(CMS_URL + "/api/footer?populate=all");
 		// const footer = (await footerData.json()).data as FooterI;
-		console.log(await footerData.json().data)
 
 		// const homepageData = await fetch(
 		// 	CMS_URL + "/api/pages?filters[slug][$eq]=homepage&populate=all"
@@ -26,15 +25,13 @@ export const load: LayoutLoad = async ({ fetch, url, data, route }) => {
 		// console.log(homepage)
 
 		return {
-			footer: null,
+			footer,
 			homepage: null,
 			user: data.user,
 			// auth: data.auth,
 			isAuthenticated: data.isAuthenticated,
 			countryDetails: data.countryDetails
 		};
-
-	
 	} catch (error) {
 		console.error("Error loading footer data: ", error);
 		return {

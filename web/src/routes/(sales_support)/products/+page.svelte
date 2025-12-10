@@ -122,11 +122,10 @@
 		newPrice = value;
 	};
 
-
 	$effect(() => {
 		if (form?.error) {
 			console.log(form.error);
-			toast.error("Failure", {description: form.error, position: "top-right"});
+			toast.error("Failure", { description: form.error, position: "top-right" });
 		}
 	});
 
