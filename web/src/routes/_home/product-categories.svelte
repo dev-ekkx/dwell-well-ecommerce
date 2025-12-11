@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { onMount } from "svelte";
-	import Picture from "$lib/components/picture.svelte";
 	import ArrowButton from "$lib/components/arrow-button.svelte";
-	import type { CategoryI } from "$lib/interfaces";
+	import Picture from "$lib/components/picture.svelte";
 	import { useCarousel } from "$lib/helpers/carousel.svelte";
+	import type { CategoryI } from "$lib/interfaces";
+	import { onMount } from "svelte";
 
 	const { productCategoriesData } = $props();
-	const productsCategories = productCategoriesData as CategoryI;
-	const carousel = useCarousel({ items: productsCategories.items });
+	const productsCategories = $derived(productCategoriesData as CategoryI);
+	const carousel = $derived(useCarousel({ items: productsCategories?.items ?? [] }));
 
 	onMount(() => {
 		carousel.collectItems();
