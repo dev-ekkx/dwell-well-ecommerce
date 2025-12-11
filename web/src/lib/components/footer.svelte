@@ -13,8 +13,6 @@
 	const socials = footerData?.socialLinks ?? [];
 	const columnLinks = footerData?.linkColumns ?? [];
 
-	$inspect(footerData);
-
 	let newsletterDisclaimer = $state("");
 	const isExternal = (link: string) =>
 		link.startsWith("http") || link.startsWith("mailto:") || link.startsWith("tel:");

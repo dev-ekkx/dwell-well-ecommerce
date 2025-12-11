@@ -1,34 +1,49 @@
 <script lang="ts">
-	import type { PageI } from "$lib/interfaces";
+	import type { HeroI, PageI } from "$lib/interfaces";
+	import { onMount, setContext } from "svelte";
 	import type { PageProps } from "./$types";
 	import HeroSkeleton from "./_home/hero-skeleton.svelte";
+	import Hero from "./_home/hero.svelte";
+	import ProductCategories from "./_home/product-categories.svelte";
 
 	const { data }: PageProps = $props();
-	const homePageData = (data?.homepage ?? {}) as PageI;
-	const seoData = homePageData?.seo ?? {};
-	// const heroData = homePageData?.contentSections.find(
-	// 	(item) => item.__component === "page-controls.hero"
-	// ) as HeroI;
+	let homePageData = $state({}) as PageI;
+	const seoData = $derived(homePageData?.seo ?? {})
 
-	// const whyChooseUsData = homePageData?.contentSections.find(
+	
+	onMount(async () => {
+		const res = await data?.homepage
+			homePageData = (await res?.json()).data[0] as PageI;
+	})
+
+
+	$inspect(homePageData)
+
+	const heroData = $derived(homePageData?.contentSections?.find(
+		(item) => item.__component === "page-controls.hero"
+	) as HeroI);
+
+	// const whyChooseUsData = $derived(homePageData?.contentSections?.find(
 	// 	(item) => item.__component === "page-controls.why-choose-us"
-	// );
-	// const productCategoriesData = homePageData?.contentSections.find(
-	// 	(item) => item.sectionId === "categories"
-	// );
-	// const flashSalesData = homePageData?.contentSections.find(
+	// ));
+	const productCategoriesData = $derived(homePageData?.contentSections?.find(
+		(item) => item.__component === "page-controls.category-or-new-arrival-section"
+	));
+	// const flashSalesData = $derived(homePageData?.contentSections?.find(
 	// 	(item) => item.__component === "page-controls.promotion"
-	// );
+	// ));
 
-	// const newArrivalsData = homePageData?.contentSections.find(
+	// const newArrivalsData = $derived(homePageData?.contentSections?.find(
 	// 	(item) => item.sectionId === "newArrivals"
-	// )!;
+	// ));
+
+
 
 	// Provide hero images to the HeroCarousel component via context
-	// if (heroData?.images.length) {
+$effect(() => {
+	setContext("hero-images", heroData?.images ?? []);
+})
 
-	// 	setContext("hero-images", heroData.images);
-	// }
 </script>
 
 <svelte:head>
@@ -36,13 +51,24 @@
 	<meta content={seoData?.metaDescription || ""} />
 </svelte:head>
 
+
 <div class="g-px">
-	<HeroSkeleton />
+{#await data?.homepage}
+	{@render loaders()}
+{:then homepage}
+	{@render pageContent()}
+{/await}
 </div>
-<!-- <div class="g-px">
+
+
+{#snippet loaders()}
+	<HeroSkeleton />
+{/snippet}
+
+{#snippet pageContent()}
 	<Hero {heroData} />
-	<WhyChooseUs {whyChooseUsData} />
+	<!-- <WhyChooseUs {whyChooseUsData} /> -->
 	<ProductCategories {productCategoriesData} />
-	<FlashSales {flashSalesData} />
-	<NewArrivals {newArrivalsData} />
-</div> -->
+	<!-- <FlashSales {flashSalesData} /> -->
+	<!-- <NewArrivals {newArrivalsData} /> -->
+{/snippet}

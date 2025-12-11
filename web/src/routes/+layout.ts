@@ -26,7 +26,7 @@ export const load: LayoutLoad = ({ fetch, url, data, route }) => {
 
 		return {
 			footer,
-			homepage: null,
+			homepage,
 			user: data.user,
 			// auth: data.auth,
 			isAuthenticated: data.isAuthenticated,
