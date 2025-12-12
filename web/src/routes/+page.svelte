@@ -2,6 +2,8 @@
 	import type { HeroI, PageI } from "$lib/interfaces";
 	import { onMount, setContext } from "svelte";
 	import type { PageProps } from "./$types";
+	import FlashSalesSkeleton from "./_home/flash-sales-skeleton.svelte";
+	import FlashSales from "./_home/flash-sales.svelte";
 	import HeroSkeleton from "./_home/hero-skeleton.svelte";
 	import Hero from "./_home/hero.svelte";
 	import ProductCategoriesSkeleton from "./_home/product-categories-skeleton.svelte";
@@ -25,18 +27,15 @@
 	const heroData = $derived(homePageData?.contentSections?.find(
 		(item) => item.__component === "page-controls.hero"
 	) as HeroI);
-
 	const whyChooseUsData = $derived(homePageData?.contentSections?.find(
 		(item) => item.__component === "page-controls.why-choose-us"
 	));
-
 	const productCategoriesData = $derived(homePageData?.contentSections?.find(
 		(item) => item.__component === "page-controls.category-or-new-arrival-section"
 	));
-	// const flashSalesData = $derived(homePageData?.contentSections?.find(
-	// 	(item) => item.__component === "page-controls.promotion"
-	// ));
-
+	const flashSalesData = $derived(homePageData?.contentSections?.find(
+		(item) => item.__component === "page-controls.promotion"
+	));
 	// const newArrivalsData = $derived(homePageData?.contentSections?.find(
 	// 	(item) => item.sectionId === "newArrivals"
 	// ));
@@ -68,12 +67,13 @@ $effect(() => {
 <HeroSkeleton />
 <WhyChooseUsSkeleton />
 <ProductCategoriesSkeleton />
+<FlashSalesSkeleton />
 {/snippet}
 
 {#snippet pageContent()}
 	<Hero {heroData} />
 	<WhyChooseUs {whyChooseUsData} />
 	<ProductCategories {productCategoriesData} />
-	<!-- <FlashSales {flashSalesData} /> -->
+	<FlashSales {flashSalesData} />
 	<!-- <NewArrivals {newArrivalsData} /> -->
 {/snippet}

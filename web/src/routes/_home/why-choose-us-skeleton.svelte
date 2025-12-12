@@ -12,11 +12,11 @@
 		<!-- Title + description -->
 		<div class="flex flex-col gap-4">
 			<!-- Title -->
-			<div class="h-7 w-56 rounded bg-gray-300/40 animate-pulse"></div>
+			<div class="h-7 w-56 rounded bg-gray-300 animate-pulse"></div>
 
 			<!-- Description lines -->
-			<div class="h-4 w-80 max-w-[35rem] rounded bg-gray-300/40 animate-pulse"></div>
-			<div class="h-4 w-64 max-w-[35rem] rounded bg-gray-300/40 animate-pulse"></div>
+			<div class="h-4 w-80 max-w-[35rem] rounded bg-gray-300 animate-pulse"></div>
+			<div class="h-4 w-64 max-w-[35rem] rounded bg-gray-300 animate-pulse"></div>
 		</div>
 
 		<!-- Reasons grid -->
@@ -26,14 +26,14 @@
 				<div class="flex flex-col gap-3 lg:gap-4">
 
 					<!-- Icon -->
-					<div class="flex h-14 w-14 items-center justify-center rounded-lg bg-gray-300/40 animate-pulse"></div>
+					<div class="flex h-14 w-14 items-center justify-center rounded-lg bg-gray-300 animate-pulse"></div>
 
 					<!-- Subtitle -->
-					<div class="h-5 w-40 rounded bg-gray-300/40 animate-pulse"></div>
+					<div class="h-5 w-40 rounded bg-gray-300 animate-pulse"></div>
 
 					<!-- Description lines -->
-					<div class="h-4 w-56 rounded bg-gray-300/40 animate-pulse"></div>
-					<div class="h-4 w-48 rounded bg-gray-300/40 animate-pulse"></div>
+					<div class="h-4 w-56 rounded bg-gray-300 animate-pulse"></div>
+					<div class="h-4 w-48 rounded bg-gray-300 animate-pulse"></div>
 				</div>
 			{/each}
 
@@ -43,7 +43,7 @@
 	<!-- Right-side image (desktop only) -->
 	{#if !isMobile}
 		<div
-			class="h-[38rem] w-[40vw] rounded-2xl bg-gray-300/40 animate-pulse"
+			class="h-[38rem] w-[40vw] rounded-2xl bg-gray-300 animate-pulse"
 		></div>
 	{/if}
 
