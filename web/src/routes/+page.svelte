@@ -4,7 +4,9 @@
 	import type { PageProps } from "./$types";
 	import HeroSkeleton from "./_home/hero-skeleton.svelte";
 	import Hero from "./_home/hero.svelte";
+	import ProductCategoriesSkeleton from "./_home/product-categories-skeleton.svelte";
 	import ProductCategories from "./_home/product-categories.svelte";
+	import WhyChooseUs from "./_home/why-choose-us.svelte";
 
 	const { data }: PageProps = $props();
 	let homePageData = $state({}) as PageI;
@@ -23,9 +25,10 @@
 		(item) => item.__component === "page-controls.hero"
 	) as HeroI);
 
-	// const whyChooseUsData = $derived(homePageData?.contentSections?.find(
-	// 	(item) => item.__component === "page-controls.why-choose-us"
-	// ));
+	const whyChooseUsData = $derived(homePageData?.contentSections?.find(
+		(item) => item.__component === "page-controls.why-choose-us"
+	));
+
 	const productCategoriesData = $derived(homePageData?.contentSections?.find(
 		(item) => item.__component === "page-controls.category-or-new-arrival-section"
 	));
@@ -60,14 +63,14 @@ $effect(() => {
 {/await}
 </div>
 
-
 {#snippet loaders()}
-	<HeroSkeleton />
+<HeroSkeleton />
+<ProductCategoriesSkeleton />
 {/snippet}
 
 {#snippet pageContent()}
 	<Hero {heroData} />
-	<!-- <WhyChooseUs {whyChooseUsData} /> -->
+	<WhyChooseUs {whyChooseUsData} />
 	<ProductCategories {productCategoriesData} />
 	<!-- <FlashSales {flashSalesData} /> -->
 	<!-- <NewArrivals {newArrivalsData} /> -->

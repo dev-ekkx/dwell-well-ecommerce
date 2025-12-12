@@ -1,10 +1,9 @@
 <script lang="ts">
 	import Picture from "$lib/components/picture.svelte";
 	import { MediaQuery } from "svelte/reactivity";
-	import type { WhyChooseUsI } from "$lib/interfaces";
 
-	const { whyChooseUsData }: { whyChooseUsData: WhyChooseUsI } = $props();
-	const reasons = whyChooseUsData?.reasons;
+	const { whyChooseUsData } = $props();
+	const reasons = $derived(whyChooseUsData?.reasons)
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const isMobile = $derived(mediaQuery.current);
@@ -13,8 +12,8 @@
 <div class="g-mt flex flex-col gap-12 lg:flex-row">
 	<section class=" flex flex-col gap-10">
 		<div class="flex flex-col gap-4">
-			<span class="text-2xl font-semibold capitalize">{whyChooseUsData.title}</span>
-			<p class="w-full max-w-[35rem]">{whyChooseUsData.description}</p>
+			<span class="text-2xl font-semibold capitalize">{whyChooseUsData?.title}</span>
+			<p class="w-full max-w-[35rem]">{whyChooseUsData?.description}</p>
 		</div>
 
 		<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -33,8 +32,8 @@
 		<Picture
 			alt="product"
 			class="max-h-[38rem] max-w-[40vw] rounded-2xl object-cover"
-			src={`${whyChooseUsData.image.url}`}
-			source={`${whyChooseUsData.image.url}`}
+			src={`${whyChooseUsData?.image.url}`}
+			source={`${whyChooseUsData?.image.url}`}
 		/>
 	{/if}
 </div>
