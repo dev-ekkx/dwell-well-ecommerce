@@ -6,6 +6,7 @@
 	import Hero from "./_home/hero.svelte";
 	import ProductCategoriesSkeleton from "./_home/product-categories-skeleton.svelte";
 	import ProductCategories from "./_home/product-categories.svelte";
+	import WhyChooseUsSkeleton from "./_home/why-choose-us-skeleton.svelte";
 	import WhyChooseUs from "./_home/why-choose-us.svelte";
 
 	const { data }: PageProps = $props();
@@ -65,6 +66,7 @@ $effect(() => {
 
 {#snippet loaders()}
 <HeroSkeleton />
+<WhyChooseUsSkeleton />
 <ProductCategoriesSkeleton />
 {/snippet}
 
