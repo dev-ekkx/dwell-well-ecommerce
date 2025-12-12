@@ -1,4 +1,6 @@
 <script lang="ts">
+	import NewArrivals from "./_home/new-arrivals.svelte";
+
 	import type { HeroI, PageI } from "$lib/interfaces";
 	import { onMount, setContext } from "svelte";
 	import type { PageProps } from "./$types";
@@ -6,6 +8,7 @@
 	import FlashSales from "./_home/flash-sales.svelte";
 	import HeroSkeleton from "./_home/hero-skeleton.svelte";
 	import Hero from "./_home/hero.svelte";
+	import NewArrivalsSkeleton from "./_home/new-arrivals-skeleton.svelte";
 	import ProductCategoriesSkeleton from "./_home/product-categories-skeleton.svelte";
 	import ProductCategories from "./_home/product-categories.svelte";
 	import WhyChooseUsSkeleton from "./_home/why-choose-us-skeleton.svelte";
@@ -36,9 +39,9 @@
 	const flashSalesData = $derived(homePageData?.contentSections?.find(
 		(item) => item.__component === "page-controls.promotion"
 	));
-	// const newArrivalsData = $derived(homePageData?.contentSections?.find(
-	// 	(item) => item.sectionId === "newArrivals"
-	// ));
+	const newArrivalsData = $derived(homePageData?.contentSections?.find(
+		(item) => item.sectionId === "newArrivals"
+	));
 
 
 
@@ -68,6 +71,7 @@ $effect(() => {
 <WhyChooseUsSkeleton />
 <ProductCategoriesSkeleton />
 <FlashSalesSkeleton />
+<NewArrivalsSkeleton />
 {/snippet}
 
 {#snippet pageContent()}
@@ -75,5 +79,5 @@ $effect(() => {
 	<WhyChooseUs {whyChooseUsData} />
 	<ProductCategories {productCategoriesData} />
 	<FlashSales {flashSalesData} />
-	<!-- <NewArrivals {newArrivalsData} /> -->
+	<NewArrivals {newArrivalsData} />
 {/snippet}
