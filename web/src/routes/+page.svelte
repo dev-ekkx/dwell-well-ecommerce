@@ -17,15 +17,11 @@
 	const { data }: PageProps = $props();
 	let homePageData = $state({}) as PageI;
 	const seoData = $derived(homePageData?.seo ?? {})
-
 	
 	onMount(async () => {
 		const res = await data?.homepage
-			homePageData = (await res?.json()).data[0] as PageI;
+		homePageData = (await res?.json()).data[0] as PageI;
 	})
-
-
-	$inspect(homePageData)
 
 	const heroData = $derived(homePageData?.contentSections?.find(
 		(item) => item.__component === "page-controls.hero"

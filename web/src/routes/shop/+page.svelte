@@ -1,12 +1,19 @@
 <script lang="ts">
-	import type { PageProps } from "./$types";
-	import { formatNumberWithCommas, setRouteParams } from "$lib/utils";
-	import FiltersAndSort from "./filter-and-sort.svelte";
-	import ProductCard from "$lib/components/product-card.svelte";
-	import ContactUs from "$lib/components/contact-us.svelte";
+	import { goto } from "$app/navigation";
 	import { page } from "$app/state";
-	import { ITEMS_PER_PAGE_OPTIONS } from "$lib/constants";
-	import { Content, Item, Root, Trigger } from "$lib/components/ui/select";
+	import CaretIcon from "$lib/assets/caret-up.svg";
+	import FilterIcon from "$lib/assets/filter.svg";
+	import ContactUs from "$lib/components/contact-us.svelte";
+	import EmptyProduct from "$lib/components/empty-product.svelte";
+	import EmptySearch from "$lib/components/empty-search.svelte";
+	import ProductCard from "$lib/components/product-card.svelte";
+	import { Link, Page } from "$lib/components/ui/breadcrumb";
+	import {
+		Item as BreadcrumbItem,
+		List as BreadcrumbList,
+		Root as BreadcrumbRoot,
+		Separator as BreadcrumbSeparator
+	} from "$lib/components/ui/breadcrumb/index.js";
 	import {
 		Content as PaginationContent,
 		Ellipsis as PaginationEllipsis,
@@ -16,33 +23,27 @@
 		PrevButton as PaginationPrevButton,
 		Root as PaginationRoot
 	} from "$lib/components/ui/pagination/index.js";
-	import EmptySearch from "$lib/components/empty-search.svelte";
+	import { Content, Item, Root, Trigger } from "$lib/components/ui/select";
 	import {
 		Content as SheetContent,
 		Overlay as SheetOverlay,
 		Root as SheetRoot,
 		Trigger as SheetTrigger
 	} from "$lib/components/ui/sheet/index.js";
-	import EmptyProduct from "$lib/components/empty-product.svelte";
-	import CaretIcon from "$lib/assets/caret-up.svg";
-	import FilterIcon from "$lib/assets/filter.svg";
-	import { MediaQuery, SvelteURLSearchParams } from "svelte/reactivity";
-	import { onMount } from "svelte";
+	import { ITEMS_PER_PAGE_OPTIONS } from "$lib/constants";
 	import type { PageI, ProductI } from "$lib/interfaces";
+	import { formatNumberWithCommas, setRouteParams } from "$lib/utils";
+	import { onMount } from "svelte";
+	import { MediaQuery, SvelteURLSearchParams } from "svelte/reactivity";
 	import ProductCategories from "../_home/product-categories.svelte";
-	import { Link, Page } from "$lib/components/ui/breadcrumb";
-	import {
-		Item as BreadcrumbItem,
-		List as BreadcrumbList,
-		Root as BreadcrumbRoot,
-		Separator as BreadcrumbSeparator
-	} from "$lib/components/ui/breadcrumb/index.js";
+	import type { PageProps } from "./$types";
+	import FiltersAndSort from "./filter-and-sort.svelte";
 	import ProductCategorySection from "./product-category-sections.svelte";
-	import { goto } from "$app/navigation";
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const { data }: PageProps = $props();
-	const seoData = $derived(data.seo);
+	let homePageData = $state({}) as PageI;
+	const seoData = $derived(homePageData?.seo ?? {})
 	const filters = $derived({
 		...data.filters,
 		priceRange: {
@@ -62,10 +63,20 @@
 	let totalProducts = $derived(data.totalProducts ?? 0);
 	const moreThanAPage = $derived(totalProducts / +itemsPerPage > 1);
 
-	const homePageData = data.homepage as PageI;
-	const productCategoriesData = homePageData.contentSections.find(
+	
+
+	$inspect(data)
+
+
+	onMount(async () => {
+		const res = await data?.homepage
+		homePageData = (await res?.json()).data[0] as PageI;
+
+	})
+
+	const productCategoriesData = $derived(homePageData?.contentSections?.find(
 		(item) => item.sectionId === "categories"
-	);
+	));
 
 	const isViewingCategory = $derived(() => {
 		return !!page.url.searchParams.get("category");
@@ -162,6 +173,7 @@
 </svelte:head>
 
 <div class="flex flex-col gap-10">
+	{new Date().toISOString()}
 	{#if isViewingCategory() || searchTerm}
 		<!-- Breadcrumbs -->
 		<BreadcrumbRoot class="mb-6 g-px">
