@@ -35,14 +35,23 @@
 	import { formatNumberWithCommas, setRouteParams } from "$lib/utils";
 	import { onMount } from "svelte";
 	import { MediaQuery, SvelteURLSearchParams } from "svelte/reactivity";
+	import ProductCategoriesSkeleton from "../_home/product-categories-skeleton.svelte";
 	import ProductCategories from "../_home/product-categories.svelte";
 	import type { PageProps } from "./$types";
 	import FiltersAndSort from "./filter-and-sort.svelte";
 	import ProductCategorySection from "./product-category-sections.svelte";
+	import ProductsSkeleton from "./products-skeleton.svelte";
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const { data }: PageProps = $props();
 	let homePageData = $state({}) as PageI;
+	let productsData = $state<{
+		products: ProductI[];
+		totalProducts: number;
+	}>({
+		products: [],
+		totalProducts: 0
+	});
 	const seoData = $derived(homePageData?.seo ?? {})
 	const filters = $derived({
 		...data.filters,
@@ -52,7 +61,7 @@
 		}
 	});
 	const searchTerm = $derived(page.url.searchParams.get("q") || "");
-	const products = $derived(data.products as ProductI[]);
+	const products = $derived(productsData.products);
 	const isMobile = $derived(mediaQuery.current);
 
 	// Page state
@@ -60,17 +69,19 @@
 	const itemsPerPageOptions = $state([...ITEMS_PER_PAGE_OPTIONS]);
 	let itemsPerPage = $state(page.url.searchParams.get("perPage") || "10");
 	let currentPage = $derived(parseInt(page.url.searchParams.get("page") ?? "1"));
-	let totalProducts = $derived(data.totalProducts ?? 0);
+	let totalProducts = $derived(productsData.totalProducts);
 	const moreThanAPage = $derived(totalProducts / +itemsPerPage > 1);
 
 	
 
-	$inspect(data)
+	$inspect(productsData)
+	$inspect(products)
 
 
 	onMount(async () => {
-		const res = await data?.homepage
-		homePageData = (await res?.json()).data[0] as PageI;
+		const homepageRes = await data?.homepage
+		homePageData = (await homepageRes?.json()).data[0] as PageI;
+		productsData = await data?.productsData
 
 	})
 
@@ -173,7 +184,6 @@
 </svelte:head>
 
 <div class="flex flex-col gap-10">
-	{new Date().toISOString()}
 	{#if isViewingCategory() || searchTerm}
 		<!-- Breadcrumbs -->
 		<BreadcrumbRoot class="mb-6 g-px">
@@ -193,7 +203,11 @@
 
 	{#if !(isFilterOrSearch() || isViewingCategory())}
 		<div class="-mt-12 g-mb max-w-full g-px">
+			{#await data.homepage}
+			<ProductCategoriesSkeleton />
+			{:then product}
 			<ProductCategories {productCategoriesData} />
+			{/await}
 		</div>
 	{/if}
 
@@ -241,6 +255,13 @@
 				</div>
 			{/if}
 
+
+			{#await data.productsData}
+				<ProductsSkeleton />
+			{:then products}
+			fdf
+			{/await}
+
 			<!--- Empty products --->
 			{#if !searchTerm && products.length === 0}
 				<EmptyProduct />
@@ -252,11 +273,12 @@
 					<EmptySearch />
 				</div>
 			{/if}
-
+			
 			<!-- #################### PRODUCT & PAGINATION CONTENT #################### -->
 			{#if isFilterOrSearch() || isViewingCategory()}
-				<!--	Product items -->
-				<section class="flex flex-col gap-5 md:gap-7 xl:gap-10">
+			<!--	Product items -->
+			<section class="flex flex-col gap-5 md:gap-7 xl:gap-10">
+					<ProductsSkeleton />
 					<div
 						class="grid grid-cols-2 gap-4 gap-y-8 sm:gap-6 md:grid-cols-3 md:gap-y-12 xl:grid-cols-4"
 					>
@@ -323,12 +345,17 @@
 					</div>
 				</section>
 			{:else}
-				<!-- Product category sections -->
-				<div class="flex flex-col gap-10 md:gap-12 lg:gap-16">
-					<ProductCategorySection title="New Arrivals" {products} />
-					<ProductCategorySection title="Best Sellers" products={products.slice(2)} />
-					<ProductCategorySection title="Top Picks" products={products.slice(4)} />
-				</div>
+
+				{#await data.productsData}
+			<ProductCategoriesSkeleton />
+			{:then prodData}
+			<!-- Product category sections -->
+			<div class="flex flex-col gap-10 md:gap-12 lg:gap-16">
+				<ProductCategorySection title="New Arrivals" products={prodData.products} />
+				<ProductCategorySection title="Best Sellers" products={prodData.products.slice(2)} />
+				<ProductCategorySection title="Top Picks" products={prodData.products.slice(4)} />
+			</div>
+			{/await}
 			{/if}
 			<!-- #################### END OF PRODUCT & PAGINATION CONTENT #################### -->
 		</div>

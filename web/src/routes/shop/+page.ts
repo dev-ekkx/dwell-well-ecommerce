@@ -1,8 +1,8 @@
-import type { PageLoad } from "./$types";
-import { client } from "../../graphql.config";
-import { GET_FILTERS } from "../../graphql.queries";
 import type { FiltersI, PageI } from "$lib/interfaces";
 import { error } from "@sveltejs/kit";
+import { client } from "../../graphql.config";
+import { GET_FILTERS } from "../../graphql.queries";
+import type { PageLoad } from "./$types";
 
 export const load: PageLoad = async ({ fetch, data }) => {
 	const cmsBaseUrl = import.meta.env.VITE_CMS_URL;
@@ -31,7 +31,6 @@ export const load: PageLoad = async ({ fetch, data }) => {
 	return {
 		filters,
 		seo: shopPageSeo,
-		products: data.products,
-		totalProducts: data.totalProducts
+		productsData: data.productsData,
 	};
 };

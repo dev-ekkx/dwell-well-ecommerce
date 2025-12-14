@@ -13,7 +13,7 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	const priceRangeFilter = url.searchParams.get("priceRange");
 
 	// const { totalProducts, products } = await fetchAndTransformProducts({
-	const data = fetchAndTransformProducts({
+	const productsData = fetchAndTransformProducts({
 		fetch,
 		searchTerm,
 		page,
@@ -27,8 +27,6 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	});
 
 	return {
-		data,
-		totalProducts: 0,
-		products: []
+		productsData,
 	};
 };
