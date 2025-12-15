@@ -57,7 +57,7 @@ $effect(() => {
 <div class="g-px">
 {#await data?.homepage}
 	{@render loaders()}
-{:then homepage}
+{:then}
 	{@render pageContent()}
 {/await}
 </div>

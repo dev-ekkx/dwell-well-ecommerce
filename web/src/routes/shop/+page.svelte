@@ -40,6 +40,7 @@
 	import type { PageProps } from "./$types";
 	import FiltersAndSort from "./filter-and-sort.svelte";
 	import ProductCategorySection from "./product-category-sections.svelte";
+	import ProductsCategorySectionSkeleton from "./products-category-section-skeleton.svelte";
 	import ProductsSkeleton from "./products-skeleton.svelte";
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
@@ -72,12 +73,6 @@
 	let totalProducts = $derived(productsData.totalProducts);
 	const moreThanAPage = $derived(totalProducts / +itemsPerPage > 1);
 
-	
-
-	$inspect(productsData)
-	$inspect(products)
-
-
 	onMount(async () => {
 		const homepageRes = await data?.homepage
 		homePageData = (await homepageRes?.json()).data[0] as PageI;
@@ -87,7 +82,7 @@
 
 	const productCategoriesData = $derived(homePageData?.contentSections?.find(
 		(item) => item.sectionId === "categories"
-	));
+	))
 
 	const isViewingCategory = $derived(() => {
 		return !!page.url.searchParams.get("category");
@@ -206,7 +201,9 @@
 			{#await data.homepage}
 			<ProductCategoriesSkeleton />
 			{:then product}
+			{#if productCategoriesData?.title}
 			<ProductCategories {productCategoriesData} />
+			{/if}
 			{/await}
 		</div>
 	{/if}
@@ -254,14 +251,7 @@
 					</span>
 				</div>
 			{/if}
-
-
-			{#await data.productsData}
-				<ProductsSkeleton />
-			{:then products}
-			fdf
-			{/await}
-
+		
 			<!--- Empty products --->
 			{#if !searchTerm && products.length === 0}
 				<EmptyProduct />
@@ -278,15 +268,18 @@
 			{#if isFilterOrSearch() || isViewingCategory()}
 			<!--	Product items -->
 			<section class="flex flex-col gap-5 md:gap-7 xl:gap-10">
-					<ProductsSkeleton />
-					<div
-						class="grid grid-cols-2 gap-4 gap-y-8 sm:gap-6 md:grid-cols-3 md:gap-y-12 xl:grid-cols-4"
-					>
-						{#each products as product (product.SKU)}
+					{#await data.productsData}
+				<ProductsSkeleton />
+			{:then data}
+			{data.totalProducts}
+							<div
+								class="grid grid-cols-2 gap-4 gap-y-8 sm:gap-6 md:grid-cols-3 md:gap-y-12 xl:grid-cols-4"
+							>
+						{#each data.products as product (product.SKU)}
 							<ProductCard {product} trigger={() => viewProductDetails(product)} />
 						{/each}
 					</div>
-
+					{/await}
 					<!-- Items per page and pagination -->
 					<div class="mt-6 flex items-center justify-between gap-4 md:mt-8 xl:mt-10">
 						<!--	Items per page select -->
@@ -346,8 +339,9 @@
 				</section>
 			{:else}
 
+			<ProductsCategorySectionSkeleton />
 				{#await data.productsData}
-			<ProductCategoriesSkeleton />
+			<ProductsCategorySectionSkeleton />
 			{:then prodData}
 			<!-- Product category sections -->
 			<div class="flex flex-col gap-10 md:gap-12 lg:gap-16">
@@ -363,9 +357,9 @@
 
 	<div class="g-mt g-px">
 		{#if searchTerm}
-			<ProductCategorySection title="Flash Sales" {products} isDynamicWidth={false} />
+			<ProductCategorySection title="Flash Sales" products={products} isDynamicWidth={false} />
 		{:else}
-			<ProductCategorySection title="Recommended Items" {products} isDynamicWidth={false} />
+			<ProductCategorySection title="Recommended Items" products={products} isDynamicWidth={false} />
 		{/if}
 	</div>
 	<!-- Contact us -->
