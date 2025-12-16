@@ -27,6 +27,6 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 	});
 
 	return {
-		productsData,
+		productsData
 	};
 };

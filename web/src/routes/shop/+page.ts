@@ -31,6 +31,6 @@ export const load: PageLoad = async ({ fetch, data }) => {
 	return {
 		filters,
 		seo: shopPageSeo,
-		productsData: data.productsData,
+		productsData: data.productsData
 	};
 };

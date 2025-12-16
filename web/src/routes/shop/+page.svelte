@@ -53,7 +53,7 @@
 		products: [],
 		totalProducts: 0
 	});
-	const seoData = $derived(homePageData?.seo ?? {})
+	const seoData = $derived(homePageData?.seo ?? {});
 	const filters = $derived({
 		...data.filters,
 		priceRange: {
@@ -66,23 +66,24 @@
 	const isMobile = $derived(mediaQuery.current);
 
 	// Page state
+	let isLoading = $state(true);
 	let openFilters = $state(false);
-	const itemsPerPageOptions = $state([...ITEMS_PER_PAGE_OPTIONS]);
 	let itemsPerPage = $state(page.url.searchParams.get("perPage") || "10");
 	let currentPage = $derived(parseInt(page.url.searchParams.get("page") ?? "1"));
 	let totalProducts = $derived(productsData.totalProducts);
+	const itemsPerPageOptions = $state([...ITEMS_PER_PAGE_OPTIONS]);
 	const moreThanAPage = $derived(totalProducts / +itemsPerPage > 1);
 
 	onMount(async () => {
-		const homepageRes = await data?.homepage
+		const homepageRes = await data?.homepage;
 		homePageData = (await homepageRes?.json()).data[0] as PageI;
-		productsData = await data?.productsData
+		productsData = await data?.productsData;
+		isLoading = false;
+	});
 
-	})
-
-	const productCategoriesData = $derived(homePageData?.contentSections?.find(
-		(item) => item.sectionId === "categories"
-	))
+	const productCategoriesData = $derived(
+		homePageData?.contentSections?.find((item) => item.sectionId === "categories")
+	);
 
 	const isViewingCategory = $derived(() => {
 		return !!page.url.searchParams.get("category");
@@ -199,11 +200,11 @@
 	{#if !(isFilterOrSearch() || isViewingCategory())}
 		<div class="-mt-12 g-mb max-w-full g-px">
 			{#await data.homepage}
-			<ProductCategoriesSkeleton />
-			{:then product}
-			{#if productCategoriesData?.title}
-			<ProductCategories {productCategoriesData} />
-			{/if}
+				<ProductCategoriesSkeleton />
+			{:then}
+				{#if productCategoriesData?.title}
+					<ProductCategories {productCategoriesData} />
+				{/if}
 			{/await}
 		</div>
 	{/if}
@@ -215,7 +216,7 @@
 		</div>
 
 		<!--	main content -->
-		<div class="flex max-w-full flex-col gap-6">
+		<div class="flex w-full flex-col gap-6">
 			<!--	Mobile Filter and Sort sheet -->
 			<SheetRoot bind:open={openFilters}>
 				{#if isMobile}
@@ -251,34 +252,35 @@
 					</span>
 				</div>
 			{/if}
-		
-			<!--- Empty products --->
-			{#if !searchTerm && products.length === 0}
-				<EmptyProduct />
+
+			{#if !isLoading}
+				<!--- Empty products --->
+				{#if !searchTerm && products.length === 0}
+					<EmptyProduct />
+				{/if}
+
+				<!--- Empty products for search --->
+				{#if searchTerm && products.length === 0}
+					<div class="flex h-[70vh] items-center justify-center">
+						<EmptySearch />
+					</div>
+				{/if}
 			{/if}
 
-			<!--- Empty products for search --->
-			{#if searchTerm && products.length === 0}
-				<div class="flex h-[70vh] items-center justify-center">
-					<EmptySearch />
-				</div>
-			{/if}
-			
 			<!-- #################### PRODUCT & PAGINATION CONTENT #################### -->
 			{#if isFilterOrSearch() || isViewingCategory()}
-			<!--	Product items -->
-			<section class="flex flex-col gap-5 md:gap-7 xl:gap-10">
+				<!--	Product items -->
+				<section class="flex flex-col gap-5 md:gap-7 xl:gap-10">
 					{#await data.productsData}
-				<ProductsSkeleton />
-			{:then data}
-			{data.totalProducts}
-							<div
-								class="grid grid-cols-2 gap-4 gap-y-8 sm:gap-6 md:grid-cols-3 md:gap-y-12 xl:grid-cols-4"
-							>
-						{#each data.products as product (product.SKU)}
-							<ProductCard {product} trigger={() => viewProductDetails(product)} />
-						{/each}
-					</div>
+						<ProductsSkeleton />
+					{:then data}
+						<div
+							class="grid grid-cols-2 gap-4 gap-y-8 sm:gap-6 md:grid-cols-3 md:gap-y-12 xl:grid-cols-4"
+						>
+							{#each data.products as product (product.SKU)}
+								<ProductCard {product} trigger={() => viewProductDetails(product)} />
+							{/each}
+						</div>
 					{/await}
 					<!-- Items per page and pagination -->
 					<div class="mt-6 flex items-center justify-between gap-4 md:mt-8 xl:mt-10">
@@ -338,29 +340,40 @@
 					</div>
 				</section>
 			{:else}
-
 				{#await data.productsData}
-			<ProductsCategorySectionSkeleton />
-			{:then prodData}
-			<!-- Product category sections -->
-			<div class="flex flex-col gap-10 md:gap-12 lg:gap-16">
-				<ProductCategorySection title="New Arrivals" products={prodData.products} />
-				<ProductCategorySection title="Best Sellers" products={prodData.products.slice(2)} />
-				<ProductCategorySection title="Top Picks" products={prodData.products.slice(4)} />
-			</div>
-			{/await}
+					<ProductsCategorySectionSkeleton />
+				{:then prodData}
+					<!-- Product category sections -->
+					<div class="flex flex-col gap-10 md:gap-12 lg:gap-16">
+						<ProductCategorySection title="New Arrivals" products={prodData.products} />
+						<ProductCategorySection title="Best Sellers" products={prodData.products.slice(2)} />
+						<ProductCategorySection title="Top Picks" products={prodData.products.slice(4)} />
+					</div>
+				{/await}
 			{/if}
 			<!-- #################### END OF PRODUCT & PAGINATION CONTENT #################### -->
 		</div>
 	</section>
 
-	<div class="g-mt g-px">
-		{#if searchTerm}
-			<ProductCategorySection title="Flash Sales" products={products} isDynamicWidth={false} />
-		{:else}
-			<ProductCategorySection title="Recommended Items" products={products} isDynamicWidth={false} />
-		{/if}
-	</div>
+	{#await data.productsData}
+		<ProductsCategorySectionSkeleton />
+	{:then prodData}
+		<div class="g-mt g-px">
+			{#if searchTerm}
+				<ProductCategorySection
+					title="Flash Sales"
+					products={prodData.products}
+					isDynamicWidth={false}
+				/>
+			{:else}
+				<ProductCategorySection
+					title="Recommended Items"
+					products={prodData.products}
+					isDynamicWidth={false}
+				/>
+			{/if}
+		</div>
+	{/await}
 	<!-- Contact us -->
 	<ContactUs />
 </div>

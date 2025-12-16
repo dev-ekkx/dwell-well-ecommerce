@@ -42,8 +42,6 @@
 	const shouldDisplayComponent = $derived(
 		!isAuthPage && (!page?.route?.id || !page.route.id.includes("(sales_support)"))
 	);
-
-
 </script>
 
 <svelte:head>
@@ -80,11 +78,11 @@
 				<FooterSkeleton />
 			{:then footerJson}
 				<FooterComponent footer={footerJson.data} />
-				{:catch}
+			{:catch}
 				<span>No footer data available</span>
 			{/await}
 		{/if}
-		{:catch}
+	{:catch}
 		<span>No footer data available</span>
 	{/await}
 {/if}

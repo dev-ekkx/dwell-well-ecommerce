@@ -8,7 +8,7 @@
 	// Register plugin
 	gsap.registerPlugin(Flip, ScrollTrigger);
 
-	const {heroImages} = $props();
+	const { heroImages } = $props();
 
 	let intervalId: NodeJS.Timeout;
 

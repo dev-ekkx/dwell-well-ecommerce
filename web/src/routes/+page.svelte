@@ -16,36 +16,39 @@
 
 	const { data }: PageProps = $props();
 	let homePageData = $state({}) as PageI;
-	const seoData = $derived(homePageData?.seo ?? {})
-	
+	const seoData = $derived(homePageData?.seo ?? {});
+
 	onMount(async () => {
-		const res = await data?.homepage
+		const res = await data?.homepage;
 		homePageData = (await res?.json()).data[0] as PageI;
-	})
+	});
 
-	const heroData = $derived(homePageData?.contentSections?.find(
-		(item) => item.__component === "page-controls.hero"
-	) as HeroI);
-	const whyChooseUsData = $derived(homePageData?.contentSections?.find(
-		(item) => item.__component === "page-controls.why-choose-us"
-	));
-	const productCategoriesData = $derived(homePageData?.contentSections?.find(
-		(item) => item.__component === "page-controls.category-or-new-arrival-section"
-	));
-	const flashSalesData = $derived(homePageData?.contentSections?.find(
-		(item) => item.__component === "page-controls.promotion"
-	));
-	const newArrivalsData = $derived(homePageData?.contentSections?.find(
-		(item) => item.sectionId === "newArrivals"
-	));
-
-
+	const heroData = $derived(
+		homePageData?.contentSections?.find(
+			(item) => item.__component === "page-controls.hero"
+		) as HeroI
+	);
+	const whyChooseUsData = $derived(
+		homePageData?.contentSections?.find(
+			(item) => item.__component === "page-controls.why-choose-us"
+		)
+	);
+	const productCategoriesData = $derived(
+		homePageData?.contentSections?.find(
+			(item) => item.__component === "page-controls.category-or-new-arrival-section"
+		)
+	);
+	const flashSalesData = $derived(
+		homePageData?.contentSections?.find((item) => item.__component === "page-controls.promotion")
+	);
+	const newArrivalsData = $derived(
+		homePageData?.contentSections?.find((item) => item.sectionId === "newArrivals")
+	);
 
 	// Provide hero images to the HeroCarousel component via context
-$effect(() => {
-	setContext("hero-images", heroData?.images ?? []);
-})
-
+	$effect(() => {
+		setContext("hero-images", heroData?.images ?? []);
+	});
 </script>
 
 <svelte:head>
@@ -53,21 +56,20 @@ $effect(() => {
 	<meta content={seoData?.metaDescription || ""} />
 </svelte:head>
 
-
 <div class="g-px">
-{#await data?.homepage}
-	{@render loaders()}
-{:then}
-	{@render pageContent()}
-{/await}
+	{#await data?.homepage}
+		{@render loaders()}
+	{:then}
+		{@render pageContent()}
+	{/await}
 </div>
 
 {#snippet loaders()}
-<HeroSkeleton />
-<WhyChooseUsSkeleton />
-<ProductCategoriesSkeleton />
-<FlashSalesSkeleton />
-<NewArrivalsSkeleton />
+	<HeroSkeleton />
+	<WhyChooseUsSkeleton />
+	<ProductCategoriesSkeleton />
+	<FlashSalesSkeleton />
+	<NewArrivalsSkeleton />
 {/snippet}
 
 {#snippet pageContent()}

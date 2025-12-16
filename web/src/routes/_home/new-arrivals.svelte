@@ -10,9 +10,11 @@
 
 	// Build a repeated list to loop seamlessly by starting in the middle block
 	const REPEAT = 5;
-	const displayedProducts = $derived((Array.from({ length: REPEAT }, (_, r) =>
-		newArrivals?.items?.map((p) => ({ ...p, _r: r }))
-	)).flat());
+	const displayedProducts = $derived(
+		Array.from({ length: REPEAT }, (_, r) =>
+			newArrivals?.items?.map((p) => ({ ...p, _r: r }))
+		).flat()
+	);
 
 	let container = $state<HTMLElement | null>(null);
 	let track = $state<HTMLElement | null>(null);

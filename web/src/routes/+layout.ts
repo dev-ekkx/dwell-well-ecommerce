@@ -17,9 +17,7 @@ export const load: LayoutLoad = ({ fetch, url, data, route }) => {
 		const footer = fetch(CMS_URL + "/api/footer?populate=all");
 		// const footer = (await footerData.json()).data as FooterI;
 
-		const homepage = fetch(
-			CMS_URL + "/api/pages?filters[slug][$eq]=homepage&populate=all"
-		);
+		const homepage = fetch(CMS_URL + "/api/pages?filters[slug][$eq]=homepage&populate=all");
 		// // const homepage = (await homepageData.json()).data[0] as PageI;
 		// const homepage = await homepageData
 		// console.log(homepage)

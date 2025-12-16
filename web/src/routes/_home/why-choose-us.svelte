@@ -3,7 +3,7 @@
 	import { MediaQuery } from "svelte/reactivity";
 
 	const { whyChooseUsData } = $props();
-	const reasons = $derived(whyChooseUsData?.reasons)
+	const reasons = $derived(whyChooseUsData?.reasons);
 
 	const mediaQuery = new MediaQuery("max-width: 63.9rem");
 	const isMobile = $derived(mediaQuery.current);

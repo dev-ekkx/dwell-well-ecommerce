@@ -5,7 +5,7 @@
 	import HeroCarousel from "./hero-carousel.svelte";
 
 	const { heroData } = $props();
-	const ctaButtons = $derived(heroData?.ctaButtons)
+	const ctaButtons = $derived(heroData?.ctaButtons);
 
 	const handleCta = (cta: "shop now" | "learn more") => {
 		if (cta === "shop now") {
