@@ -1,11 +1,11 @@
 <script lang="ts">
-	import HeroCarousel from "./hero-carousel.svelte";
+	import { goto } from "$app/navigation";
 	import { Button } from "$lib/components/ui/button";
 	import { cn } from "$lib/utils";
-	import { goto } from "$app/navigation";
+	import HeroCarousel from "./hero-carousel.svelte";
 
 	const { heroData } = $props();
-	const ctaButtons = heroData.ctaButtons;
+	const ctaButtons = $derived(heroData?.ctaButtons);
 
 	const handleCta = (cta: "shop now" | "learn more") => {
 		if (cta === "shop now") {
@@ -21,9 +21,9 @@
 			<h1
 				class="text-2xl leading-8 font-semibold capitalize md:text-4xl md:leading-12 lg:text-5xl lg:leading-16"
 			>
-				{heroData.title}
+				{heroData?.title}
 			</h1>
-			<p>{heroData.subTitle}</p>
+			<p>{heroData?.subTitle}</p>
 		</div>
 		<div class="flex flex-col gap-2 sm:flex-row sm:gap-5 md:gap-6">
 			{#each ctaButtons as cta (cta.id)}
@@ -41,5 +41,5 @@
 	</section>
 
 	<!--	Carousel section-->
-	<HeroCarousel />
+	<HeroCarousel heroImages={heroData?.images ?? []} />
 </div>

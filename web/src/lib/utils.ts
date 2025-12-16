@@ -436,7 +436,6 @@ export const fetchAndTransformProducts = async ({
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ skus: skusToFetch })
 		});
-
 		if (!operationalDataResponse.ok) {
 			// Log the error but continue with default data if possible,
 			// or re-throw an error if the data is essential.

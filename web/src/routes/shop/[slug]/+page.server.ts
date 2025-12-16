@@ -1,10 +1,10 @@
-import type { PageServerLoad } from "./$types";
-import { client } from "../../../graphql.config";
-import { GET_PRODUCT_BY_SLUG, GET_RELATED_PRODUCTS } from "../../../graphql.queries";
-import { error } from "@sveltejs/kit";
+import { BACKEND_URL } from "$lib/constants";
 import type { ProductI, ProductSummaryI } from "$lib/interfaces";
 import type { ProductDataMapT } from "$lib/types";
-import { BACKEND_URL } from "$lib/constants";
+import { error } from "@sveltejs/kit";
+import { client } from "../../../graphql.config";
+import { GET_PRODUCT_BY_SLUG, GET_RELATED_PRODUCTS } from "../../../graphql.queries";
+import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ params, url }) => {
 	const opsData = Object.fromEntries(url.searchParams);

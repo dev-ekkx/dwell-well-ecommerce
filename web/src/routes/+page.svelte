@@ -1,46 +1,81 @@
 <script lang="ts">
-	import Hero from "./_home/hero.svelte";
-	import WhyChooseUs from "./_home/why-choose-us.svelte";
-	import ProductCategories from "./_home/product-categories.svelte";
-	import FlashSales from "./_home/flash-sales.svelte";
 	import NewArrivals from "./_home/new-arrivals.svelte";
-	import type { PageProps } from "./$types";
+
 	import type { HeroI, PageI } from "$lib/interfaces";
-	import { setContext } from "svelte";
+	import { onMount, setContext } from "svelte";
+	import type { PageProps } from "./$types";
+	import FlashSalesSkeleton from "./_home/flash-sales-skeleton.svelte";
+	import FlashSales from "./_home/flash-sales.svelte";
+	import HeroSkeleton from "./_home/hero-skeleton.svelte";
+	import Hero from "./_home/hero.svelte";
+	import NewArrivalsSkeleton from "./_home/new-arrivals-skeleton.svelte";
+	import ProductCategoriesSkeleton from "./_home/product-categories-skeleton.svelte";
+	import ProductCategories from "./_home/product-categories.svelte";
+	import WhyChooseUsSkeleton from "./_home/why-choose-us-skeleton.svelte";
+	import WhyChooseUs from "./_home/why-choose-us.svelte";
 
 	const { data }: PageProps = $props();
-	const homePageData = data.homepage as PageI;
-	const heroData = homePageData.contentSections.find(
-		(item) => item.__component === "page-controls.hero"
-	) as HeroI;
-	const seoData = homePageData.seo;
-	const whyChooseUsData = homePageData.contentSections.find(
-		(item) => item.__component === "page-controls.why-choose-us"
-	);
-	const productCategoriesData = homePageData.contentSections.find(
-		(item) => item.sectionId === "categories"
-	);
-	const flashSalesData = homePageData.contentSections.find(
-		(item) => item.__component === "page-controls.promotion"
-	);
+	let homePageData = $state({}) as PageI;
+	const seoData = $derived(homePageData?.seo ?? {});
 
-	const newArrivalsData = homePageData.contentSections.find(
-		(item) => item.sectionId === "newArrivals"
-	)!;
+	onMount(async () => {
+		const res = await data?.homepage;
+		homePageData = (await res?.json()).data[0] as PageI;
+	});
+
+	const heroData = $derived(
+		homePageData?.contentSections?.find(
+			(item) => item.__component === "page-controls.hero"
+		) as HeroI
+	);
+	const whyChooseUsData = $derived(
+		homePageData?.contentSections?.find(
+			(item) => item.__component === "page-controls.why-choose-us"
+		)
+	);
+	const productCategoriesData = $derived(
+		homePageData?.contentSections?.find(
+			(item) => item.__component === "page-controls.category-or-new-arrival-section"
+		)
+	);
+	const flashSalesData = $derived(
+		homePageData?.contentSections?.find((item) => item.__component === "page-controls.promotion")
+	);
+	const newArrivalsData = $derived(
+		homePageData?.contentSections?.find((item) => item.sectionId === "newArrivals")
+	);
 
 	// Provide hero images to the HeroCarousel component via context
-	setContext("hero-images", heroData.images);
+	$effect(() => {
+		setContext("hero-images", heroData?.images ?? []);
+	});
 </script>
 
 <svelte:head>
-	<title>{seoData.metaTitle}</title>
-	<meta content={seoData.metaDescription} />
+	<title>{seoData?.metaTitle || ""}</title>
+	<meta content={seoData?.metaDescription || ""} />
 </svelte:head>
 
 <div class="g-px">
+	{#await data?.homepage}
+		{@render loaders()}
+	{:then}
+		{@render pageContent()}
+	{/await}
+</div>
+
+{#snippet loaders()}
+	<HeroSkeleton />
+	<WhyChooseUsSkeleton />
+	<ProductCategoriesSkeleton />
+	<FlashSalesSkeleton />
+	<NewArrivalsSkeleton />
+{/snippet}
+
+{#snippet pageContent()}
 	<Hero {heroData} />
 	<WhyChooseUs {whyChooseUsData} />
 	<ProductCategories {productCategoriesData} />
 	<FlashSales {flashSalesData} />
 	<NewArrivals {newArrivalsData} />
-</div>
+{/snippet}

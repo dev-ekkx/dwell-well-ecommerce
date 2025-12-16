@@ -1,8 +1,7 @@
-import { AUTH_ROUTES } from "$lib/constants";
-import type { FooterI, PageI } from "$lib/interfaces";
+import { AUTH_ROUTES, CMS_URL } from "$lib/constants";
 import type { LayoutLoad } from "./$types";
 
-export const load: LayoutLoad = async ({ fetch, url, data, route }) => {
+export const load: LayoutLoad = ({ fetch, url, data, route }) => {
 	const isAuthPage = AUTH_ROUTES.some((r) => url.pathname.endsWith(`/${r}`));
 	try {
 		if (isAuthPage || route?.id?.includes("(sales_support)")) {
@@ -15,13 +14,13 @@ export const load: LayoutLoad = async ({ fetch, url, data, route }) => {
 			};
 		}
 
-		const footerData = await fetch(import.meta.env.VITE_CMS_URL + "/api/footer?populate=all");
-		const footer = (await footerData.json()).data as FooterI;
+		const footer = fetch(CMS_URL + "/api/footer?populate=all");
+		// const footer = (await footerData.json()).data as FooterI;
 
-		const homepageData = await fetch(
-			import.meta.env.VITE_CMS_URL + "/api/pages?filters[slug][$eq]=homepage&populate=all"
-		);
-		const homepage = (await homepageData.json()).data[0] as PageI;
+		const homepage = fetch(CMS_URL + "/api/pages?filters[slug][$eq]=homepage&populate=all");
+		// // const homepage = (await homepageData.json()).data[0] as PageI;
+		// const homepage = await homepageData
+		// console.log(homepage)
 
 		return {
 			footer,

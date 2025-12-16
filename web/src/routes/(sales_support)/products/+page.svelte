@@ -122,11 +122,10 @@
 		newPrice = value;
 	};
 
-
 	$effect(() => {
 		if (form?.error) {
 			console.log(form.error);
-			toast.error("Failure", {description: form.error, position: "top-right"});
+			toast.error("Failure", { description: form.error, position: "top-right" });
 		}
 	});
 
@@ -237,6 +236,7 @@
 		}}
 		class="mt-4 flex flex-col gap-4"
 	>
+		<input type="text" value={product.SKU} name="sku" hidden />
 		{#each productPriceForm as input}
 			<div class="relative flex w-full flex-col gap-1.5">
 				<Label for={input.name}>{input.label}</Label>

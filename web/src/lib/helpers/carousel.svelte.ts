@@ -1,7 +1,7 @@
 // carousel.svelte.ts
+import type { CarouselOptionsT, CarouselStateT } from "$lib/types";
 import gsap from "gsap";
 import { onMount } from "svelte";
-import type { CarouselOptionsT, CarouselStateT } from "$lib/types";
 
 export function useCarousel<T>(options: CarouselOptionsT<T>): CarouselStateT<T> {
 	let carouselState = $state<{

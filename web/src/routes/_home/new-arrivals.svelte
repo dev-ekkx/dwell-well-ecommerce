@@ -1,23 +1,25 @@
 <script lang="ts">
-	import { onMount } from "svelte";
-	import gsap from "gsap";
-	import Picture from "$lib/components/picture.svelte";
 	import ArrowButton from "$lib/components/arrow-button.svelte";
+	import Picture from "$lib/components/picture.svelte";
 	import type { NewArrivalI } from "$lib/interfaces";
+	import gsap from "gsap";
+	import { onMount } from "svelte";
 
 	const { newArrivalsData } = $props();
-	const newArrivals = newArrivalsData as NewArrivalI;
+	const newArrivals = $derived(newArrivalsData as NewArrivalI);
 
 	// Build a repeated list to loop seamlessly by starting in the middle block
 	const REPEAT = 5;
-	const displayedProducts = Array.from({ length: REPEAT }, (_, r) =>
-		newArrivals.items.map((p) => ({ ...p, _r: r }))
-	).flat();
+	const displayedProducts = $derived(
+		Array.from({ length: REPEAT }, (_, r) =>
+			newArrivals?.items?.map((p) => ({ ...p, _r: r }))
+		).flat()
+	);
 
 	let container = $state<HTMLElement | null>(null);
 	let track = $state<HTMLElement | null>(null);
 	let items = $state<HTMLElement[]>([]);
-	let index = newArrivals.items.length;
+	let index = $derived(newArrivals?.items?.length);
 
 	function computeXForIndex(i: number) {
 		if (!track || items.length === 0 || !items[i]) return 0;
@@ -98,7 +100,7 @@
 	<div class="flex items-center justify-between gap-4 capitalize">
 		<span
 			class="text-2xl leading-8 font-semibold md:text-3xl md:leading-10 lg:text-4xl lg:leading-12"
-			>{newArrivals.title}</span
+			>{newArrivals?.title}</span
 		>
 
 		<!-- Arrow buttons -->
@@ -114,12 +116,12 @@
 			<div class="flex flex-col items-center gap-6">
 				<Picture
 					loading="eager"
-					alt={product.title}
+					alt={product?.title}
 					class="h-[18.75rem] w-[14.75rem] rounded-lg object-cover transition-all duration-500 ease-linear lg:h-[35.125rem] lg:w-[26.3rem]"
-					src={`${product.image.url}`}
-					source={`${product.image.url}`}
+					src={`${product?.image?.url}`}
+					source={`${product?.image?.url}`}
 				/>
-				<span class="text-lg font-medium capitalize">{product.title}</span>
+				<span class="text-lg font-medium capitalize">{product?.title}</span>
 			</div>
 		{/each}
 	</div>
