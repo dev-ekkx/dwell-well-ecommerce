@@ -13,7 +13,7 @@
 
 </script>
 <section
-	class={cn("relative flex max-w-full flex-col gap-4 overflow-x-clip", {
+	class={cn("flex max-w-full flex-col gap-4 overflow-x-clip", {
 		"max-w-[67vw] xl:max-w-[71vw]": isDynamicWidth && !isMobile
 	})}
 >
@@ -37,18 +37,14 @@
 		<div class="h-4 w-96 max-w-full rounded bg-gray-300 animate-pulse"></div>
 	</div>
 
-	<!-- Arrow buttons -->
-	<div class="absolute top-2/4 left-0 z-10 h-10 w-10 rounded-full bg-red-600 animate-pulse"></div>
-	<div class="absolute top-2/4 right-0 z-10 h-10 w-10 rounded-full bg-red-600 animate-pulse"></div>
-
 	<!-- Product carousel -->
-	<div class="flex w-max items-center gap-4">
+	<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
 
 		{#each Array(5) as _}
 			<div class="flex flex-col gap-4">
 
 				<!-- Product image -->
-				<div class="h-64 w-48 rounded-lg bg-gray-300 animate-pulse"></div>
+				<div class="h-64 w-full rounded-lg bg-gray-300 animate-pulse"></div>
 
 				<!-- Product title -->
 				<div class="h-4 w-32 rounded bg-gray-300 animate-pulse"></div>

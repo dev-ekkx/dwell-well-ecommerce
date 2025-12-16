@@ -339,7 +339,6 @@
 				</section>
 			{:else}
 
-			<ProductsCategorySectionSkeleton />
 				{#await data.productsData}
 			<ProductsCategorySectionSkeleton />
 			{:then prodData}
