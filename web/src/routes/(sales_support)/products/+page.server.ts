@@ -1,9 +1,9 @@
+import { BACKEND_URL } from "$lib/constants";
 import { fetchAndTransformProducts } from "$lib/utils";
 import { fail } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import { BACKEND_URL } from "$lib/constants";
 
-export const load: PageServerLoad = async ({ fetch, url, request }) => {
+export const load: PageServerLoad = async ({ fetch, url }) => {
 	const searchTerm = url.searchParams.get("q");
 	const page = Number(url.searchParams.get("page") ?? "1");
 	const pageSize = Number(url.searchParams.get("perPage") ?? "10");
@@ -14,7 +14,7 @@ export const load: PageServerLoad = async ({ fetch, url, request }) => {
 	const availabilitiesFilter = url.searchParams.get("availabilities")?.split(",").filter(Boolean);
 	const priceRangeFilter = url.searchParams.get("priceRange");
 
-	const { totalProducts, products } = await fetchAndTransformProducts({
+	const productsData = await fetchAndTransformProducts({
 		fetch,
 		searchTerm,
 		page,
@@ -28,8 +28,7 @@ export const load: PageServerLoad = async ({ fetch, url, request }) => {
 	});
 
 	return {
-		totalProducts,
-		products
+		productsData
 	};
 };
 
