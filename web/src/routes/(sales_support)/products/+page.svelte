@@ -129,12 +129,12 @@
 		}
 	});
 
-	$effect(() => {
-		if (dialogOpen) {
-			newPrice = 0;
-			isLoading = false;
-		}
-	});
+	// $effect(() => {
+	// 	if (dialogOpen) {
+	// 		newPrice = 0;
+	// 		isLoading = false;
+	// 	}
+	// });
 </script>
 
 <div class="flex flex-col gap-10">
