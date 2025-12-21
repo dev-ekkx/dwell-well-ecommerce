@@ -1,9 +1,15 @@
 import { BACKEND_URL } from "$lib/constants";
+import type { FetchI, UserAuthI } from "$lib/interfaces";
 import { fetchAndTransformProducts } from "$lib/utils";
-import { fail } from "@sveltejs/kit";
+import { fail, redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
-export const load: PageServerLoad = async ({ fetch, url }) => {
+export const load: PageServerLoad = async ({ fetch, url, cookies }) => {
+const rawSession = cookies.get("session");
+if (!rawSession) throw redirect(302, "/login");
+
+const session = JSON.parse(rawSession) as UserAuthI;
+const token = session?.auth?.accessToken;
 	const searchTerm = url.searchParams.get("q");
 	const page = Number(url.searchParams.get("page") ?? "1");
 	const pageSize = Number(url.searchParams.get("perPage") ?? "10");
@@ -27,10 +33,17 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 		priceRangeFilter
 	});
 
+	const res = await fetchProductsStatistics(fetch, String(token ?? ""))
+	const stats = await res.json();
+	console.log("stats: ", stats);
+
 	return {
-		productsData
+		productsData,
 	};
 };
+
+
+
 
 export const actions = {
 	updatePrice: async ({ request, fetch }) => {
@@ -55,3 +68,15 @@ export const actions = {
 		}
 	}
 };
+
+
+
+function fetchProductsStatistics(fetch: FetchI, token: string) {
+	return fetch(`${BACKEND_URL}/api/products/stats`, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+			"Authorization": `Bearer ${token}`
+		}
+	});
+}

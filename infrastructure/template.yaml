@@ -341,9 +341,9 @@ Resources:
           Properties:
             RestApiId: !Ref DwellWellApiGateway
             Path: api/products/
-            Method: POST
+            Method: GET
             Auth:
-              Authorizer: NONE
+              Authorizer: CognitoAuthorizer
 
   DwellWellGetSKUsByPriceFunction:
     Type: AWS::Serverless::Function
@@ -416,7 +416,7 @@ Resources:
             Path: api/products/stats
             Method: GET
             Auth:
-              Authorizer: NONE
+              Authorizer: CognitoAuthorizer
 
   # --- Webhooks Functions ---
   DwellWellStrapiWebhookFunction:

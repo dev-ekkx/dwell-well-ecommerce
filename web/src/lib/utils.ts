@@ -106,8 +106,8 @@ export const getUserAndAuthData = async () => {
 	const [authSession, currentUser] = await Promise.all([fetchAuthSession(), getCurrentUser()]);
 
 	const userInfo = authSession?.tokens?.idToken?.payload ?? {};
-	const accessToken = String(authSession?.tokens?.accessToken?.toString());
-	const idToken = String(authSession?.tokens?.idToken?.toString());
+	const accessToken = authSession.tokens?.accessToken?.toString();
+	const idToken = authSession.tokens?.idToken?.toString();
 	const user: UserAuthI["user"] = {
 		userId: currentUser?.userId ?? "",
 		name: userInfo["name"] ?? "",
