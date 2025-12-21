@@ -137,6 +137,7 @@
 	});
 </script>
 
+<DialogRoot bind:open={dialogOpen}>
 <div class="flex flex-col gap-10">
 	<section class="grid grid-cols-4 gap-4">
 		{#each productsSummary as summary}
@@ -155,7 +156,6 @@
 	</section>
 
 	<!-- Table section -->
-	<DialogRoot bind:open={dialogOpen}>
 		<CardRoot>
 			<CardHeader>
 				<CardTitle>Products</CardTitle>
@@ -220,8 +220,8 @@
 				</TableRoot>
 			</CardContent>
 		</CardRoot>
-	</DialogRoot>
-</div>
+	</div>
+</DialogRoot>
 
 {#snippet updatePriceForm(product: ProductI)}
 	<form

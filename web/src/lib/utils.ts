@@ -431,7 +431,7 @@ export const fetchAndTransformProducts = async ({
 	let productDataMap: ProductDataMapT = {};
 
 	try {
-		const operationalDataResponse = await fetch(`${BACKEND_URL}/products`, {
+		const operationalDataResponse = await fetch(`${BACKEND_URL}/api/products`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ skus: skusToFetch })
