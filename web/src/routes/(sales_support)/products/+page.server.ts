@@ -72,7 +72,7 @@ export const actions = {
 
 
 function fetchProductsStatistics(fetch: FetchI, token: string) {
-	return fetch(`${BACKEND_URL}/api/products/stats`, {
+	return fetch(`${BACKEND_URL}/products/stats`, {
 		method: "GET",
 		headers: {
 			"Content-Type": "application/json",

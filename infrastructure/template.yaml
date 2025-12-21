@@ -341,7 +341,7 @@ Resources:
           Properties:
             RestApiId: !Ref DwellWellApiGateway
             Path: api/products/
-            Method: GET
+            Method: POST
             Auth:
               Authorizer: CognitoAuthorizer
 
