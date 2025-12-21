@@ -91,8 +91,8 @@
 	];
 
 	const { data, form } = $props();
-	const products = $derived(data.products || []);
-	const totalProducts = $derived(data.totalProducts || 0);
+	const products = $derived(data.productsData.products || []);
+	const totalProducts = $derived(data.productsData.totalProducts || 0);
 	const productPriceForm = [
 		{
 			label: "Old Price",

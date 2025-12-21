@@ -142,3 +142,55 @@ func (s *ProductService) UpdateProductPrice(request events.APIGatewayProxyReques
 		Body:       string(responseBody),
 	}, nil
 }
+
+// GetProductStats returns aggregated product statistics.
+func (s *ProductService) GetProductStats(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	// 1. Get Total Products
+	totalProducts, err := s.dynamoDB.GetTotalProductsCount()
+	if err != nil {
+		log.Printf("ERROR: getting total products count: %v", err)
+		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error fetching total products"}, nil
+	}
+
+	// 2. Get Available Stock
+	totalStock, err := s.dynamoDB.GetTotalInventoryCount()
+	if err != nil {
+		log.Printf("ERROR: getting total inventory count: %v", err)
+		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error fetching total stock"}, nil
+	}
+
+	// 3. Get Pending Items
+	pendingItems, err := s.dynamoDB.GetPendingProducts()
+	if err != nil {
+		log.Printf("ERROR: getting pending products: %v", err)
+		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error fetching pending items"}, nil
+	}
+
+	// 4. Get Low Stock Alert
+	threshold := 10 // Default threshold
+	if tStr, ok := request.QueryStringParameters["threshold"]; ok {
+		if t, err := strconv.Atoi(tStr); err == nil {
+			threshold = t
+		}
+	}
+	lowStockItems, err := s.dynamoDB.GetLowStockProducts(threshold)
+	if err != nil {
+		log.Printf("ERROR: getting low stock products: %v", err)
+		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error fetching low stock items"}, nil
+	}
+
+	// Construct response
+	response := map[string]interface{}{
+		"totalProducts":  totalProducts,
+		"totalStock":     totalStock,
+		"pendingPricing": pendingItems,
+		"lowStockAlert":  lowStockItems,
+	}
+
+	responseBody, _ := json.Marshal(response)
+	return events.APIGatewayProxyResponse{
+		StatusCode: 200,
+		Headers:    map[string]string{"Content-Type": "application/json"},
+		Body:       string(responseBody),
+	}, nil
+}

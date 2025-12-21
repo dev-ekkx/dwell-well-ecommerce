@@ -301,3 +301,120 @@ func (d *DynamoDBClient) UpdateProductPrice(sku string, price float64) ([]models
 	log.Printf("INFO: Successfully updated price to '%f' for SKU '%s'.", price, sku)
 	return nil, nil
 }
+
+// GetTotalProductsCount scans the table and returns the total number of products.
+func (d *DynamoDBClient) GetTotalProductsCount() (int64, error) {
+	// Note: Scan is expensive. For large tables, consider keeping a counter in a separate item or using DynamoDB Streams.
+	input := &dynamodb.ScanInput{
+		TableName: awsSDK.String(d.tableName),
+		Select:    types.SelectCount,
+	}
+
+	result, err := d.client.Scan(context.TODO(), input)
+	if err != nil {
+		log.Printf("ERROR: Failed to scan table for total count: %v", err)
+		return 0, err
+	}
+
+	return int64(result.Count), nil
+}
+
+// GetTotalInventoryCount scans the table and sums the inventory of all products.
+func (d *DynamoDBClient) GetTotalInventoryCount() (int64, error) {
+	// Note: Scan is expensive.
+	input := &dynamodb.ScanInput{
+		TableName:            awsSDK.String(d.tableName),
+		ProjectionExpression: awsSDK.String("inventory"),
+	}
+
+	var totalInventory int64
+	paginator := dynamodb.NewScanPaginator(d.client, input)
+
+	for paginator.HasMorePages() {
+		page, err := paginator.NextPage(context.TODO())
+		if err != nil {
+			log.Printf("ERROR: Failed to scan page for inventory: %v", err)
+			return 0, err
+		}
+
+		for _, item := range page.Items {
+			var product struct {
+				Inventory int `dynamodbav:"inventory"`
+			}
+			err := attributevalue.UnmarshalMap(item, &product)
+			if err != nil {
+				log.Printf("WARN: Failed to unmarshal inventory: %v", err)
+				continue
+			}
+			totalInventory += int64(product.Inventory)
+		}
+	}
+
+	return totalInventory, nil
+}
+
+// GetPendingProducts scans for products with price 0 (or missing).
+func (d *DynamoDBClient) GetPendingProducts() ([]models.Product, error) {
+	// Note: Scan is expensive. Ideally, use a GSI on price or status if this is a frequent query.
+	input := &dynamodb.ScanInput{
+		TableName:        awsSDK.String(d.tableName),
+		FilterExpression: awsSDK.String("price = :zero OR attribute_not_exists(price)"),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":zero": &types.AttributeValueMemberN{Value: "0"},
+		},
+	}
+
+	var products []models.Product
+	paginator := dynamodb.NewScanPaginator(d.client, input)
+
+	for paginator.HasMorePages() {
+		page, err := paginator.NextPage(context.TODO())
+		if err != nil {
+			log.Printf("ERROR: Failed to scan page for pending products: %v", err)
+			return nil, err
+		}
+
+		var pageProducts []models.Product
+		err = attributevalue.UnmarshalListOfMaps(page.Items, &pageProducts)
+		if err != nil {
+			log.Printf("ERROR: Failed to unmarshal pending products: %v", err)
+			return nil, err
+		}
+		products = append(products, pageProducts...)
+	}
+
+	return products, nil
+}
+
+// GetLowStockProducts scans for products with inventory less than the threshold.
+func (d *DynamoDBClient) GetLowStockProducts(threshold int) ([]models.Product, error) {
+	// Note: Scan is expensive.
+	input := &dynamodb.ScanInput{
+		TableName:        awsSDK.String(d.tableName),
+		FilterExpression: awsSDK.String("inventory < :threshold"),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":threshold": &types.AttributeValueMemberN{Value: strconv.Itoa(threshold)},
+		},
+	}
+
+	var products []models.Product
+	paginator := dynamodb.NewScanPaginator(d.client, input)
+
+	for paginator.HasMorePages() {
+		page, err := paginator.NextPage(context.TODO())
+		if err != nil {
+			log.Printf("ERROR: Failed to scan page for low stock products: %v", err)
+			return nil, err
+		}
+
+		var pageProducts []models.Product
+		err = attributevalue.UnmarshalListOfMaps(page.Items, &pageProducts)
+		if err != nil {
+			log.Printf("ERROR: Failed to unmarshal low stock products: %v", err)
+			return nil, err
+		}
+		products = append(products, pageProducts...)
+	}
+
+	return products, nil
+}
