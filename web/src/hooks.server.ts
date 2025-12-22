@@ -1,7 +1,7 @@
 import type { UserAuthI } from "$lib/interfaces";
 import { paraglideMiddleware } from "$lib/paraglide/server";
 import { checkTokenExpiry } from "$lib/utils";
-import { redirect, type Handle } from "@sveltejs/kit";
+import { redirect, type Handle, type HandleFetch } from "@sveltejs/kit";
 import { sequence } from "@sveltejs/kit/hooks";
 import { signOut } from "aws-amplify/auth";
 
@@ -86,9 +86,25 @@ const handleParaglide: Handle = ({ event, resolve }) =>
 		});
 	});
 
+
+// Incoming Response Hooks
 export const handle: Handle = sequence(
 	handleTokenExpiry,
 	handleAuthCheck,
 	handleAuthGuards,
 	handleParaglide
 );
+
+// Outgoing Request Hooks
+export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
+const rawSession = event.cookies.get("session") ?? "{}";
+const session = JSON.parse(rawSession) as UserAuthI;
+const token = session?.auth?.idToken;
+console.log("Request URL: ", request.url);
+    // Security Check: ONLY append the token to own API domain
+    if (request.url.startsWith('https://c4jbmp5o64.execute-api.us-east-1.amazonaws.com/Prod') || request.url.startsWith('http://localhost:3000')) {
+        request.headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    return fetch(request);
+};
