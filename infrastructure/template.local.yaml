@@ -234,7 +234,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref DwellWellApiGateway
-            Path: api/webhooks/strapi
+            Path: /webhooks/strapi
             Method: POST
 
 Outputs:
