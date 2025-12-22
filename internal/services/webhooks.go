@@ -26,14 +26,6 @@ func NewWebhookService() (*WebhookService, error) {
 
 // HandleStrapiEvent is the updated handler that can process multiple event types.
 func (s *WebhookService) HandleStrapiEvent(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	//const expectedSignature = "YOUR_SECRET_TOKEN" // This should come from a secure source like AWS Secrets Manager
-	//
-	//signature := request.Headers["x-strapi-signature"] // Headers are case-insensitive
-	//
-	//if signature != expectedSignature {
-	//	log.Println("ERROR: Invalid Strapi signature received.")
-	//	return events.APIGatewayProxyResponse{StatusCode: 401, Body: "Unauthorized"}, nil
-	//}
 
 	var payload models.WebhookPayload
 

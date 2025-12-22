@@ -2,7 +2,7 @@ import { BACKEND_URL } from "$lib/constants";
 import type { FetchI, ProductStatsI } from "$lib/interfaces";
 import { fetchAndTransformProducts } from "$lib/utils";
 import { fail } from "@sveltejs/kit";
-import type { PageServerLoad } from "./$types";
+import type { PageServerLoad, Actions } from "./$types";
 
 export const load: PageServerLoad = async ({ fetch, url }) => {
 	const searchTerm = url.searchParams.get("q");
@@ -63,7 +63,7 @@ export const actions = {
 			return fail(400, { error: (error as Error).message });
 		}
 	}
-};
+} satisfies Actions;
 
 async function fetchProductsStatistics(fetch: FetchI): Promise<ProductStatsI> {
 	const res = await fetch(`${BACKEND_URL}/products/stats`, {
