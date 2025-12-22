@@ -261,18 +261,18 @@ func (d *DynamoDBClient) GetProductSKUsByPriceRange(minPrice, maxPrice float64) 
 	return skus, nil
 }
 
-func (d *DynamoDBClient) UpdateProductPrice(sku string, price float64) ([]models.Product, error) {
+func (d *DynamoDBClient) UpdateProductInventory(sku string, inventory int, price float64) ([]models.Product, error) {
 
 	key, err := attributevalue.MarshalMap(map[string]string{"sku": sku})
 	if err != nil {
-		log.Printf("ERROR: Failed to marshal key for UpdateProductPrice: %v", err)
+		log.Printf("ERROR: Failed to marshal key for UpdateProductInventory: %v", err)
 		return nil, err
 	}
 
 	updateExpression := "SET price = :newPrice"
-	expressionAttributeValues, err := attributevalue.MarshalMap(map[string]string{":newPrice": strconv.FormatFloat(price, 'f', -1, 64)})
+	expressionAttributeValues, err := attributevalue.MarshalMap(map[string]string{":newPrice": strconv.FormatFloat(price, 'f', -1, 64), ":inventory": strconv.Itoa(inventory)})
 	if err != nil {
-		log.Printf("ERROR: Failed to marshal attribute values for UpdateProductPrice: %v", err)
+		log.Printf("ERROR: Failed to marshal attribute values for UpdateProductInventory: %v", err)
 		return nil, err
 	}
 
@@ -282,7 +282,7 @@ func (d *DynamoDBClient) UpdateProductPrice(sku string, price float64) ([]models
 		Key:                       key,
 		UpdateExpression:          awsSDK.String(updateExpression),
 		ExpressionAttributeValues: expressionAttributeValues,
-		ConditionExpression:       awsSDK.String("attribute_exists(sku)"), // Only update if product exists
+		ConditionExpression:       awsSDK.String("attribute_exists(sku)"),
 	}
 
 	_, err = d.client.UpdateItem(context.TODO(), input)
@@ -291,14 +291,14 @@ func (d *DynamoDBClient) UpdateProductPrice(sku string, price float64) ([]models
 		// If the condition fails, it's not a true error; the product just doesn't exist.
 		var conditionalCheckFailedException *types.ConditionalCheckFailedException
 		if errors.As(err, &conditionalCheckFailedException) {
-			log.Printf("INFO: Product with SKU '%s' not found for price update. No action taken.", sku)
+			log.Printf("INFO: Product with SKU '%s' not found for price and inventory update. No action taken.", sku)
 			return nil, nil
 		}
-		log.Printf("ERROR: Failed to update price for SKU %s: %v", sku, err)
+		log.Printf("ERROR: Failed to update price and inventory for SKU %s: %v", sku, err)
 		return nil, err
 	}
 
-	log.Printf("INFO: Successfully updated price to '%f' for SKU '%s'.", price, sku)
+	log.Printf("INFO: Successfully updated price to '%f' and inventory to '%d' for SKU '%s'.", price, inventory, sku)
 	return nil, nil
 }
 

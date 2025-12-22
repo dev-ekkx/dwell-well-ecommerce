@@ -108,9 +108,9 @@ func (s *ProductService) GetProducts(request events.APIGatewayProxyRequest) (eve
 	}, nil
 }
 
-// UpdateProductPrice is the handler method for updating the price of a single product.
-func (s *ProductService) UpdateProductPrice(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	var body models.UpdateProductPriceRequest
+// UpdateProductInventory is the handler method for updating the inventory of a single product.
+func (s *ProductService) UpdateProductInventory(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	var body models.UpdateProductInventoryRequest
 	err := json.Unmarshal([]byte(request.Body), &body)
 	if err != nil {
 		log.Printf("ERROR: unmarshalling request body: %v", err)
@@ -118,7 +118,7 @@ func (s *ProductService) UpdateProductPrice(request events.APIGatewayProxyReques
 	}
 
 	// The database logic is abstracted away in the db package.
-	products, err := s.dynamoDB.UpdateProductPrice(body.SKU, body.Price)
+	products, err := s.dynamoDB.UpdateProductInventory(body.SKU, body.Inventory, body.Price)
 	if err != nil {
 		log.Printf("ERROR: updating item in DynamoDB: %v", err)
 		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Error updating data"}, nil

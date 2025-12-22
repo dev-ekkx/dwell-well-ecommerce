@@ -14,7 +14,8 @@ type GetProductsRequest struct {
 	SKUs []string `json:"skus"`
 }
 
-type UpdateProductPriceRequest struct {
-	SKU   string  `json:"sku"`
-	Price float64 `json:"price"`
+type UpdateProductInventoryRequest struct {
+	SKU       string  `json:"sku"`
+	Inventory int     `json:"inventory"`
+	Price     float64 `json:"price"`
 }

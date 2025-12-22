@@ -114,31 +114,31 @@
 		{
 			label: "Total Available Stock",
 			value: productStat.totalStock,
-			description: "Total number of products"
+			description: "Total available stock"
 		},
 		{
 			label: "Pricing Completion",
 			value: productStat.pendingPricing,
-			description: "Total number of products"
+			description: "Total products pending pricing"
 		},
 		{
 			label: "Low Stock Alerts",
 			value: productStat.lowStockAlert,
-			description: "Total number of products"
+			description: "Total products with low stock"
 		}
 	]);
-	const productPriceForm = [
+	const productInventoryForm = [
 		{
-			label: "Old Price",
-			name: "oldPrice",
+			label: "Price",
+			name: "price",
 			productName: "",
-			readonly: true
+			value: 0
 		},
 		{
-			label: "New Price",
-			name: "newPrice",
+			label: "Inventory",
+			name: "inventory",
 			productName: "",
-			placeholder: "Enter new price"
+			value: 0
 		}
 	];
 
@@ -146,9 +146,9 @@
 	let isLoading = $state(false);
 	let dialogOpen = $state(false);
 
-	const isFormValid = $derived(() => {
-		return newPrice > 0 || isLoading;
-	});
+	const isFormValid = (product: ProductI) => {
+		return productInventoryForm.every((input) => Number(product[input.name as keyof ProductI]) > 0) || isLoading;
+	};
 
 	const handleNewPriceInput = (e: Event) => {
 		const value = +(e.target as HTMLInputElement).value;
@@ -249,7 +249,7 @@
 											</DialogTrigger>
 										</Tooltip.Trigger>
 										<Tooltip.Content class="bg-primary text-white">
-											<span>Update Price</span>
+											<span>Update Inventory</span>
 										</Tooltip.Content>
 									</Tooltip.Root>
 								</Tooltip.Provider>
@@ -285,21 +285,18 @@
 		class="mt-4 flex flex-col gap-4"
 	>
 		<input type="text" value={product.SKU} name="sku" hidden />
-		{#each productPriceForm as input}
+		{#each productInventoryForm as input}
 			<div class="relative flex w-full flex-col gap-1.5">
 				<Label for={input.name}>{input.label}</Label>
 				<Input
 					name={input.name}
 					id={input.name}
-					value={input.name === "oldPrice" ? product.price : newPrice}
-					readonly={input.name === "oldPrice"}
 					type="number"
 					min="0"
-					oninput={(e) => handleNewPriceInput(e)}
+					bind:value={product[input.name as keyof ProductI]}
 				/>
 			</div>
 		{/each}
-		<Button class="mt-4 cursor-pointer" type="submit" disabled={!isFormValid()}>Update Price</Button
-		>
+		<Button class="mt-4 cursor-pointer" type="submit" disabled={!isFormValid(product)}>Update Price</Button>
 	</form>
 {/snippet}

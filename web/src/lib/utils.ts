@@ -444,9 +444,7 @@ export const fetchAndTransformProducts = async ({
 				"Failed to fetch operational product data: " + operationalDataResponse.statusText
 			);
 		} else {
-			const daaa = await operationalDataResponse.json();
-			productDataMap = daaa;
-			console.log("product map: ", daaa);
+			productDataMap = await operationalDataResponse.json();
 		}
 	} catch (e) {
 		console.error("Error fetching operational product data: " + (e as Error).message);

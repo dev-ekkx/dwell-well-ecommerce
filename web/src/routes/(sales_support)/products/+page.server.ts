@@ -1,7 +1,7 @@
 import { BACKEND_URL } from "$lib/constants";
 import type { FetchI, ProductStatsI, UserAuthI } from "$lib/interfaces";
 import { fetchAndTransformProducts } from "$lib/utils";
-import { fail, redirect } from "@sveltejs/kit";
+import { redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ fetch, url, cookies }) => {
@@ -48,19 +48,19 @@ export const actions = {
 
 		console.log("form data: ", formData);
 
-		try {
-			const res = await fetch(`${BACKEND_URL}/products/update-price`, {
-				method: "POST",
-				body: JSON.stringify({ newPrice, sku })
-			});
+		// try {
+		// 	const res = await fetch(`${BACKEND_URL}/products/update-price`, {
+		// 		method: "POST",
+		// 		body: JSON.stringify({ newPrice, sku })
+		// 	});
 
-			console.log("response: ", res);
+		// 	console.log("response: ", res);
 
-			return;
-		} catch (error) {
-			console.log("error: ", error);
-			return fail(400, { error: (error as Error).message });
-		}
+		// 	return;
+		// } catch (error) {
+		// 	console.log("error: ", error);
+		// 	return fail(400, { error: (error as Error).message });
+		// }
 	}
 };
 
