@@ -431,7 +431,7 @@ export const fetchAndTransformProducts = async ({
 	let productDataMap: ProductDataMapT = {};
 
 	try {
-		const operationalDataResponse = await fetch(`${BACKEND_URL}/api/products`, {
+		const operationalDataResponse = await fetch(`${BACKEND_URL}/products`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ skus: skusToFetch })
@@ -444,7 +444,9 @@ export const fetchAndTransformProducts = async ({
 				"Failed to fetch operational product data: " + operationalDataResponse.statusText
 			);
 		} else {
-			productDataMap = await operationalDataResponse.json();
+			const daaa= await operationalDataResponse.json();
+			productDataMap = daaa
+			console.log("product map: ", daaa)
 		}
 	} catch (e) {
 		console.error("Error fetching operational product data: " + (e as Error).message);

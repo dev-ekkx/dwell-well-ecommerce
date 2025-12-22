@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -15,6 +16,7 @@ func main() {
 	}
 
 	handler := func(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+		fmt.Println("requests: ", request)
 		return productService.GetProductStats(request)
 	}
 	lambda.Start(handler)

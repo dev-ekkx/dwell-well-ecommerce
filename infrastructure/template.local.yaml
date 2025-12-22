@@ -1,0 +1,242 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Dwell Well E-commerce API (LOCAL)
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 256
+    Tracing: Active
+    Architectures:
+      - x86_64
+
+Parameters:
+  ProductsTableName:
+    Type: String
+    Default: DwellWellProductsTable
+  CartTableName:
+    Type: String
+    Default: DwellWellCartTable
+  FrontendUrl:
+    Type: String
+    Default: http://localhost:5173/
+
+Resources:
+  ############### API GATEWAY ###############
+  DwellWellApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Local
+      Cors:
+        AllowMethods: "'GET,POST,OPTIONS,PATCH,PUT'"
+        AllowHeaders: "'Content-Type,Authorization'"
+        AllowOrigin: "'*'"
+
+  ############### DYNAMODB ###############
+  DwellWellProductsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref ProductsTableName
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: sku
+          AttributeType: S
+        - AttributeName: productStatus
+          AttributeType: S
+        - AttributeName: price
+          AttributeType: N
+      KeySchema:
+        - AttributeName: sku
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: DwellWellStatusPriceIndex
+          KeySchema:
+            - AttributeName: productStatus
+              KeyType: HASH
+            - AttributeName: price
+              KeyType: RANGE
+          Projection:
+            ProjectionType: KEYS_ONLY
+
+  DwellWellCartTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref CartTableName
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: userId
+          AttributeType: S
+        - AttributeName: sku
+          AttributeType: S
+        - AttributeName: addedAt
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userId
+          KeyType: HASH
+        - AttributeName: sku
+          KeyType: RANGE
+      GlobalSecondaryIndexes:
+        - IndexName: DwellWellSkuIndex
+          KeySchema:
+            - AttributeName: sku
+              KeyType: HASH
+            - AttributeName: addedAt
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      TimeToLiveSpecification:
+        AttributeName: TTL
+        Enabled: true
+
+  ############### EVENT BUS & SNS ###############
+  DwellWellAppEventBus:
+    Type: AWS::Events::EventBus
+    Properties:
+      Name: DwellWellAppEventBus
+
+  DwellWellOrderEventsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: "DwellWellOrderEvents"
+
+  DwellWellInventoryEventsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: "DwellWellInventoryEvents"
+
+  DwellWellPaymentEventsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: "DwellWellPaymentEvents"
+
+  DwellWellUserEventsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: "DwellWellUserEvents"
+
+  ############### LAMBDA FUNCTIONS ###############
+  DwellWellGetProductsFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
+    Properties:
+      CodeUri: ../cmd/get-products/
+      Handler: get-products
+      Runtime: provided.al2023
+      Environment:
+        Variables:
+          PRODUCTS_TABLE_NAME: !Ref ProductsTableName
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProductsTableName
+        - AWSXrayWriteOnlyAccess
+#        - CloudWatchLogsFullAccess
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Events:
+        ApiProducts:
+          Type: Api
+          Properties:
+            RestApiId: !Ref DwellWellApiGateway
+            Path: /products/
+            Method: POST
+
+  DwellWellGetSKUsByPriceFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
+    Properties:
+      CodeUri: ../cmd/skus-by-price/
+      Handler: skus-by-price
+      Runtime: provided.al2023
+      Environment:
+        Variables:
+          PRODUCTS_TABLE_NAME: !Ref ProductsTableName
+      Policies:
+        - AWSXrayWriteOnlyAccess
+#        - CloudWatchLogsFullAccess
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Events:
+        ApiSkus:
+          Type: Api
+          Properties:
+            RestApiId: !Ref DwellWellApiGateway
+            Path: /products/skus-by-price
+            Method: GET
+
+  DwellWellUpdateProductPriceFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
+    Properties:
+      CodeUri: ../cmd/update-product-price/
+      Handler: update-product-price
+      Runtime: provided.al2023
+      Environment:
+        Variables:
+          PRODUCTS_TABLE_NAME: !Ref ProductsTableName
+      Policies:
+        - AWSXrayWriteOnlyAccess
+#        - CloudWatchLogsFullAccess
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Events:
+        ApiUpdateProductPrice:
+          Type: Api
+          Properties:
+            RestApiId: !Ref DwellWellApiGateway
+            Path: /products/update-price
+            Method: PATCH
+
+  DwellWellGetProductStatsFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
+    Properties:
+      CodeUri: ../cmd/get-product-stats/
+      Handler: get-product-stats
+      Runtime: provided.al2023
+      Environment:
+        Variables:
+          PRODUCTS_TABLE_NAME: !Ref ProductsTableName
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProductsTableName
+        - AWSXrayWriteOnlyAccess
+#        - CloudWatchLogsFullAccess
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Events:
+        ApiProductStats:
+          Type: Api
+          Properties:
+            RestApiId: !Ref DwellWellApiGateway
+            Path: /products/stats
+            Method: GET
+
+  # --- Webhooks Functions ---
+  DwellWellStrapiWebhookFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
+    Properties:
+      CodeUri: ../cmd/webhook-strapi/
+      Handler: webhook-strapi
+      Runtime: provided.al2023
+      Environment:
+        Variables:
+          PRODUCTS_TABLE_NAME: !Ref ProductsTableName
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProductsTableName
+        - AWSXrayWriteOnlyAccess
+#        - CloudWatchLogsFullAccess
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Events:
+        ApiWebhookStrapi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref DwellWellApiGateway
+            Path: api/webhooks/strapi
+            Method: POST
+
+Outputs:
+  ApiEndpoint:
+    Value: !Sub "http://localhost:3000/"
