@@ -269,8 +269,11 @@ func (d *DynamoDBClient) UpdateProductInventory(sku string, inventory int, price
 		return nil, err
 	}
 
-	updateExpression := "SET price = :newPrice"
-	expressionAttributeValues, err := attributevalue.MarshalMap(map[string]string{":newPrice": strconv.FormatFloat(price, 'f', -1, 64), ":inventory": strconv.Itoa(inventory)})
+	updateExpression := "SET price = :newPrice, inventory = :inventory"
+	expressionAttributeValues, err := attributevalue.MarshalMap(map[string]any{
+		":newPrice":  price,
+		":inventory": inventory,
+	})
 	if err != nil {
 		log.Printf("ERROR: Failed to marshal attribute values for UpdateProductInventory: %v", err)
 		return nil, err

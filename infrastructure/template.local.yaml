@@ -163,13 +163,13 @@ Resources:
             Path: /products/skus-by-price
             Method: GET
 
-  DwellWellUpdateProductPriceFunction:
+  DwellWellUpdateProductInventoryFunction:
     Type: AWS::Serverless::Function
     Metadata:
       BuildMethod: go1.x
     Properties:
-      CodeUri: ../cmd/update-product-price/
-      Handler: update-product-price
+      CodeUri: ../cmd/update-product-inventory/
+      Handler: update-product-inventory
       Runtime: provided.al2023
       Environment:
         Variables:
@@ -179,11 +179,11 @@ Resources:
 #        - CloudWatchLogsFullAccess
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
       Events:
-        ApiUpdateProductPrice:
+        ApiUpdateProductInventory:
           Type: Api
           Properties:
             RestApiId: !Ref DwellWellApiGateway
-            Path: /products/update-price
+            Path: /products/update-inventory
             Method: PATCH
 
   DwellWellGetProductStatsFunction:

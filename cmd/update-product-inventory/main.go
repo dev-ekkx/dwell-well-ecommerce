@@ -20,7 +20,7 @@ func main() {
 
 	// Create a handler function that will be called by the Lambda runtime.
 	handler := func(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-		return productService.UpdateProductPrice(request)
+		return productService.UpdateProductInventory(request)
 	}
 
 	// Start the Lambda runtime.

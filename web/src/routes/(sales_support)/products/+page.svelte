@@ -35,6 +35,13 @@
 	import ProductsSummaryCardsSkeleton from "./products-summary-cards-skeleton.svelte";
 	import ProductsTableSekeleton from "./products-table-sekeleton.svelte";
 
+	interface SelectedProductI {
+		name: string;
+		price: number;
+		inventory: number;
+		SKU: string;
+	}
+
 	const productColumns = [
 		{
 			label: "Image",
@@ -71,6 +78,12 @@
 	];
 
 	const { data, form } = $props();
+	let selectedProduct = $state<SelectedProductI>({
+		name: "",
+		price: 0,
+		inventory: 0,
+		SKU: ""
+	});
 	let productsData = $state<{
 		products: ProductI[];
 		totalProducts: number;
@@ -146,8 +159,8 @@
 	let isLoading = $state(false);
 	let dialogOpen = $state(false);
 
-	const isFormValid = (product: ProductI) => {
-		return productInventoryForm.every((input) => Number(product[input.name as keyof ProductI]) > 0) || isLoading;
+	const isFormValid = (product: SelectedProductI) => {
+		return productInventoryForm.every((input) => Number(product[input.name as keyof SelectedProductI]) > 0) || isLoading;
 	};
 
 	const handleNewPriceInput = (e: Event) => {
@@ -243,6 +256,7 @@
 									<Tooltip.Root>
 										<Tooltip.Trigger>
 											<DialogTrigger
+											onclick={() => (selectedProduct = product)}
 												class="cursor-pointer rounded-full p-2 transition-all duration-200 ease-linear hover:bg-primary hover:text-white"
 											>
 												<PencilIcon class="size-5" />
@@ -256,8 +270,8 @@
 
 								<DialogContent>
 									<DialogHeader>
-										<DialogTitle>Update Price</DialogTitle>
-										{@render updatePriceForm(product)}
+										<DialogTitle>Update Price and Inventory</DialogTitle>
+										{@render updateInventoryForm()}
 									</DialogHeader>
 								</DialogContent>
 							</TableCell>
@@ -271,20 +285,21 @@
 	</TableRoot>
 {/snippet}
 
-{#snippet updatePriceForm(product: ProductI)}
+{#snippet updateInventoryForm()}
 	<form
-		action="?/updatePrice"
+		action="?/updateInventory"
 		method="POST"
 		use:enhance={() => {
 			isLoading = true;
-			return async ({ update }) => {
-				await update();
+			return async ({ update, result }) => {
+				// await update();
+				console.log("Result: ", result)
 				isLoading = false;
 			};
 		}}
 		class="mt-4 flex flex-col gap-4"
 	>
-		<input type="text" value={product.SKU} name="sku" hidden />
+		<input type="text" value={selectedProduct?.SKU} name="sku" hidden />
 		{#each productInventoryForm as input}
 			<div class="relative flex w-full flex-col gap-1.5">
 				<Label for={input.name}>{input.label}</Label>
@@ -293,10 +308,11 @@
 					id={input.name}
 					type="number"
 					min="0"
-					bind:value={product[input.name as keyof ProductI]}
+					step="0.01"
+					bind:value={selectedProduct[input.name as keyof SelectedProductI]}
 				/>
 			</div>
 		{/each}
-		<Button class="mt-4 cursor-pointer" type="submit" disabled={!isFormValid(product)}>Update Price</Button>
+		<Button class="mt-4 cursor-pointer" type="submit" disabled={!isFormValid(selectedProduct)}>Update</Button>
 	</form>
 {/snippet}

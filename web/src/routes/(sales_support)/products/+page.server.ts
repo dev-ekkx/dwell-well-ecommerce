@@ -1,7 +1,7 @@
 import { BACKEND_URL } from "$lib/constants";
 import type { FetchI, ProductStatsI, UserAuthI } from "$lib/interfaces";
 import { fetchAndTransformProducts } from "$lib/utils";
-import { redirect } from "@sveltejs/kit";
+import { fail, redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ fetch, url, cookies }) => {
@@ -41,26 +41,32 @@ export const load: PageServerLoad = async ({ fetch, url, cookies }) => {
 };
 
 export const actions = {
-	updatePrice: async ({ request, fetch }) => {
+	updateInventory: async ({ request, fetch }) => {
 		const formData = await request.formData();
 		const sku = formData.get("sku") as string;
 		const newPrice = Number(formData.get("newPrice"));
+		const inventory = Number(formData.get("inventory"));
 
 		console.log("form data: ", formData);
 
-		// try {
-		// 	const res = await fetch(`${BACKEND_URL}/products/update-price`, {
-		// 		method: "POST",
-		// 		body: JSON.stringify({ newPrice, sku })
-		// 	});
+		try {
+			const res = await fetch(`${BACKEND_URL}/products/update-inventory`, {
+				method: "PATCH",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({ newPrice, sku, inventory })
+			});
 
-		// 	console.log("response: ", res);
+			if (!res.ok) {
+				return fail(res.status, { error: res.statusText });
+			}
 
-		// 	return;
-		// } catch (error) {
-		// 	console.log("error: ", error);
-		// 	return fail(400, { error: (error as Error).message });
-		// }
+			return;
+		} catch (error) {
+			console.log("error: ", error);
+			return fail(400, { error: (error as Error).message });
+		}
 	}
 };
 
