@@ -2,6 +2,6 @@ import type { PageLoad } from "./$types";
 
 export const load: PageLoad = ({ data }) => {
 	return {
-		productsData: data.productsData,
+		productStatAndData: data.productStatAndData
 	}
 };

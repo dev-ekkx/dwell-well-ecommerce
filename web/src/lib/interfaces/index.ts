@@ -381,3 +381,10 @@ export interface FetchI {
 	(input: URL | RequestInfo, init?: RequestInit): Promise<Response>;
 	(input: string | URL | Request, init?: RequestInit): Promise<Response>;
 }
+
+export interface ProductStatsI {
+	lowStockAlert: number;
+	pendingPricing: number;
+	totalProducts: number;
+	totalStock: number;
+}

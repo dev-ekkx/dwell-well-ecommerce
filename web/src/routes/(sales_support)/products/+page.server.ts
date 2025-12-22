@@ -1,5 +1,5 @@
 import { BACKEND_URL } from "$lib/constants";
-import type { FetchI, UserAuthI } from "$lib/interfaces";
+import type { FetchI, ProductStatsI, UserAuthI } from "$lib/interfaces";
 import { fetchAndTransformProducts } from "$lib/utils";
 import { fail, redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
@@ -20,7 +20,7 @@ const token = session?.auth?.idToken;
 	const availabilitiesFilter = url.searchParams.get("availabilities")?.split(",").filter(Boolean);
 	const priceRangeFilter = url.searchParams.get("priceRange");
 
-	const productsData = await fetchAndTransformProducts({
+	const productsData = fetchAndTransformProducts({
 		fetch,
 		searchTerm,
 		page,
@@ -33,12 +33,10 @@ const token = session?.auth?.idToken;
 		priceRangeFilter
 	});
 
-	const res = await fetchProductsStatistics(fetch, String(token ?? ""))
-	const stats = await res.json();
-	console.log("stats: ", stats);
-
+	const productStat = fetchProductsStatistics(fetch, String(token ?? ""))
+	const productStatAndData = Promise.all([productsData, productStat])
 	return {
-		productsData,
+		productStatAndData,
 	};
 };
 
@@ -70,13 +68,14 @@ export const actions = {
 };
 
 
-
-function fetchProductsStatistics(fetch: FetchI, token: string) {
-	return fetch(`${BACKEND_URL}/products/stats`, {
+async function fetchProductsStatistics(fetch: FetchI, token: string): Promise<ProductStatsI> {
+	const res = await fetch(`${BACKEND_URL}/products/stats`, {
 		method: "GET",
 		headers: {
 			"Content-Type": "application/json",
 			"Authorization": `Bearer ${token}`
 		}
 	});
+
+	return res.json();
 }

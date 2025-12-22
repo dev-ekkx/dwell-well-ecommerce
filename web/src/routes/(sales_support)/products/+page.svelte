@@ -28,9 +28,10 @@
 		Row as TableRow
 	} from "$lib/components/ui/table";
 	import * as Tooltip from "$lib/components/ui/tooltip/index";
-	import type { ProductI } from "$lib/interfaces/index";
+	import type { ProductI, ProductStatsI } from "$lib/interfaces/index";
 	import { PencilIcon } from "@lucide/svelte";
 	import { toast } from "svelte-sonner";
+	import ProductsSummaryCardsSkeleton from "./products-summary-cards-skeleton.svelte";
 
 	const productsSummary = [
 		{
@@ -91,8 +92,26 @@
 	];
 
 	const { data, form } = $props();
-	const products = $derived(data.productsData.products || []);
-	const totalProducts = $derived(data.productsData.totalProducts || 0);
+	let productsStatAndData = $state<{
+		productsData: {
+			products: ProductI[];
+			totalProducts: number;	
+		};
+		productStat: ProductStatsI;
+	}>({
+		productsData: {
+			products: [],
+			totalProducts: 0
+		},
+		productStat: {
+			totalProducts: 0,
+			lowStockAlert: 0,
+			pendingPricing: 0,
+			totalStock: 0
+		}
+	})
+	const products = $derived(productsStatAndData.productsData.products || []);
+	const totalProducts = $derived(productsStatAndData.productsData.totalProducts || 0);
 	const productPriceForm = [
 		{
 			label: "Old Price",
@@ -139,10 +158,13 @@
 
 <DialogRoot bind:open={dialogOpen}>
 <div class="flex flex-col gap-10">
+	{#await data.productStatAndData}
+	<ProductsSummaryCardsSkeleton />
+	{:then}
 	<section class="grid grid-cols-4 gap-4">
 		{#each productsSummary as summary}
-			<CardRoot>
-				<CardHeader>
+		<CardRoot>
+			<CardHeader>
 					<CardTitle>{summary.label}</CardTitle>
 				</CardHeader>
 				<CardContent>
@@ -152,8 +174,9 @@
 					<CardDescription>{summary.description}</CardDescription>
 				</CardFooter>
 			</CardRoot>
-		{/each}
-	</section>
+			{/each}
+		</section>
+		{/await}
 
 	<!-- Table section -->
 		<CardRoot>

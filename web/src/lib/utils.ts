@@ -478,3 +478,18 @@ export const fetchAndTransformProducts = async ({
 
 	return { totalProducts, products: mergedProducts };
 };
+
+
+export const customFetch = async (
+    input: URL | RequestInfo,
+    init?: RequestInit,
+    token?: string
+) => {
+    const headers = new Headers(init?.headers);
+    
+    if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    return fetch(input, { ...init, headers });
+};

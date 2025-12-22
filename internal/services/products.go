@@ -167,7 +167,7 @@ func (s *ProductService) GetProductStats(request events.APIGatewayProxyRequest) 
 	}
 
 	// 4. Get Low Stock Alert
-	threshold := 10 // Default threshold
+	threshold := 5 // Default threshold
 	if tStr, ok := request.QueryStringParameters["threshold"]; ok {
 		if t, err := strconv.Atoi(tStr); err == nil {
 			threshold = t
@@ -183,8 +183,8 @@ func (s *ProductService) GetProductStats(request events.APIGatewayProxyRequest) 
 	response := map[string]interface{}{
 		"totalProducts":  totalProducts,
 		"totalStock":     totalStock,
-		"pendingPricing": pendingItems,
-		"lowStockAlert":  lowStockItems,
+		"pendingPricing": len(pendingItems),
+		"lowStockAlert":  len(lowStockItems),
 	}
 
 	responseBody, _ := json.Marshal(response)
