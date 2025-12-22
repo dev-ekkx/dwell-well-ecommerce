@@ -444,9 +444,9 @@ export const fetchAndTransformProducts = async ({
 				"Failed to fetch operational product data: " + operationalDataResponse.statusText
 			);
 		} else {
-			const daaa= await operationalDataResponse.json();
-			productDataMap = daaa
-			console.log("product map: ", daaa)
+			const daaa = await operationalDataResponse.json();
+			productDataMap = daaa;
+			console.log("product map: ", daaa);
 		}
 	} catch (e) {
 		console.error("Error fetching operational product data: " + (e as Error).message);
@@ -479,17 +479,12 @@ export const fetchAndTransformProducts = async ({
 	return { totalProducts, products: mergedProducts };
 };
 
+export const customFetch = async (input: URL | RequestInfo, init?: RequestInit, token?: string) => {
+	const headers = new Headers(init?.headers);
 
-export const customFetch = async (
-    input: URL | RequestInfo,
-    init?: RequestInit,
-    token?: string
-) => {
-    const headers = new Headers(init?.headers);
-    
-    if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
-    }
+	if (token) {
+		headers.set("Authorization", `Bearer ${token}`);
+	}
 
-    return fetch(input, { ...init, headers });
+	return fetch(input, { ...init, headers });
 };

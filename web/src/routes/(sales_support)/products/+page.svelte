@@ -35,29 +35,6 @@
 	import ProductsSummaryCardsSkeleton from "./products-summary-cards-skeleton.svelte";
 	import ProductsTableSekeleton from "./products-table-sekeleton.svelte";
 
-	const productsSummary = [
-		{
-			label: "Total Products",
-			value: 0,
-			description: "Total number of products"
-		},
-		{
-			label: "Total Available Stock",
-			value: 0,
-			description: "Total number of products"
-		},
-		{
-			label: "Pricing Completion",
-			value: 0,
-			description: "Total number of products"
-		},
-		{
-			label: "Low Stock Alerts",
-			value: 0,
-			description: "Total number of products"
-		}
-	];
-
 	const productColumns = [
 		{
 			label: "Image",
@@ -111,7 +88,7 @@
 	let productsStat = $state<{
 		productsData: {
 			products: ProductI[];
-			totalProducts: number;	
+			totalProducts: number;
 		};
 		productStat: ProductStatsI;
 	}>({
@@ -125,9 +102,31 @@
 			pendingPricing: 0,
 			totalStock: 0
 		}
-	})
+	});
 	const products = $derived(productsData.products || []);
 	const totalProducts = $derived(productsData.totalProducts || 0);
+	const productsSummary = $derived([
+		{
+			label: "Total Products",
+			value: totalProducts,
+			description: "Total number of products"
+		},
+		{
+			label: "Total Available Stock",
+			value: productStat.totalStock,
+			description: "Total number of products"
+		},
+		{
+			label: "Pricing Completion",
+			value: productStat.pendingPricing,
+			description: "Total number of products"
+		},
+		{
+			label: "Low Stock Alerts",
+			value: productStat.lowStockAlert,
+			description: "Total number of products"
+		}
+	]);
 	const productPriceForm = [
 		{
 			label: "Old Price",
@@ -172,7 +171,6 @@
 	});
 
 	onMount(() => {
-		
 		data.productStatAndData.then((res) => {
 			productsData = res[0];
 			productStat = res[1];
@@ -181,103 +179,97 @@
 </script>
 
 <DialogRoot bind:open={dialogOpen}>
-<div class="flex flex-col gap-10">
-	{#await data.productStatAndData}
-	<ProductsSummaryCardsSkeleton />
-	{:then}
-	<section class="grid grid-cols-4 gap-4">
-		{#each productsSummary as summary}
-		<CardRoot>
-			<CardHeader>
-					<CardTitle>{summary.label}</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<p>{summary.value}</p>
-				</CardContent>
-				<CardFooter>
-					<CardDescription>{summary.description}</CardDescription>
-				</CardFooter>
-			</CardRoot>
-			{/each}
-		</section>
+	<div class="flex flex-col gap-10">
+		{#await data.productStatAndData}
+			<ProductsSummaryCardsSkeleton />
+		{:then}
+			<section class="grid grid-cols-4 gap-4">
+				{#each productsSummary as summary}
+					<CardRoot>
+						<CardHeader>
+							<CardTitle>{summary.label}</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<p>{summary.value}</p>
+						</CardContent>
+						<CardFooter>
+							<CardDescription>{summary.description}</CardDescription>
+						</CardFooter>
+					</CardRoot>
+				{/each}
+			</section>
 		{/await}
 
-	<!-- Table section -->
+		<!-- Table section -->
 		<CardRoot>
 			<CardHeader>
 				<CardTitle>Products</CardTitle>
 			</CardHeader>
 			<CardContent>
 				{#await data.productStatAndData}
-				<ProductsTableSekeleton />
-				{:then} 
-				{@render tableData()}
+					<ProductsTableSekeleton />
+				{:then}
+					{@render tableData()}
 				{/await}
 			</CardContent>
 		</CardRoot>
 	</div>
 </DialogRoot>
 
-
 {#snippet tableData()}
 	<TableRoot>
-					<TableHeader>
-						<TableRow>
-							{#each productColumns as column}
-								<TableHead>{column.label}</TableHead>
-							{/each}
-						</TableRow>
-					</TableHeader>
-					<TableBody>
-						{#each products as product, i (product)}
-							<TableRow>
-								{#each productColumns as column}
-									{#if column.value === "image"}
-										<TableCell>
-											<img
-												class="h-16 w-20 rounded"
-												src={product.images[0].url}
-												alt={product.name}
-											/>
-										</TableCell>
-									{:else if column.value === "price" && product.price === 0}
-										<TableCell>
-											<Badge variant="secondary">Price not set</Badge>
-										</TableCell>
-									{:else if column.value === "action"}
-										<TableCell>
-											<Tooltip.Provider>
-												<Tooltip.Root>
-													<Tooltip.Trigger>
-														<DialogTrigger
-															class="cursor-pointer rounded-full p-2 transition-all duration-200 ease-linear hover:bg-primary hover:text-white"
-														>
-															<PencilIcon class="size-5" />
-														</DialogTrigger>
-													</Tooltip.Trigger>
-													<Tooltip.Content class="bg-primary text-white">
-														<span>Update Price</span>
-													</Tooltip.Content>
-												</Tooltip.Root>
-											</Tooltip.Provider>
+		<TableHeader>
+			<TableRow>
+				{#each productColumns as column}
+					<TableHead>{column.label}</TableHead>
+				{/each}
+			</TableRow>
+		</TableHeader>
+		<TableBody>
+			{#each products as product, i (product)}
+				<TableRow>
+					{#each productColumns as column}
+						{#if column.value === "image"}
+							<TableCell>
+								<img class="h-16 w-20 rounded" src={product.images[0].url} alt={product.name} />
+							</TableCell>
+						{:else if column.value === "price" && product.price === 0}
+							<TableCell>
+								<Badge variant="secondary">Price not set</Badge>
+							</TableCell>
+						{:else if column.value === "action"}
+							<TableCell>
+								<Tooltip.Provider>
+									<Tooltip.Root>
+										<Tooltip.Trigger>
+											<DialogTrigger
+												class="cursor-pointer rounded-full p-2 transition-all duration-200 ease-linear hover:bg-primary hover:text-white"
+											>
+												<PencilIcon class="size-5" />
+											</DialogTrigger>
+										</Tooltip.Trigger>
+										<Tooltip.Content class="bg-primary text-white">
+											<span>Update Price</span>
+										</Tooltip.Content>
+									</Tooltip.Root>
+								</Tooltip.Provider>
 
-											<DialogContent>
-												<DialogHeader>
-													<DialogTitle>Update Price</DialogTitle>
-													{@render updatePriceForm(product)}
-												</DialogHeader>
-											</DialogContent>
-										</TableCell>
-									{:else}
-										<TableCell>{product[column.value as keyof typeof product]}</TableCell>
-									{/if}
-								{/each}
-							</TableRow>
-						{/each}
-					</TableBody>
-				</TableRoot>
+								<DialogContent>
+									<DialogHeader>
+										<DialogTitle>Update Price</DialogTitle>
+										{@render updatePriceForm(product)}
+									</DialogHeader>
+								</DialogContent>
+							</TableCell>
+						{:else}
+							<TableCell>{product[column.value as keyof typeof product]}</TableCell>
+						{/if}
+					{/each}
+				</TableRow>
+			{/each}
+		</TableBody>
+	</TableRoot>
 {/snippet}
-	
 
 {#snippet updatePriceForm(product: ProductI)}
 	<form

@@ -86,7 +86,6 @@ const handleParaglide: Handle = ({ event, resolve }) =>
 		});
 	});
 
-
 // Incoming Response Hooks
 export const handle: Handle = sequence(
 	handleTokenExpiry,
@@ -97,14 +96,17 @@ export const handle: Handle = sequence(
 
 // Outgoing Request Hooks
 export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
-const rawSession = event.cookies.get("session") ?? "{}";
-const session = JSON.parse(rawSession) as UserAuthI;
-const token = session?.auth?.accessToken;
+	const rawSession = event.cookies.get("session") ?? "{}";
+	const session = JSON.parse(rawSession) as UserAuthI;
+	const token = session?.auth?.accessToken;
 
-// Security Check: ONLY append the token to own API domain
-    if (request.url.startsWith('https://c4jbmp5o64.execute-api.us-east-1.amazonaws.com/Prod') || request.url.startsWith('http://localhost:3000')) {
-        request.headers.append('Authorization', `Bearer ${token}`);
-    }
+	// Security Check: ONLY append the token to own API domain
+	if (
+		request.url.startsWith("https://c4jbmp5o64.execute-api.us-east-1.amazonaws.com/Prod") ||
+		request.url.startsWith("http://localhost:3000")
+	) {
+		request.headers.append("Authorization", `Bearer ${token}`);
+	}
 
-    return fetch(request);
+	return fetch(request);
 };
