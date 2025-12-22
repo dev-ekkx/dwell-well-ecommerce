@@ -33,6 +33,7 @@
 	import { onMount } from "svelte";
 	import { toast } from "svelte-sonner";
 	import ProductsSummaryCardsSkeleton from "./products-summary-cards-skeleton.svelte";
+	import ProductsTableSekeleton from "./products-table-sekeleton.svelte";
 
 	const productsSummary = [
 		{
@@ -207,7 +208,19 @@
 				<CardTitle>Products</CardTitle>
 			</CardHeader>
 			<CardContent>
-				<TableRoot>
+				{#await data.productStatAndData}
+				<ProductsTableSekeleton />
+				{:then} 
+				{@render tableData()}
+				{/await}
+			</CardContent>
+		</CardRoot>
+	</div>
+</DialogRoot>
+
+
+{#snippet tableData()}
+	<TableRoot>
 					<TableHeader>
 						<TableRow>
 							{#each productColumns as column}
@@ -263,10 +276,8 @@
 						{/each}
 					</TableBody>
 				</TableRoot>
-			</CardContent>
-		</CardRoot>
-	</div>
-</DialogRoot>
+{/snippet}
+	
 
 {#snippet updatePriceForm(product: ProductI)}
 	<form
