@@ -33,7 +33,7 @@ const token = session?.auth?.idToken;
 		priceRangeFilter
 	});
 
-	const productStat = fetchProductsStatistics(fetch, String(token ?? ""))
+	const productStat = fetchProductsStatistics(fetch)
 	const productStatAndData = Promise.all([productsData, productStat])
 	return {
 		productStatAndData,
@@ -68,12 +68,11 @@ export const actions = {
 };
 
 
-async function fetchProductsStatistics(fetch: FetchI, token: string): Promise<ProductStatsI> {
+async function fetchProductsStatistics(fetch: FetchI): Promise<ProductStatsI> {
 	const res = await fetch(`${BACKEND_URL}/products/stats`, {
 		method: "GET",
 		headers: {
 			"Content-Type": "application/json",
-			"Authorization": `Bearer ${token}`
 		}
 	});
 

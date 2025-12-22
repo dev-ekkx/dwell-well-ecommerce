@@ -99,11 +99,11 @@ export const handle: Handle = sequence(
 export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
 const rawSession = event.cookies.get("session") ?? "{}";
 const session = JSON.parse(rawSession) as UserAuthI;
-const token = session?.auth?.idToken;
-console.log("Request URL: ", request.url);
-    // Security Check: ONLY append the token to own API domain
+const token = session?.auth?.accessToken;
+
+// Security Check: ONLY append the token to own API domain
     if (request.url.startsWith('https://c4jbmp5o64.execute-api.us-east-1.amazonaws.com/Prod') || request.url.startsWith('http://localhost:3000')) {
-        request.headers.set('Authorization', `Bearer ${token}`);
+        request.headers.append('Authorization', `Bearer ${token}`);
     }
 
     return fetch(request);

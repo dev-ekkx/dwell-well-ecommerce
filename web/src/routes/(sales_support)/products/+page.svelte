@@ -30,6 +30,7 @@
 	import * as Tooltip from "$lib/components/ui/tooltip/index";
 	import type { ProductI, ProductStatsI } from "$lib/interfaces/index";
 	import { PencilIcon } from "@lucide/svelte";
+	import { onMount } from "svelte";
 	import { toast } from "svelte-sonner";
 	import ProductsSummaryCardsSkeleton from "./products-summary-cards-skeleton.svelte";
 
@@ -92,7 +93,21 @@
 	];
 
 	const { data, form } = $props();
-	let productsStatAndData = $state<{
+	let productsData = $state<{
+		products: ProductI[];
+		totalProducts: number;
+	}>({
+		products: [],
+		totalProducts: 0
+	});
+	let productStat = $state<ProductStatsI>({
+		totalProducts: 0,
+		lowStockAlert: 0,
+		pendingPricing: 0,
+		totalStock: 0
+	});
+
+	let productsStat = $state<{
 		productsData: {
 			products: ProductI[];
 			totalProducts: number;	
@@ -110,8 +125,8 @@
 			totalStock: 0
 		}
 	})
-	const products = $derived(productsStatAndData.productsData.products || []);
-	const totalProducts = $derived(productsStatAndData.productsData.totalProducts || 0);
+	const products = $derived(productsData.products || []);
+	const totalProducts = $derived(productsData.totalProducts || 0);
 	const productPriceForm = [
 		{
 			label: "Old Price",
@@ -154,6 +169,14 @@
 			isLoading = false;
 		}
 	});
+
+	onMount(() => {
+		
+		data.productStatAndData.then((res) => {
+			productsData = res[0];
+			productStat = res[1];
+		});
+	});
 </script>
 
 <DialogRoot bind:open={dialogOpen}>
@@ -182,7 +205,6 @@
 		<CardRoot>
 			<CardHeader>
 				<CardTitle>Products</CardTitle>
-				{new Date().toISOString()}
 			</CardHeader>
 			<CardContent>
 				<TableRoot>
