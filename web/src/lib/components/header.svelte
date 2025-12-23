@@ -56,6 +56,12 @@
 
 	const userData = $derived(page.data.user);
 	const isAuthenticated = $derived(page.data.isAuthenticated);
+	const routeNavs = $derived(() => {
+		if (isAuthenticated && (userData.role === "admin" || userData.role === "subAdmin")) {
+			return ROUTE_NAVS;
+		}
+		return ROUTE_NAVS.filter((nav) => nav.route !== "/products");
+	})
 
 	$effect(() => {
 		if (isSearchOpen && searchInput) {
@@ -325,7 +331,7 @@
 
 <!--Routes -->
 {#snippet navigation(isMobile = false)}
-	{#each ROUTE_NAVS as nav (nav.label)}
+	{#each routeNavs() as nav (nav.label)}
 		<a
 			onclick={isMenuOpen ? toggleMenu : null}
 			class={cn(

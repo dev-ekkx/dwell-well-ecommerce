@@ -431,7 +431,6 @@ export const fetchAndTransformProducts = async ({
 	let productDataMap: ProductDataMapT = {};
 
 	try {
-		console.log("SKUS to fetch: ", skusToFetch)
 		const operationalDataResponse = await fetch(`${BACKEND_URL}/products`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
@@ -456,6 +455,7 @@ export const fetchAndTransformProducts = async ({
 	let mergedProducts = productsFromStrapi.map((item) => {
 		const opsProduct = productDataMap[item.SKU] || {
 			price: 0,
+			newPrice: 0,
 			averageRating: 0,
 			reviewCount: 0,
 			inventory: 0

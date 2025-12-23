@@ -8,6 +8,10 @@ export const ROUTE_NAVS = [
 		route: "/shop"
 	},
 	{
+		label: "Products",
+		route: "/products"
+	},
+	{
 		label: "About",
 		route: "/about"
 	},

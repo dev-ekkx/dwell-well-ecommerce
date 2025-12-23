@@ -269,9 +269,9 @@ func (d *DynamoDBClient) UpdateProductInventory(sku string, inventory int, price
 		return nil, err
 	}
 
-	updateExpression := "SET price = :newPrice, inventory = :inventory"
+	updateExpression := "SET price = :price, inventory = :inventory"
 	expressionAttributeValues, err := attributevalue.MarshalMap(map[string]any{
-		":newPrice":  price,
+		":price":     price,
 		":inventory": inventory,
 	})
 	if err != nil {
