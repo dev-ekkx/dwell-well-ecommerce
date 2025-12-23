@@ -1,17 +1,18 @@
-import { SvelteMap } from "svelte/reactivity";
-import type { CartItemI, CartStoreI, ProductI } from "$lib/interfaces";
 import { browser } from "$app/environment";
+import type { CartItemI, CartStoreI, ProductI } from "$lib/interfaces";
+import { SvelteMap } from "svelte/reactivity";
 
 class CartStore implements CartStoreI {
 	// Top-level reactive store
 	private readonly store = new SvelteMap<string, CartItemI>();
 	// Derived reactive values
-	public cartItems = $derived(() => Array.from(this.store.values()));
+	private activeProducts = $derived(() => Array.from(this.store.values()).filter((item) => item.productStatus === "ACTIVE"));
+	public cartItems = $derived(() => Array.from(this.activeProducts()));
 	public totalItems = $derived(() =>
-		Array.from(this.store.values()).reduce((acc, item) => acc + item.quantity, 0)
+		Array.from(this.activeProducts()).reduce((acc, item) => acc + item.quantity, 0)
 	);
 	public totalPrice = $derived(() =>
-		Array.from(this.store.values()).reduce((acc, item) => acc + item.price * item.quantity, 0)
+		Array.from(this.activeProducts()).reduce((acc, item) => acc + item.price * item.quantity, 0)
 	);
 	private readonly STORAGE_KEY = "cart";
 	private readonly DEBOUNCE_DELAY = 1500;

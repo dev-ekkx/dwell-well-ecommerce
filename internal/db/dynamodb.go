@@ -67,7 +67,13 @@ func (d *DynamoDBClient) CreateProductWithDefaults(sku string) error {
 		if !errors.As(err, &conditionalCheckFailedException) {
 			return err
 		}
-		log.Printf("INFO: Product with SKU '%s' already exists. No action taken.", sku)
+		err = d.UpdateProductStatus(sku, "ACTIVE")
+		if err != nil {
+			log.Printf("ERROR: Failed to publish product (update status) for SKU %s: %v", sku, err)
+			return err
+		}
+		return nil
+
 	} else {
 		log.Printf("INFO: Successfully created new product with SKU '%s' in DynamoDB.", sku)
 	}

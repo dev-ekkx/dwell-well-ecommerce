@@ -327,7 +327,7 @@ export interface UserStoreI {
 }
 
 // Interface for Cart Item
-export interface CartItemI extends Pick<ProductI, "name" | "price" | "SKU" | "inventory"> {
+export interface CartItemI extends Pick<ProductI, "name" | "price" | "SKU" | "inventory" | "productStatus"> {
 	quantity: number;
 	image: StrapiImageI;
 	slug: string;
