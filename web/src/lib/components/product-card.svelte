@@ -1,11 +1,11 @@
 <script lang="ts">
+	import CartIcon from "$lib/assets/cart.svg";
+	import { Badge } from "$lib/components/ui/badge";
+	import type { ProductI, ProductSummaryI } from "$lib/interfaces";
+	import { cartStore } from "$lib/store/cart-store.svelte.js";
 	import { formatNumberWithCommas } from "$lib/utils";
 	import { type ConfigI, StarRating } from "@dev-ekkx/svelte-star-rating";
-	import CartIcon from "$lib/assets/cart.svg";
-	import type { ProductI, ProductSummaryI } from "$lib/interfaces";
 	import { MediaQuery } from "svelte/reactivity";
-	import { cartStore } from "$lib/store/cart-store.svelte.js";
-	import { Badge } from "$lib/components/ui/badge";
 
 	const { product, trigger }: { product: ProductSummaryI | ProductI; trigger?: () => void } =
 		$props();
@@ -59,10 +59,12 @@
 			src={productImage}
 		/>
 
+		{#if product.inventory === 0 || product?.productStatus === "INACTIVE"}
 		<Badge
-			class="absolute top-1 left-0 border-primary bg-muted font-semibold text-primary"
-			variant="outline">Currently unavailable</Badge
+		class="absolute top-1 left-0 border-primary bg-muted font-semibold text-primary"
+		variant="outline">Currently unavailable</Badge
 		>
+		{/if}
 	</div>
 
 	<div class="flex flex-col gap-1">
@@ -81,8 +83,8 @@
 					>${formatNumberWithCommas(product?.oldPrice ?? 0)}</span
 				>
 			{/if}
-			{#if product.price > 0}
-				<span class="">${formatNumberWithCommas(299)} </span>
+			{#if product.price > 0 && product?.productStatus === "ACTIVE"}
+				<span class="text-lg">${formatNumberWithCommas(product?.price ?? 0)} </span>
 			{/if}
 		</span>
 	</div>

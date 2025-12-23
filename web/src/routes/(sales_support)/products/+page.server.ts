@@ -44,7 +44,7 @@ export const actions = {
 	updateInventory: async ({ request, fetch }) => {
 		const formData = await request.formData();
 		const sku = formData.get("sku") as string;
-		const newPrice = Number(formData.get("newPrice"));
+		const price = Number(formData.get("price"));
 		const inventory = Number(formData.get("inventory"));
 
 		console.log("form data: ", formData);
@@ -55,7 +55,7 @@ export const actions = {
 				headers: {
 					"Content-Type": "application/json"
 				},
-				body: JSON.stringify({ newPrice, sku, inventory })
+				body: JSON.stringify({ price, sku, inventory })
 			});
 
 			if (!res.ok) {

@@ -163,12 +163,6 @@
 		return productInventoryForm.every((input) => Number(product[input.name as keyof SelectedProductI]) > 0) || isLoading;
 	};
 
-	const handleNewPriceInput = (e: Event) => {
-		const value = +(e.target as HTMLInputElement).value;
-		if (value <= 0) return;
-		newPrice = value;
-	};
-
 	$effect(() => {
 		if (form?.error) {
 			console.log(form.error);
@@ -291,9 +285,9 @@
 		method="POST"
 		use:enhance={() => {
 			isLoading = true;
-			return async ({ update, result }) => {
-				// await update();
-				console.log("Result: ", result)
+			return async ({ update }) => {
+				dialogOpen = false;
+				await update();
 				isLoading = false;
 			};
 		}}

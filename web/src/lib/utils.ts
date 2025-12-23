@@ -445,7 +445,6 @@ export const fetchAndTransformProducts = async ({
 			);
 		} else {
 			productDataMap = await operationalDataResponse.json();
-			console.log("Product map: ", productDataMap)
 		}
 	} catch (e) {
 		console.error("Error fetching operational product data: " + (e as Error).message);
@@ -455,7 +454,6 @@ export const fetchAndTransformProducts = async ({
 	let mergedProducts = productsFromStrapi.map((item) => {
 		const opsProduct = productDataMap[item.SKU] || {
 			price: 0,
-			newPrice: 0,
 			averageRating: 0,
 			reviewCount: 0,
 			inventory: 0
@@ -468,6 +466,7 @@ export const fetchAndTransformProducts = async ({
 			name: item.name
 		};
 	}) as ProductI[];
+	console.log(mergedProducts)
 
 	// Client-Side Price Sort (Required because Strapi only sorts by name/date)
 	if (sort === "price-asc") {

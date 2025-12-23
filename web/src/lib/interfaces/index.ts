@@ -65,6 +65,7 @@ export interface ProductI {
 	availability: FilterI;
 	styles: FilterI[];
 	regionalAvailability: RegionalAvailabilityI[];
+	productStatus?: string;
 }
 
 export interface ProductSummaryI

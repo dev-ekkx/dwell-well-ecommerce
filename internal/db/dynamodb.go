@@ -165,10 +165,7 @@ func (d *DynamoDBClient) GetProductsBySKUs(skus []string) ([]models.Product, err
 	var allProducts []models.Product
 
 	for start := 0; start < len(skus); start += batchSize {
-		end := start + batchSize
-		if end > len(skus) {
-			end = len(skus)
-		}
+		end := min(start+batchSize, len(skus))
 		batchSKUs := skus[start:end]
 
 		// Prepare keys for this batch
