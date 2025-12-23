@@ -106,8 +106,8 @@ export const getUserAndAuthData = async () => {
 	const [authSession, currentUser] = await Promise.all([fetchAuthSession(), getCurrentUser()]);
 
 	const userInfo = authSession?.tokens?.idToken?.payload ?? {};
-	const accessToken = authSession.tokens?.accessToken?.toString();
-	const idToken = authSession.tokens?.idToken?.toString();
+	const accessToken = authSession.tokens?.accessToken?.toString()!;
+	const idToken = authSession.tokens?.idToken?.toString()!;
 	const user: UserAuthI["user"] = {
 		userId: currentUser?.userId ?? "",
 		name: userInfo["name"] ?? "",
@@ -431,6 +431,7 @@ export const fetchAndTransformProducts = async ({
 	let productDataMap: ProductDataMapT = {};
 
 	try {
+		console.log("SKUS to fetch: ", skusToFetch)
 		const operationalDataResponse = await fetch(`${BACKEND_URL}/products`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
@@ -445,6 +446,7 @@ export const fetchAndTransformProducts = async ({
 			);
 		} else {
 			productDataMap = await operationalDataResponse.json();
+			console.log("Product map: ", productDataMap)
 		}
 	} catch (e) {
 		console.error("Error fetching operational product data: " + (e as Error).message);

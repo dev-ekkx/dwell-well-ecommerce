@@ -121,7 +121,7 @@
 	const productsSummary = $derived([
 		{
 			label: "Total Products",
-			value: totalProducts,
+			value: productStat.totalProducts,
 			description: "Total number of products"
 		},
 		{

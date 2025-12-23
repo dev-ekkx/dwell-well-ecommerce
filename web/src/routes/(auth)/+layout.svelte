@@ -175,16 +175,17 @@
 		// userStore.updateUserStore(userAuth);
 		isLoading = true;
 
-		const redirecTo =
-			page.url.searchParams.get("redirectTo") ??
-			(userAuth?.user?.role === "customer" ? "/" : "/products");
+		// const redirecTo =
+		// 	("/" + page.url.searchParams.get("redirectTo") )?? userAuth?.user?.role === "customer" ? "/" : "/products");
 
-		goto(redirecTo).then(() => (isLoading = false));
-		// if (userAuth?.user?.role === "customer") {
-		// 	goto(redirecTo).then(() => (isLoading = false));
-		// } else {
-		// 	goto("/admin").then(() => (isLoading = false));
-		// }
+		let redirectTo = "/";
+		if (page.url.searchParams.get("redirectTo")) {
+			redirectTo = redirectTo + page.url.searchParams.get("redirectTo")
+		} else {
+			redirectTo = userAuth?.user?.role === "customer" ? "/" : "/products"
+		}
+		console.log("redirect to: ", redirectTo)
+		goto(redirectTo).then(() => (isLoading = false));
 	};
 
 	const handleError = () => {
