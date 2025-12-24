@@ -6,7 +6,7 @@
 	<img alt="binoculars" src={Binoculars} />
 	<h3 class="text-2xl font-bold">No products found</h3>
 	<p class="text-center text-muted-foreground">
-		We couldn't find any products matching your search.
+		We couldn't find any products matching your search term.
 		<br />
 		Please try adjusting your filters or search terms.
 	</p>
