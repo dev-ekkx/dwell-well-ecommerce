@@ -86,7 +86,7 @@
 			await tick();
 			if (menu) {
 				// Animate in
-				gsap.fromTo(menu, { y: "-100%" }, { y: 0, duration: 0.3, ease: "power1.out" });
+				gsap.fromTo(menu, { y: "-105%" }, { y: 0, duration: 0.3, ease: "power1.out" });
 			}
 		}
 	}
@@ -107,7 +107,7 @@
 			await tick();
 			if (searchMenu) {
 				// Animate in
-				gsap.fromTo(searchMenu, { y: "-100%" }, { y: 0, duration: 0.3, ease: "power1.out" });
+				gsap.fromTo(searchMenu, { y: "-105%" }, { y: 0, duration: 0.3, ease: "power1.out" });
 			}
 		}
 	}
