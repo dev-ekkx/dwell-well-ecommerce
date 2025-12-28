@@ -1,15 +1,10 @@
 import { BACKEND_URL } from "$lib/constants";
-import type { FetchI, ProductStatsI, UserAuthI } from "$lib/interfaces";
+import type { FetchI, ProductStatsI } from "$lib/interfaces";
 import { fetchAndTransformProducts } from "$lib/utils";
-import { fail, redirect } from "@sveltejs/kit";
+import { fail } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
-export const load: PageServerLoad = async ({ fetch, url, cookies }) => {
-	const rawSession = cookies.get("session");
-	if (!rawSession) throw redirect(302, "/login");
-
-	const session = JSON.parse(rawSession) as UserAuthI;
-	const token = session?.auth?.idToken;
+export const load: PageServerLoad = async ({ fetch, url }) => {
 	const searchTerm = url.searchParams.get("q");
 	const page = Number(url.searchParams.get("page") ?? "1");
 	const pageSize = Number(url.searchParams.get("perPage") ?? "10");

@@ -36,6 +36,7 @@
 		Root as SelectRoot,
 		Trigger as SelectTrigger
 	} from "$lib/components/ui/select";
+	import { Spinner } from "$lib/components/ui/spinner";
 	import {
 		Body as TableBody,
 		Cell as TableCell,
@@ -49,7 +50,6 @@
 	import type { ProductI, ProductStatsI } from "$lib/interfaces/index";
 	import { formatNumberWithCommas, setRouteParams } from "$lib/utils";
 	import { PencilIcon } from "@lucide/svelte";
-	import { onMount } from "svelte";
 	import { toast } from "svelte-sonner";
 	import ProductsSummaryCardsSkeleton from "./products-summary-cards-skeleton.svelte";
 	import ProductsTableSekeleton from "./products-table-sekeleton.svelte";
@@ -68,13 +68,7 @@
 		inventory: 0,
 		SKU: ""
 	});
-	let productsData = $state<{
-		products: ProductI[];
-		totalProducts: number;
-	}>({
-		products: [],
-		totalProducts: 0
-	});
+
 	let productStat = $state<ProductStatsI>({
 		totalProducts: 0,
 		lowStockAlert: 0,
@@ -82,25 +76,18 @@
 		totalStock: 0
 	});
 
-	let productsStat = $state<{
-		productsData: {
+
+
+		let productsData = $state<{
 			products: ProductI[];
 			totalProducts: number;
-		};
-		productStat: ProductStatsI;
-	}>({
-		productsData: {
+		}>({
 			products: [],
 			totalProducts: 0
-		},
-		productStat: {
-			totalProducts: 0,
-			lowStockAlert: 0,
-			pendingPricing: 0,
-			totalStock: 0
-		}
-	});
-	const products = $derived(productsData.products || []);
+		});
+
+
+	const products = $derived<ProductI[]>(productsData.products || []);
 	const totalProducts = $derived(productStat.totalProducts);
 	const productsSummary = $derived([
 		{
@@ -170,6 +157,13 @@
 		setParams();
 	};
 
+			$effect(() => {
+		data.productStatAndData.then((res) => {
+			productsData = res[0];
+			productStat = res[1];
+		});
+	});
+
 	$effect(() => {
 		if (form?.error) {
 			console.log(form.error);
@@ -184,12 +178,7 @@
 		}
 	});
 
-	onMount(() => {
-		data.productStatAndData.then((res) => {
-			productsData = res[0];
-			productStat = res[1];
-		});
-	});
+
 </script>
 
 <DialogRoot bind:open={dialogOpen}>
@@ -217,7 +206,7 @@
 		<!-- Table section -->
 		<CardRoot>
 			<CardHeader>
-				<CardTitle>Products</CardTitle>
+				<CardTitle>Products ({products.length})</CardTitle>
 			</CardHeader>
 			<CardContent>
 				{#await data.productStatAndData}
@@ -313,7 +302,7 @@
 									<Badge variant="secondary">Price not set</Badge>
 								</TableCell>
 							{:else}
-								<TableCell>{formatNumberWithCommas(product.price)}</TableCell>
+								<TableCell>{formatNumberWithCommas(product.price ?? 0)}</TableCell>
 							{/if}
 						{:else if column.value === "action"}
 							<TableCell>
@@ -378,8 +367,14 @@
 				/>
 			</div>
 		{/each}
-		<Button class="mt-4 cursor-pointer" type="submit" disabled={!isFormValid(selectedProduct)}
-			>Update</Button
+		<Button class="mt-4 cursor-pointer" type="submit" disabled={!isFormValid(selectedProduct) || isLoading}
+			>
+				{#if isLoading}
+					<Spinner />
+				{:else}
+					Update
+				{/if}
+			</Button
 		>
 	</form>
 {/snippet}

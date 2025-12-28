@@ -30,7 +30,10 @@ export function cn(...inputs: ClassValue[]) {
  * @returns A string representation of the number with commas.
  */
 export function formatNumberWithCommas(num: number): string {
-	return num.toLocaleString("en-Gh");
+    return num.toLocaleString("en-GH", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
 }
 
 export const setRouteParams = async (
