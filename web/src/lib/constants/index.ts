@@ -71,3 +71,38 @@ export const FORM_FIELDS = {
 };
 
 export const AUTH_ROUTES = ["login", "signup", "verify_otp", "reset_password"] as const;
+
+export const PRODUCT_COLUMNS = [
+		{
+			label: "Image",
+			value: "image"
+		},
+		{
+			label: "Name",
+			value: "name"
+		},
+		{
+			label: "SKU",
+			value: "SKU"
+		},
+		{
+			label: "Price",
+			value: "price"
+		},
+		{
+			label: "Inventory",
+			value: "inventory"
+		},
+		{
+			label: "Average Rating",
+			value: "averageRating"
+		},
+		{
+			label: "Review Count",
+			value: "reviewCount"
+		},
+		{
+			label: "Action",
+			value: "action"
+		}
+	];

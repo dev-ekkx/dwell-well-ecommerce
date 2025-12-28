@@ -23,7 +23,7 @@
 		PrevButton as PaginationPrevButton,
 		Root as PaginationRoot
 	} from "$lib/components/ui/pagination/index.js";
-	import { Content, Item, Root, Trigger } from "$lib/components/ui/select";
+	import { Content as SelectContent, Item as SelectItem, Root as SelectRoot, Trigger as SelectTrigger } from "$lib/components/ui/select";
 	import {
 		Content as SheetContent,
 		Overlay as SheetOverlay,
@@ -71,7 +71,7 @@
 	let itemsPerPage = $state(page.url.searchParams.get("perPage") || "10");
 	let currentPage = $derived(parseInt(page.url.searchParams.get("page") ?? "1"));
 	let totalProducts = $derived(productsData.totalProducts);
-	const itemsPerPageOptions = $state([...ITEMS_PER_PAGE_OPTIONS]);
+	const itemsPerPageOptions = $state(ITEMS_PER_PAGE_OPTIONS);
 	const moreThanAPage = $derived(totalProducts / +itemsPerPage > 1);
 
 	onMount(async () => {
@@ -288,14 +288,14 @@
 						{#if products.length > 0}
 							<div class="flex items-center gap-4">
 								<span class="w-max">Products per page:</span>
-								<Root bind:value={itemsPerPage} onValueChange={handleItemsPerPage} type="single">
-									<Trigger class="w-16">{itemsPerPage}</Trigger>
-									<Content>
+								<SelectRoot bind:value={itemsPerPage} onValueChange={handleItemsPerPage} type="single">
+									<SelectTrigger class="w-16">{itemsPerPage}</SelectTrigger>
+									<SelectContent>
 										{#each itemsPerPageOptions as option (option)}
-											<Item value={String(option)}>{option}</Item>
+											<SelectItem value={String(option)}>{option}</SelectItem>
 										{/each}
-									</Content>
-								</Root>
+									</SelectContent>
+								</SelectRoot>
 							</div>
 						{/if}
 

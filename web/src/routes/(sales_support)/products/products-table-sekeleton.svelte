@@ -10,8 +10,7 @@
 		Row as TableRow
 	} from "$lib/components/ui/table";
 
-	export let columnCount = 8;
-	export let rowCount = 5;
+	const { columnCount = 8, rowCount = 5 } = $props();
 </script>
 
 <CardRoot>

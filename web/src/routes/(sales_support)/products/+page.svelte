@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
+	import { page } from "$app/state";
+	import CaretIcon from "$lib/assets/caret-up.svg";
 	import Badge from "$lib/components/ui/badge/badge.svelte";
 	import Button from "$lib/components/ui/button/button.svelte";
 	import {
@@ -20,6 +22,16 @@
 	import Input from "$lib/components/ui/input/input.svelte";
 	import { Label } from "$lib/components/ui/label";
 	import {
+		Content as PaginationContent,
+		Ellipsis as PaginationEllipsis,
+		Item as PaginationItem,
+		Link as PaginationLink,
+		NextButton as PaginationNextButton,
+		PrevButton as PaginationPrevButton,
+		Root as PaginationRoot
+	} from "$lib/components/ui/pagination";
+	import { Content as SelectContent, Item as SelectItem, Root as SelectRoot, Trigger as SelectTrigger } from "$lib/components/ui/select";
+	import {
 		Body as TableBody,
 		Cell as TableCell,
 		Head as TableHead,
@@ -28,8 +40,9 @@
 		Row as TableRow
 	} from "$lib/components/ui/table";
 	import * as Tooltip from "$lib/components/ui/tooltip/index";
+	import { ITEMS_PER_PAGE_OPTIONS, PRODUCT_COLUMNS } from "$lib/constants";
 	import type { ProductI, ProductStatsI } from "$lib/interfaces/index";
-	import { formatNumberWithCommas } from "$lib/utils";
+	import { formatNumberWithCommas, setRouteParams } from "$lib/utils";
 	import { PencilIcon } from "@lucide/svelte";
 	import { onMount } from "svelte";
 	import { toast } from "svelte-sonner";
@@ -43,40 +56,7 @@
 		SKU: string;
 	}
 
-	const productColumns = [
-		{
-			label: "Image",
-			value: "image"
-		},
-		{
-			label: "Name",
-			value: "name"
-		},
-		{
-			label: "SKU",
-			value: "SKU"
-		},
-		{
-			label: "Price",
-			value: "price"
-		},
-		{
-			label: "Inventory",
-			value: "inventory"
-		},
-		{
-			label: "Average Rating",
-			value: "averageRating"
-		},
-		{
-			label: "Review Count",
-			value: "reviewCount"
-		},
-		{
-			label: "Action",
-			value: "action"
-		}
-	];
+
 
 	const { data, form } = $props();
 	let selectedProduct = $state<SelectedProductI>({
@@ -118,11 +98,11 @@
 		}
 	});
 	const products = $derived(productsData.products || []);
-	const totalProducts = $derived(productsData.totalProducts || 0);
+	const totalProducts = $derived(productStat.totalProducts);
 	const productsSummary = $derived([
 		{
 			label: "Total Products",
-			value: productStat.totalProducts,
+			value: totalProducts,
 			description: "Total number of products"
 		},
 		{
@@ -159,9 +139,28 @@
 	let newPrice = $state(0);
 	let isLoading = $state(false);
 	let dialogOpen = $state(false);
+	let currentPage = $derived(parseInt(page.url.searchParams.get("page") ?? "1"));
+	let itemsPerPage = $state(page.url.searchParams.get("perPage") || "10");
+	const itemsPerPageOptions = $state(ITEMS_PER_PAGE_OPTIONS);
+	const moreThanAPage = $derived(totalProducts / +itemsPerPage > 1);
 
 	const isFormValid = (product: SelectedProductI) => {
 		return productInventoryForm.every((input) => Number(product[input.name as keyof SelectedProductI]) > 0) || isLoading;
+	};
+
+		const setParams = (page?: number) => {
+		setRouteParams({
+			page: page ? page : currentPage,
+			perPage: itemsPerPage
+		});
+	};
+
+	const handleItemsPerPage = () => {
+		setParams(1);
+	};
+
+	const handlePageChange = () => {
+		setParams();
 	};
 
 	$effect(() => {
@@ -215,10 +214,66 @@
 			</CardHeader>
 			<CardContent>
 				{#await data.productStatAndData}
-					<ProductsTableSekeleton />
+					<ProductsTableSekeleton columnCount={PRODUCT_COLUMNS.length} rowCount={+itemsPerPage} />
 				{:then}
 					{@render tableData()}
 				{/await}
+					<!-- Items per page and pagination -->
+					<div class="mt-6 flex items-center justify-between gap-4 md:mt-8 xl:mt-10">
+						<!--	Items per page select -->
+						{#if products.length > 0}
+							<div class="flex items-center gap-4">
+								<span class="w-max">Products per page:</span>
+								<SelectRoot bind:value={itemsPerPage} onValueChange={handleItemsPerPage} type="single">
+									<SelectTrigger class="w-16">{itemsPerPage}</SelectTrigger>
+									<SelectContent>
+										{#each itemsPerPageOptions as option (option)}
+											<SelectItem value={String(option)}>{option}</SelectItem>
+										{/each}
+									</SelectContent>
+								</SelectRoot>
+							</div>
+						{/if}
+
+						<!-- Pagination -->
+						{#if moreThanAPage}
+							<PaginationRoot
+								bind:page={currentPage}
+								count={totalProducts}
+								onPageChange={handlePageChange}
+								perPage={+itemsPerPage}
+							>
+								{#snippet children({ pages, currentPage })}
+									<PaginationContent>
+										<PaginationItem>
+											<PaginationPrevButton class="cursor-pointer">
+												<img src={CaretIcon} class="-rotate-90" alt="caret-left" />
+											</PaginationPrevButton>
+										</PaginationItem>
+
+										{#each pages as page (page.key)}
+											{#if page.type === "ellipsis"}
+												<PaginationItem>
+													<PaginationEllipsis />
+												</PaginationItem>
+											{:else}
+												<PaginationItem>
+													<PaginationLink {page} isActive={currentPage === page.value}>
+														{page.value}
+													</PaginationLink>
+												</PaginationItem>
+											{/if}
+										{/each}
+										<PaginationItem>
+											<PaginationNextButton class="cursor-pointer">
+												<img src={CaretIcon} class="rotate-90" alt="caret-left" />
+											</PaginationNextButton>
+										</PaginationItem>
+									</PaginationContent>
+								{/snippet}
+							</PaginationRoot>
+						{/if}
+					</div>
 			</CardContent>
 		</CardRoot>
 	</div>
@@ -228,7 +283,7 @@
 	<TableRoot>
 		<TableHeader>
 			<TableRow>
-				{#each productColumns as column}
+				{#each PRODUCT_COLUMNS as column}
 					<TableHead>{column.label}</TableHead>
 				{/each}
 			</TableRow>
@@ -236,7 +291,7 @@
 		<TableBody>
 			{#each products as product, i (product)}
 				<TableRow>
-					{#each productColumns as column}
+					{#each PRODUCT_COLUMNS as column}
 						{#if column.value === "image"}
 							<TableCell>
 								<img class="h-16 w-20 rounded" src={product.images[0].url} alt={product.name} />
