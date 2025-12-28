@@ -126,14 +126,35 @@
 		}
 	];
 
+	const filters = [
+		{label: "All Items", value: "all"},
+		{label: "Pending Pricing", value: "pendingPricing"},
+		{label: "Low Stock", value: "lowStock"},
+	]
+
 	let newPrice = $state(0);
 	let isLoading = $state(false);
 	let dialogOpen = $state(false);
 	let currentPage = $derived(parseInt(page.url.searchParams.get("page") ?? "1"));
 	let itemsPerPage = $state(page.url.searchParams.get("perPage") || "10");
+	let filterValue = $state(page.url.searchParams.get("filter") || "all");
+	const selectedFilter = $derived(filters.find((filter) => filter.value === filterValue)?.label);
 	const itemsPerPageOptions = $state(ITEMS_PER_PAGE_OPTIONS);
-	const moreThanAPage = $derived(totalProducts / +itemsPerPage > 1);
-
+	
+	const productsToDisplay = $derived(() => {
+		if (filterValue === "all") {
+			return products;
+		}
+		if (filterValue === "pendingPricing") {
+			return products.filter((product) => product.price === 0);
+		}
+		if (filterValue === "lowStock") {
+			return products.filter((product) => product.inventory < 5);
+		}
+		return [];
+	});
+	const moreThanAPage = $derived(productsToDisplay().length / +itemsPerPage > 1);
+	
 	const isFormValid = (product: SelectedProductI) => {
 		return (
 			productInventoryForm.every(
@@ -155,6 +176,12 @@
 
 	const handlePageChange = () => {
 		setParams();
+	};
+
+	const handleFilterChange = () => {
+		setRouteParams({
+			filter: filterValue
+		})
 	};
 
 			$effect(() => {
@@ -205,8 +232,22 @@
 
 		<!-- Table section -->
 		<CardRoot>
-			<CardHeader>
-				<CardTitle>Products ({products.length})</CardTitle>
+			<CardHeader class="flex items-center justify-between gap-4">
+				<CardTitle>Products ({productsToDisplay().length})</CardTitle>
+
+			
+							<SelectRoot
+								bind:value={filterValue}
+								onValueChange={handleFilterChange}
+								type="single"
+							>
+								<SelectTrigger class="w-max">{selectedFilter}</SelectTrigger>
+								<SelectContent>
+									{#each filters as option (option)}
+										<SelectItem value={String(option.value)}>{option.label}</SelectItem>
+									{/each}
+								</SelectContent>
+							</SelectRoot>
 			</CardHeader>
 			<CardContent>
 				{#await data.productStatAndData}
@@ -239,7 +280,7 @@
 					{#if moreThanAPage}
 						<PaginationRoot
 							bind:page={currentPage}
-							count={totalProducts}
+							count={productsToDisplay().length}
 							onPageChange={handlePageChange}
 							perPage={+itemsPerPage}
 						>
@@ -289,7 +330,7 @@
 			</TableRow>
 		</TableHeader>
 		<TableBody>
-			{#each products as product, i (product)}
+			{#each productsToDisplay() as product, i (product)}
 				<TableRow>
 					{#each PRODUCT_COLUMNS as column}
 						{#if column.value === "image"}
