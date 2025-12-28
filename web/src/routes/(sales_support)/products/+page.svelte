@@ -76,16 +76,13 @@
 		totalStock: 0
 	});
 
-
-
-		let productsData = $state<{
-			products: ProductI[];
-			totalProducts: number;
-		}>({
-			products: [],
-			totalProducts: 0
-		});
-
+	let productsData = $state<{
+		products: ProductI[];
+		totalProducts: number;
+	}>({
+		products: [],
+		totalProducts: 0
+	});
 
 	const products = $derived<ProductI[]>(productsData.products || []);
 	const totalProducts = $derived(productStat.totalProducts);
@@ -127,10 +124,10 @@
 	];
 
 	const filters = [
-		{label: "All Items", value: "all"},
-		{label: "Pending Pricing", value: "pendingPricing"},
-		{label: "Low Stock", value: "lowStock"},
-	]
+		{ label: "All Items", value: "all" },
+		{ label: "Pending Pricing", value: "pendingPricing" },
+		{ label: "Low Stock", value: "lowStock" }
+	];
 
 	let newPrice = $state(0);
 	let isLoading = $state(false);
@@ -140,7 +137,7 @@
 	let filterValue = $state(page.url.searchParams.get("filter") || "all");
 	const selectedFilter = $derived(filters.find((filter) => filter.value === filterValue)?.label);
 	const itemsPerPageOptions = $state(ITEMS_PER_PAGE_OPTIONS);
-	
+
 	const productsToDisplay = $derived(() => {
 		if (filterValue === "all") {
 			return products;
@@ -154,7 +151,7 @@
 		return [];
 	});
 	const moreThanAPage = $derived(productsToDisplay().length / +itemsPerPage > 1);
-	
+
 	const isFormValid = (product: SelectedProductI) => {
 		return (
 			productInventoryForm.every(
@@ -181,10 +178,10 @@
 	const handleFilterChange = () => {
 		setRouteParams({
 			filter: filterValue
-		})
+		});
 	};
 
-			$effect(() => {
+	$effect(() => {
 		data.productStatAndData.then((res) => {
 			productsData = res[0];
 			productStat = res[1];
@@ -204,8 +201,6 @@
 			isLoading = false;
 		}
 	});
-
-
 </script>
 
 <DialogRoot bind:open={dialogOpen}>
@@ -235,19 +230,14 @@
 			<CardHeader class="flex items-center justify-between gap-4">
 				<CardTitle>Products ({productsToDisplay().length})</CardTitle>
 
-			
-							<SelectRoot
-								bind:value={filterValue}
-								onValueChange={handleFilterChange}
-								type="single"
-							>
-								<SelectTrigger class="w-max">{selectedFilter}</SelectTrigger>
-								<SelectContent>
-									{#each filters as option (option)}
-										<SelectItem value={String(option.value)}>{option.label}</SelectItem>
-									{/each}
-								</SelectContent>
-							</SelectRoot>
+				<SelectRoot bind:value={filterValue} onValueChange={handleFilterChange} type="single">
+					<SelectTrigger class="w-max">{selectedFilter}</SelectTrigger>
+					<SelectContent>
+						{#each filters as option (option)}
+							<SelectItem value={String(option.value)}>{option.label}</SelectItem>
+						{/each}
+					</SelectContent>
+				</SelectRoot>
 			</CardHeader>
 			<CardContent>
 				{#await data.productStatAndData}
@@ -408,14 +398,16 @@
 				/>
 			</div>
 		{/each}
-		<Button class="mt-4 cursor-pointer" type="submit" disabled={!isFormValid(selectedProduct) || isLoading}
-			>
-				{#if isLoading}
-					<Spinner />
-				{:else}
-					Update
-				{/if}
-			</Button
+		<Button
+			class="mt-4 cursor-pointer"
+			type="submit"
+			disabled={!isFormValid(selectedProduct) || isLoading}
 		>
+			{#if isLoading}
+				<Spinner />
+			{:else}
+				Update
+			{/if}
+		</Button>
 	</form>
 {/snippet}
