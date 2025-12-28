@@ -61,7 +61,7 @@
 			return ROUTE_NAVS;
 		}
 		return ROUTE_NAVS.filter((nav) => nav.route !== "/products");
-	})
+	});
 
 	$effect(() => {
 		if (isSearchOpen && searchInput) {

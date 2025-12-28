@@ -180,11 +180,11 @@
 
 		let redirectTo = "/";
 		if (page.url.searchParams.get("redirectTo")) {
-			redirectTo = redirectTo + page.url.searchParams.get("redirectTo")
+			redirectTo = redirectTo + page.url.searchParams.get("redirectTo");
 		} else {
-			redirectTo = userAuth?.user?.role === "customer" ? "/" : "/products"
+			redirectTo = userAuth?.user?.role === "customer" ? "/" : "/products";
 		}
-		console.log("redirect to: ", redirectTo)
+		console.log("redirect to: ", redirectTo);
 		goto(redirectTo).then(() => (isLoading = false));
 	};
 

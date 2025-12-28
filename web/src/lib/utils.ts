@@ -466,7 +466,7 @@ export const fetchAndTransformProducts = async ({
 			name: item.name
 		};
 	}) as ProductI[];
-	console.log(mergedProducts)
+	console.log(mergedProducts);
 
 	// Client-Side Price Sort (Required because Strapi only sorts by name/date)
 	if (sort === "price-asc") {

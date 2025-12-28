@@ -39,8 +39,8 @@ const handleAuthCheck: Handle = async ({ event, resolve }) => {
 	event.locals.auth = null;
 	const { auth, user } = JSON.parse(event.cookies.get("session") ?? "{}") as UserAuthI;
 	const route = String(event.route.id).split("/").pop();
-	const previousRoute = event.request.headers.get('referer')
-		? new URL(event.request.headers.get('referer')!).pathname.split('/').pop()
+	const previousRoute = event.request.headers.get("referer")
+		? new URL(event.request.headers.get("referer")!).pathname.split("/").pop()
 		: null;
 	const isAuthenticated = !!auth?.idToken;
 

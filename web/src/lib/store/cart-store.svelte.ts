@@ -6,7 +6,9 @@ class CartStore implements CartStoreI {
 	// Top-level reactive store
 	private readonly store = new SvelteMap<string, CartItemI>();
 	// Derived reactive values
-	private activeProducts = $derived(() => Array.from(this.store.values()).filter((item) => item.productStatus === "ACTIVE"));
+	private activeProducts = $derived(() =>
+		Array.from(this.store.values()).filter((item) => item.productStatus === "ACTIVE")
+	);
 	public cartItems = $derived(() => Array.from(this.activeProducts()));
 	public totalItems = $derived(() =>
 		Array.from(this.activeProducts()).reduce((acc, item) => acc + item.quantity, 0)

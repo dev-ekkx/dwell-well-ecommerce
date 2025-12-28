@@ -60,10 +60,10 @@
 		/>
 
 		{#if product.inventory === 0 || product?.productStatus === "INACTIVE"}
-		<Badge
-		class="absolute top-1 left-0 border-primary bg-muted font-semibold text-primary"
-		variant="outline">Currently unavailable</Badge
-		>
+			<Badge
+				class="absolute top-1 left-0 border-primary bg-muted font-semibold text-primary"
+				variant="outline">Currently unavailable</Badge
+			>
 		{/if}
 	</div>
 

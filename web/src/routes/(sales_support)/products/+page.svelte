@@ -30,7 +30,12 @@
 		PrevButton as PaginationPrevButton,
 		Root as PaginationRoot
 	} from "$lib/components/ui/pagination";
-	import { Content as SelectContent, Item as SelectItem, Root as SelectRoot, Trigger as SelectTrigger } from "$lib/components/ui/select";
+	import {
+		Content as SelectContent,
+		Item as SelectItem,
+		Root as SelectRoot,
+		Trigger as SelectTrigger
+	} from "$lib/components/ui/select";
 	import {
 		Body as TableBody,
 		Cell as TableCell,
@@ -55,8 +60,6 @@
 		inventory: number;
 		SKU: string;
 	}
-
-
 
 	const { data, form } = $props();
 	let selectedProduct = $state<SelectedProductI>({
@@ -145,10 +148,14 @@
 	const moreThanAPage = $derived(totalProducts / +itemsPerPage > 1);
 
 	const isFormValid = (product: SelectedProductI) => {
-		return productInventoryForm.every((input) => Number(product[input.name as keyof SelectedProductI]) > 0) || isLoading;
+		return (
+			productInventoryForm.every(
+				(input) => Number(product[input.name as keyof SelectedProductI]) > 0
+			) || isLoading
+		);
 	};
 
-		const setParams = (page?: number) => {
+	const setParams = (page?: number) => {
 		setRouteParams({
 			page: page ? page : currentPage,
 			perPage: itemsPerPage
@@ -218,62 +225,66 @@
 				{:then}
 					{@render tableData()}
 				{/await}
-					<!-- Items per page and pagination -->
-					<div class="mt-6 flex items-center justify-between gap-4 md:mt-8 xl:mt-10">
-						<!--	Items per page select -->
-						{#if products.length > 0}
-							<div class="flex items-center gap-4">
-								<span class="w-max">Products per page:</span>
-								<SelectRoot bind:value={itemsPerPage} onValueChange={handleItemsPerPage} type="single">
-									<SelectTrigger class="w-16">{itemsPerPage}</SelectTrigger>
-									<SelectContent>
-										{#each itemsPerPageOptions as option (option)}
-											<SelectItem value={String(option)}>{option}</SelectItem>
-										{/each}
-									</SelectContent>
-								</SelectRoot>
-							</div>
-						{/if}
-
-						<!-- Pagination -->
-						{#if moreThanAPage}
-							<PaginationRoot
-								bind:page={currentPage}
-								count={totalProducts}
-								onPageChange={handlePageChange}
-								perPage={+itemsPerPage}
+				<!-- Items per page and pagination -->
+				<div class="mt-6 flex items-center justify-between gap-4 md:mt-8 xl:mt-10">
+					<!--	Items per page select -->
+					{#if products.length > 0}
+						<div class="flex items-center gap-4">
+							<span class="w-max">Products per page:</span>
+							<SelectRoot
+								bind:value={itemsPerPage}
+								onValueChange={handleItemsPerPage}
+								type="single"
 							>
-								{#snippet children({ pages, currentPage })}
-									<PaginationContent>
-										<PaginationItem>
-											<PaginationPrevButton class="cursor-pointer">
-												<img src={CaretIcon} class="-rotate-90" alt="caret-left" />
-											</PaginationPrevButton>
-										</PaginationItem>
+								<SelectTrigger class="w-16">{itemsPerPage}</SelectTrigger>
+								<SelectContent>
+									{#each itemsPerPageOptions as option (option)}
+										<SelectItem value={String(option)}>{option}</SelectItem>
+									{/each}
+								</SelectContent>
+							</SelectRoot>
+						</div>
+					{/if}
 
-										{#each pages as page (page.key)}
-											{#if page.type === "ellipsis"}
-												<PaginationItem>
-													<PaginationEllipsis />
-												</PaginationItem>
-											{:else}
-												<PaginationItem>
-													<PaginationLink {page} isActive={currentPage === page.value}>
-														{page.value}
-													</PaginationLink>
-												</PaginationItem>
-											{/if}
-										{/each}
-										<PaginationItem>
-											<PaginationNextButton class="cursor-pointer">
-												<img src={CaretIcon} class="rotate-90" alt="caret-left" />
-											</PaginationNextButton>
-										</PaginationItem>
-									</PaginationContent>
-								{/snippet}
-							</PaginationRoot>
-						{/if}
-					</div>
+					<!-- Pagination -->
+					{#if moreThanAPage}
+						<PaginationRoot
+							bind:page={currentPage}
+							count={totalProducts}
+							onPageChange={handlePageChange}
+							perPage={+itemsPerPage}
+						>
+							{#snippet children({ pages, currentPage })}
+								<PaginationContent>
+									<PaginationItem>
+										<PaginationPrevButton class="cursor-pointer">
+											<img src={CaretIcon} class="-rotate-90" alt="caret-left" />
+										</PaginationPrevButton>
+									</PaginationItem>
+
+									{#each pages as page (page.key)}
+										{#if page.type === "ellipsis"}
+											<PaginationItem>
+												<PaginationEllipsis />
+											</PaginationItem>
+										{:else}
+											<PaginationItem>
+												<PaginationLink {page} isActive={currentPage === page.value}>
+													{page.value}
+												</PaginationLink>
+											</PaginationItem>
+										{/if}
+									{/each}
+									<PaginationItem>
+										<PaginationNextButton class="cursor-pointer">
+											<img src={CaretIcon} class="rotate-90" alt="caret-left" />
+										</PaginationNextButton>
+									</PaginationItem>
+								</PaginationContent>
+							{/snippet}
+						</PaginationRoot>
+					{/if}
+				</div>
 			</CardContent>
 		</CardRoot>
 	</div>
@@ -297,20 +308,20 @@
 								<img class="h-16 w-20 rounded" src={product.images[0].url} alt={product.name} />
 							</TableCell>
 						{:else if column.value === "price"}
-						{#if product.price === 0}
-							<TableCell>
-								<Badge variant="secondary">Price not set</Badge>
-							</TableCell>
-						{:else}
-							<TableCell>{formatNumberWithCommas(product.price)}</TableCell>
-						{/if}
+							{#if product.price === 0}
+								<TableCell>
+									<Badge variant="secondary">Price not set</Badge>
+								</TableCell>
+							{:else}
+								<TableCell>{formatNumberWithCommas(product.price)}</TableCell>
+							{/if}
 						{:else if column.value === "action"}
 							<TableCell>
 								<Tooltip.Provider>
 									<Tooltip.Root>
 										<Tooltip.Trigger>
 											<DialogTrigger
-											onclick={() => (selectedProduct = product)}
+												onclick={() => (selectedProduct = product)}
 												class="cursor-pointer rounded-full p-2 transition-all duration-200 ease-linear hover:bg-primary hover:text-white"
 											>
 												<PencilIcon class="size-5" />
@@ -367,6 +378,8 @@
 				/>
 			</div>
 		{/each}
-		<Button class="mt-4 cursor-pointer" type="submit" disabled={!isFormValid(selectedProduct)}>Update</Button>
+		<Button class="mt-4 cursor-pointer" type="submit" disabled={!isFormValid(selectedProduct)}
+			>Update</Button
+		>
 	</form>
 {/snippet}

@@ -23,7 +23,12 @@
 		PrevButton as PaginationPrevButton,
 		Root as PaginationRoot
 	} from "$lib/components/ui/pagination/index.js";
-	import { Content as SelectContent, Item as SelectItem, Root as SelectRoot, Trigger as SelectTrigger } from "$lib/components/ui/select";
+	import {
+		Content as SelectContent,
+		Item as SelectItem,
+		Root as SelectRoot,
+		Trigger as SelectTrigger
+	} from "$lib/components/ui/select";
 	import {
 		Content as SheetContent,
 		Overlay as SheetOverlay,
@@ -288,7 +293,11 @@
 						{#if products.length > 0}
 							<div class="flex items-center gap-4">
 								<span class="w-max">Products per page:</span>
-								<SelectRoot bind:value={itemsPerPage} onValueChange={handleItemsPerPage} type="single">
+								<SelectRoot
+									bind:value={itemsPerPage}
+									onValueChange={handleItemsPerPage}
+									type="single"
+								>
 									<SelectTrigger class="w-16">{itemsPerPage}</SelectTrigger>
 									<SelectContent>
 										{#each itemsPerPageOptions as option (option)}
