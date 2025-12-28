@@ -29,6 +29,7 @@
 	} from "$lib/components/ui/table";
 	import * as Tooltip from "$lib/components/ui/tooltip/index";
 	import type { ProductI, ProductStatsI } from "$lib/interfaces/index";
+	import { formatNumberWithCommas } from "$lib/utils";
 	import { PencilIcon } from "@lucide/svelte";
 	import { onMount } from "svelte";
 	import { toast } from "svelte-sonner";
@@ -240,10 +241,14 @@
 							<TableCell>
 								<img class="h-16 w-20 rounded" src={product.images[0].url} alt={product.name} />
 							</TableCell>
-						{:else if column.value === "price" && product.price === 0}
+						{:else if column.value === "price"}
+						{#if product.price === 0}
 							<TableCell>
 								<Badge variant="secondary">Price not set</Badge>
 							</TableCell>
+						{:else}
+							<TableCell>{formatNumberWithCommas(product.price)}</TableCell>
+						{/if}
 						{:else if column.value === "action"}
 							<TableCell>
 								<Tooltip.Provider>
