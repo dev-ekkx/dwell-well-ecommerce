@@ -1,13 +1,12 @@
 <script lang="ts">
-	import ContactusBg from "$lib/assets/images/question.jpg";
-	// import Person1Img from '$lib/assets/images/person1.jpg';
-	import PhoneIcon from "$lib/assets/phone.svg";
 	import EmailIcon from "$lib/assets/email.svg";
+	import ContactusBg from "$lib/assets/images/question.jpg";
+	import PhoneIcon from "$lib/assets/phone.svg";
 	import { Button } from "$lib/components/ui/button";
-	import type { ContactFormFieldT, InputT, QuestionT } from "$lib/types";
+	import { Input } from "$lib/components/ui/input";
 	import { Textarea } from "$lib/components/ui/textarea";
 	import { QuestionFormSchema } from "$lib/schema";
-	import { Input } from "$lib/components/ui/input";
+	import type { ContactFormFieldT, InputT, QuestionT } from "$lib/types";
 
 	let contactForm = $state<QuestionT>({
 		name: "",

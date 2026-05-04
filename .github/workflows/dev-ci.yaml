@@ -1,0 +1,28 @@
+name: CI/CD Check for Development Branch
+
+on:
+  push:
+  pull_request:
+    branches: [ develop ]
+    types: [ opened, reopened, synchronize ]
+
+env:
+  GO_VERSION: "1.25.3"
+
+jobs:
+  test:
+    name: Run unit tests
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          go mod download
+          go mod verify

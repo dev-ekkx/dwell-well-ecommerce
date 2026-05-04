@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { X } from "@lucide/svelte/icons";
+	import { browser } from "$app/environment";
 	import GooglePartnerLogo from "$lib/assets/google_partner.svg";
 	import { Button } from "$lib/components/ui/button";
 	import { Checkbox } from "$lib/components/ui/checkbox";
 	import { Label } from "$lib/components/ui/label";
-	import { browser } from "$app/environment";
+	import { X } from "@lucide/svelte/icons";
 
 	let { displayCookieBanner = $bindable(false) } = $props();
 
@@ -13,7 +13,7 @@
 		label: string;
 	}[] = [
 		{
-			label: "Test Strict",
+			label: "Test Item",
 			value: "test"
 		},
 		{

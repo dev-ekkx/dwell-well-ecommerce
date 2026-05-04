@@ -10,7 +10,6 @@
 
 	function loadGoogleMaps(): Promise<void> {
 		return new Promise((resolve, reject) => {
-			// If already available, resolve immediately
 			if (typeof window !== "undefined" && (window as any).google?.maps?.importLibrary) {
 				resolve();
 				return;
@@ -97,15 +96,8 @@
 	};
 
 	onMount(async () => {
-		// await initMap();
+		await initMap();
 	});
 </script>
 
-<div bind:this={mapElement} class="h-[38.4rem]">
-	<!--	TODO: remove map placeholder-->
-	<div
-		class="flex h-full w-full items-center justify-center border border-muted-foreground text-2xl text-muted-foreground"
-	>
-		Map placeholder
-	</div>
-</div>
+<div bind:this={mapElement} class="h-[38.4rem]"></div>

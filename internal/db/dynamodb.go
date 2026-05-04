@@ -67,7 +67,13 @@ func (d *DynamoDBClient) CreateProductWithDefaults(sku string) error {
 		if !errors.As(err, &conditionalCheckFailedException) {
 			return err
 		}
-		log.Printf("INFO: Product with SKU '%s' already exists. No action taken.", sku)
+		err = d.UpdateProductStatus(sku, "ACTIVE")
+		if err != nil {
+			log.Printf("ERROR: Failed to publish product (update status) for SKU %s: %v", sku, err)
+			return err
+		}
+		return nil
+
 	} else {
 		log.Printf("INFO: Successfully created new product with SKU '%s' in DynamoDB.", sku)
 	}
@@ -165,10 +171,7 @@ func (d *DynamoDBClient) GetProductsBySKUs(skus []string) ([]models.Product, err
 	var allProducts []models.Product
 
 	for start := 0; start < len(skus); start += batchSize {
-		end := start + batchSize
-		if end > len(skus) {
-			end = len(skus)
-		}
+		end := min(start+batchSize, len(skus))
 		batchSKUs := skus[start:end]
 
 		// Prepare keys for this batch
@@ -261,18 +264,21 @@ func (d *DynamoDBClient) GetProductSKUsByPriceRange(minPrice, maxPrice float64) 
 	return skus, nil
 }
 
-func (d *DynamoDBClient) UpdateProductPrice(sku string, price float64) ([]models.Product, error) {
+func (d *DynamoDBClient) UpdateProductInventory(sku string, inventory int, price float64) ([]models.Product, error) {
 
 	key, err := attributevalue.MarshalMap(map[string]string{"sku": sku})
 	if err != nil {
-		log.Printf("ERROR: Failed to marshal key for UpdateProductPrice: %v", err)
+		log.Printf("ERROR: Failed to marshal key for UpdateProductInventory: %v", err)
 		return nil, err
 	}
 
-	updateExpression := "SET price = :newPrice"
-	expressionAttributeValues, err := attributevalue.MarshalMap(map[string]string{":newPrice": strconv.FormatFloat(price, 'f', -1, 64)})
+	updateExpression := "SET price = :price, inventory = :inventory"
+	expressionAttributeValues, err := attributevalue.MarshalMap(map[string]any{
+		":price":     price,
+		":inventory": inventory,
+	})
 	if err != nil {
-		log.Printf("ERROR: Failed to marshal attribute values for UpdateProductPrice: %v", err)
+		log.Printf("ERROR: Failed to marshal attribute values for UpdateProductInventory: %v", err)
 		return nil, err
 	}
 
@@ -282,7 +288,7 @@ func (d *DynamoDBClient) UpdateProductPrice(sku string, price float64) ([]models
 		Key:                       key,
 		UpdateExpression:          awsSDK.String(updateExpression),
 		ExpressionAttributeValues: expressionAttributeValues,
-		ConditionExpression:       awsSDK.String("attribute_exists(sku)"), // Only update if product exists
+		ConditionExpression:       awsSDK.String("attribute_exists(sku)"),
 	}
 
 	_, err = d.client.UpdateItem(context.TODO(), input)
@@ -291,14 +297,14 @@ func (d *DynamoDBClient) UpdateProductPrice(sku string, price float64) ([]models
 		// If the condition fails, it's not a true error; the product just doesn't exist.
 		var conditionalCheckFailedException *types.ConditionalCheckFailedException
 		if errors.As(err, &conditionalCheckFailedException) {
-			log.Printf("INFO: Product with SKU '%s' not found for price update. No action taken.", sku)
+			log.Printf("INFO: Product with SKU '%s' not found for price and inventory update. No action taken.", sku)
 			return nil, nil
 		}
-		log.Printf("ERROR: Failed to update price for SKU %s: %v", sku, err)
+		log.Printf("ERROR: Failed to update price and inventory for SKU %s: %v", sku, err)
 		return nil, err
 	}
 
-	log.Printf("INFO: Successfully updated price to '%f' for SKU '%s'.", price, sku)
+	log.Printf("INFO: Successfully updated price to '%f' and inventory to '%d' for SKU '%s'.", price, inventory, sku)
 	return nil, nil
 }
 

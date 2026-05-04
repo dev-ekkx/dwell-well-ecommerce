@@ -1,6 +1,6 @@
 <script>
-	import { Button } from "$lib/components/ui/button/index.ts";
 	import Binoculars from "$lib/assets/binoculars.svg";
+	import { Button } from "$lib/components/ui/button/index";
 </script>
 
 <div class="flex flex-col items-center justify-between gap-4">

@@ -56,6 +56,12 @@
 
 	const userData = $derived(page.data.user);
 	const isAuthenticated = $derived(page.data.isAuthenticated);
+	const routeNavs = $derived(() => {
+		if (isAuthenticated && (userData.role === "admin" || userData.role === "subAdmin")) {
+			return ROUTE_NAVS;
+		}
+		return ROUTE_NAVS.filter((nav) => nav.route !== "/products");
+	});
 
 	$effect(() => {
 		if (isSearchOpen && searchInput) {
@@ -80,7 +86,7 @@
 			await tick();
 			if (menu) {
 				// Animate in
-				gsap.fromTo(menu, { y: "-100%" }, { y: 0, duration: 0.3, ease: "power1.out" });
+				gsap.fromTo(menu, { y: "-105%" }, { y: 0, duration: 0.3, ease: "power1.out" });
 			}
 		}
 	}
@@ -101,7 +107,7 @@
 			await tick();
 			if (searchMenu) {
 				// Animate in
-				gsap.fromTo(searchMenu, { y: "-100%" }, { y: 0, duration: 0.3, ease: "power1.out" });
+				gsap.fromTo(searchMenu, { y: "-105%" }, { y: 0, duration: 0.3, ease: "power1.out" });
 			}
 		}
 	}
@@ -325,7 +331,7 @@
 
 <!--Routes -->
 {#snippet navigation(isMobile = false)}
-	{#each ROUTE_NAVS as nav (nav.label)}
+	{#each routeNavs() as nav (nav.label)}
 		<a
 			onclick={isMenuOpen ? toggleMenu : null}
 			class={cn(

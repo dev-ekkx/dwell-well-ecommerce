@@ -65,6 +65,7 @@ export interface ProductI {
 	availability: FilterI;
 	styles: FilterI[];
 	regionalAvailability: RegionalAvailabilityI[];
+	productStatus?: string;
 }
 
 export interface ProductSummaryI
@@ -326,7 +327,8 @@ export interface UserStoreI {
 }
 
 // Interface for Cart Item
-export interface CartItemI extends Pick<ProductI, "name" | "price" | "SKU" | "inventory"> {
+export interface CartItemI
+	extends Pick<ProductI, "name" | "price" | "SKU" | "inventory" | "productStatus"> {
 	quantity: number;
 	image: StrapiImageI;
 	slug: string;
@@ -380,4 +382,11 @@ export interface CountryAndFlagI {
 export interface FetchI {
 	(input: URL | RequestInfo, init?: RequestInit): Promise<Response>;
 	(input: string | URL | Request, init?: RequestInit): Promise<Response>;
+}
+
+export interface ProductStatsI {
+	lowStockAlert: number;
+	pendingPricing: number;
+	totalProducts: number;
+	totalStock: number;
 }

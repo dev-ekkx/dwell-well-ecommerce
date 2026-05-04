@@ -30,7 +30,10 @@ export function cn(...inputs: ClassValue[]) {
  * @returns A string representation of the number with commas.
  */
 export function formatNumberWithCommas(num: number): string {
-	return num.toLocaleString("en-Gh");
+	return num.toLocaleString("en-GH", {
+		minimumFractionDigits: 2,
+		maximumFractionDigits: 2
+	});
 }
 
 export const setRouteParams = async (
@@ -106,8 +109,8 @@ export const getUserAndAuthData = async () => {
 	const [authSession, currentUser] = await Promise.all([fetchAuthSession(), getCurrentUser()]);
 
 	const userInfo = authSession?.tokens?.idToken?.payload ?? {};
-	const accessToken = authSession.tokens?.accessToken?.toString();
-	const idToken = authSession.tokens?.idToken?.toString();
+	const accessToken = authSession.tokens?.accessToken?.toString()!;
+	const idToken = authSession.tokens?.idToken?.toString()!;
 	const user: UserAuthI["user"] = {
 		userId: currentUser?.userId ?? "",
 		name: userInfo["name"] ?? "",
@@ -431,7 +434,7 @@ export const fetchAndTransformProducts = async ({
 	let productDataMap: ProductDataMapT = {};
 
 	try {
-		const operationalDataResponse = await fetch(`${BACKEND_URL}/api/products`, {
+		const operationalDataResponse = await fetch(`${BACKEND_URL}/products`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ skus: skusToFetch })
@@ -466,6 +469,7 @@ export const fetchAndTransformProducts = async ({
 			name: item.name
 		};
 	}) as ProductI[];
+	console.log(mergedProducts);
 
 	// Client-Side Price Sort (Required because Strapi only sorts by name/date)
 	if (sort === "price-asc") {
@@ -475,4 +479,14 @@ export const fetchAndTransformProducts = async ({
 	}
 
 	return { totalProducts, products: mergedProducts };
+};
+
+export const customFetch = async (input: URL | RequestInfo, init?: RequestInit, token?: string) => {
+	const headers = new Headers(init?.headers);
+
+	if (token) {
+		headers.set("Authorization", `Bearer ${token}`);
+	}
+
+	return fetch(input, { ...init, headers });
 };

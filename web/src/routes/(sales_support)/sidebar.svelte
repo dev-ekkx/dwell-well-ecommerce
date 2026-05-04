@@ -72,7 +72,7 @@
 	const logoutEnhance: SubmitFunction = () => {
 		return async ({ result, update }) => {
 			await update();
-			if (result.type === "redirect") {
+			if (["redirect", "success"].includes(result.type)) {
 				await invalidateAll();
 			}
 		};

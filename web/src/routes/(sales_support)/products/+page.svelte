@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
+	import { page } from "$app/state";
+	import CaretIcon from "$lib/assets/caret-up.svg";
 	import Badge from "$lib/components/ui/badge/badge.svelte";
 	import Button from "$lib/components/ui/button/button.svelte";
 	import {
@@ -20,6 +22,22 @@
 	import Input from "$lib/components/ui/input/input.svelte";
 	import { Label } from "$lib/components/ui/label";
 	import {
+		Content as PaginationContent,
+		Ellipsis as PaginationEllipsis,
+		Item as PaginationItem,
+		Link as PaginationLink,
+		NextButton as PaginationNextButton,
+		PrevButton as PaginationPrevButton,
+		Root as PaginationRoot
+	} from "$lib/components/ui/pagination";
+	import {
+		Content as SelectContent,
+		Item as SelectItem,
+		Root as SelectRoot,
+		Trigger as SelectTrigger
+	} from "$lib/components/ui/select";
+	import { Spinner } from "$lib/components/ui/spinner";
+	import {
 		Body as TableBody,
 		Cell as TableCell,
 		Head as TableHead,
@@ -28,99 +46,147 @@
 		Row as TableRow
 	} from "$lib/components/ui/table";
 	import * as Tooltip from "$lib/components/ui/tooltip/index";
-	import type { ProductI } from "$lib/interfaces/index";
+	import { ITEMS_PER_PAGE_OPTIONS, PRODUCT_COLUMNS } from "$lib/constants";
+	import type { ProductI, ProductStatsI } from "$lib/interfaces/index";
+	import { formatNumberWithCommas, setRouteParams } from "$lib/utils";
 	import { PencilIcon } from "@lucide/svelte";
 	import { toast } from "svelte-sonner";
+	import ProductsSummaryCardsSkeleton from "./products-summary-cards-skeleton.svelte";
+	import ProductsTableSekeleton from "./products-table-sekeleton.svelte";
 
-	const productsSummary = [
+	interface SelectedProductI {
+		name: string;
+		price: number;
+		inventory: number;
+		SKU: string;
+	}
+
+	const { data, form } = $props();
+	let selectedProduct = $state<SelectedProductI>({
+		name: "",
+		price: 0,
+		inventory: 0,
+		SKU: ""
+	});
+
+	let productStat = $state<ProductStatsI>({
+		totalProducts: 0,
+		lowStockAlert: 0,
+		pendingPricing: 0,
+		totalStock: 0
+	});
+
+	let productsData = $state<{
+		products: ProductI[];
+		totalProducts: number;
+	}>({
+		products: [],
+		totalProducts: 0
+	});
+
+	const products = $derived<ProductI[]>(productsData.products || []);
+	const totalProducts = $derived(productStat.totalProducts);
+	const productsSummary = $derived([
 		{
 			label: "Total Products",
-			value: 0,
+			value: totalProducts,
 			description: "Total number of products"
 		},
 		{
 			label: "Total Available Stock",
-			value: 0,
-			description: "Total number of products"
+			value: productStat.totalStock,
+			description: "Total available stock"
 		},
 		{
 			label: "Pricing Completion",
-			value: 0,
-			description: "Total number of products"
+			value: productStat.pendingPricing,
+			description: "Total products pending pricing"
 		},
 		{
 			label: "Low Stock Alerts",
-			value: 0,
-			description: "Total number of products"
+			value: productStat.lowStockAlert,
+			description: "Total products with low stock"
 		}
-	];
-
-	const productColumns = [
-		{
-			label: "Image",
-			value: "image"
-		},
-		{
-			label: "Name",
-			value: "name"
-		},
-		{
-			label: "SKU",
-			value: "SKU"
-		},
+	]);
+	const productInventoryForm = [
 		{
 			label: "Price",
-			value: "price"
+			name: "price",
+			productName: "",
+			value: 0
 		},
 		{
 			label: "Inventory",
-			value: "inventory"
-		},
-		{
-			label: "Average Rating",
-			value: "averageRating"
-		},
-		{
-			label: "Review Count",
-			value: "reviewCount"
-		},
-		{
-			label: "Action",
-			value: "action"
+			name: "inventory",
+			productName: "",
+			value: 0
 		}
 	];
 
-	const { data, form } = $props();
-	const products = $derived(data.productsData.products || []);
-	const totalProducts = $derived(data.productsData.totalProducts || 0);
-	const productPriceForm = [
-		{
-			label: "Old Price",
-			name: "oldPrice",
-			productName: "",
-			readonly: true
-		},
-		{
-			label: "New Price",
-			name: "newPrice",
-			productName: "",
-			placeholder: "Enter new price"
-		}
+	const filters = [
+		{ label: "All Items", value: "all" },
+		{ label: "Pending Pricing", value: "pendingPricing" },
+		{ label: "Low Stock", value: "lowStock" }
 	];
 
 	let newPrice = $state(0);
 	let isLoading = $state(false);
 	let dialogOpen = $state(false);
+	let currentPage = $derived(parseInt(page.url.searchParams.get("page") ?? "1"));
+	let itemsPerPage = $state(page.url.searchParams.get("perPage") || "10");
+	let filterValue = $state(page.url.searchParams.get("filter") || "all");
+	const selectedFilter = $derived(filters.find((filter) => filter.value === filterValue)?.label);
+	const itemsPerPageOptions = $state(ITEMS_PER_PAGE_OPTIONS);
 
-	const isFormValid = $derived(() => {
-		return newPrice > 0 || isLoading;
+	const productsToDisplay = $derived(() => {
+		if (filterValue === "all") {
+			return products;
+		}
+		if (filterValue === "pendingPricing") {
+			return products.filter((product) => product.price === 0);
+		}
+		if (filterValue === "lowStock") {
+			return products.filter((product) => product.inventory < 5);
+		}
+		return [];
 	});
+	const moreThanAPage = $derived(productsToDisplay().length / +itemsPerPage > 1);
 
-	const handleNewPriceInput = (e: Event) => {
-		const value = +(e.target as HTMLInputElement).value;
-		if (value <= 0) return;
-		newPrice = value;
+	const isFormValid = (product: SelectedProductI) => {
+		return (
+			productInventoryForm.every(
+				(input) => Number(product[input.name as keyof SelectedProductI]) > 0
+			) || isLoading
+		);
 	};
+
+	const setParams = (page?: number) => {
+		setRouteParams({
+			page: page ? page : currentPage,
+			perPage: itemsPerPage
+		});
+	};
+
+	const handleItemsPerPage = () => {
+		setParams(1);
+	};
+
+	const handlePageChange = () => {
+		setParams();
+	};
+
+	const handleFilterChange = () => {
+		setRouteParams({
+			filter: filterValue
+		});
+	};
+
+	$effect(() => {
+		data.productStatAndData.then((res) => {
+			productsData = res[0];
+			productStat = res[1];
+		});
+	});
 
 	$effect(() => {
 		if (form?.error) {
@@ -138,120 +204,210 @@
 </script>
 
 <DialogRoot bind:open={dialogOpen}>
-<div class="flex flex-col gap-10">
-	<section class="grid grid-cols-4 gap-4">
-		{#each productsSummary as summary}
-			<CardRoot>
-				<CardHeader>
-					<CardTitle>{summary.label}</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<p>{summary.value}</p>
-				</CardContent>
-				<CardFooter>
-					<CardDescription>{summary.description}</CardDescription>
-				</CardFooter>
-			</CardRoot>
-		{/each}
-	</section>
+	<div class="flex flex-col gap-10">
+		{#await data.productStatAndData}
+			<ProductsSummaryCardsSkeleton />
+		{:then}
+			<section class="grid grid-cols-4 gap-4">
+				{#each productsSummary as summary}
+					<CardRoot>
+						<CardHeader>
+							<CardTitle>{summary.label}</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<p>{summary.value}</p>
+						</CardContent>
+						<CardFooter>
+							<CardDescription>{summary.description}</CardDescription>
+						</CardFooter>
+					</CardRoot>
+				{/each}
+			</section>
+		{/await}
 
-	<!-- Table section -->
+		<!-- Table section -->
 		<CardRoot>
-			<CardHeader>
-				<CardTitle>Products</CardTitle>
-				{new Date().toISOString()}
+			<CardHeader class="flex items-center justify-between gap-4">
+				<CardTitle>Products ({productsToDisplay().length})</CardTitle>
+
+				<SelectRoot bind:value={filterValue} onValueChange={handleFilterChange} type="single">
+					<SelectTrigger class="w-max">{selectedFilter}</SelectTrigger>
+					<SelectContent>
+						{#each filters as option (option)}
+							<SelectItem value={String(option.value)}>{option.label}</SelectItem>
+						{/each}
+					</SelectContent>
+				</SelectRoot>
 			</CardHeader>
 			<CardContent>
-				<TableRoot>
-					<TableHeader>
-						<TableRow>
-							{#each productColumns as column}
-								<TableHead>{column.label}</TableHead>
-							{/each}
-						</TableRow>
-					</TableHeader>
-					<TableBody>
-						{#each products as product, i (product)}
-							<TableRow>
-								{#each productColumns as column}
-									{#if column.value === "image"}
-										<TableCell>
-											<img
-												class="h-16 w-20 rounded"
-												src={product.images[0].url}
-												alt={product.name}
-											/>
-										</TableCell>
-									{:else if column.value === "price" && product.price === 0}
-										<TableCell>
-											<Badge variant="secondary">Price not set</Badge>
-										</TableCell>
-									{:else if column.value === "action"}
-										<TableCell>
-											<Tooltip.Provider>
-												<Tooltip.Root>
-													<Tooltip.Trigger>
-														<DialogTrigger
-															class="cursor-pointer rounded-full p-2 transition-all duration-200 ease-linear hover:bg-primary hover:text-white"
-														>
-															<PencilIcon class="size-5" />
-														</DialogTrigger>
-													</Tooltip.Trigger>
-													<Tooltip.Content class="bg-primary text-white">
-														<span>Update Price</span>
-													</Tooltip.Content>
-												</Tooltip.Root>
-											</Tooltip.Provider>
+				{#await data.productStatAndData}
+					<ProductsTableSekeleton columnCount={PRODUCT_COLUMNS.length} rowCount={+itemsPerPage} />
+				{:then}
+					{@render tableData()}
+				{/await}
+				<!-- Items per page and pagination -->
+				<div class="mt-6 flex items-center justify-between gap-4 md:mt-8 xl:mt-10">
+					<!--	Items per page select -->
+					{#if products.length > 0}
+						<div class="flex items-center gap-4">
+							<span class="w-max">Products per page:</span>
+							<SelectRoot
+								bind:value={itemsPerPage}
+								onValueChange={handleItemsPerPage}
+								type="single"
+							>
+								<SelectTrigger class="w-16">{itemsPerPage}</SelectTrigger>
+								<SelectContent>
+									{#each itemsPerPageOptions as option (option)}
+										<SelectItem value={String(option)}>{option}</SelectItem>
+									{/each}
+								</SelectContent>
+							</SelectRoot>
+						</div>
+					{/if}
 
-											<DialogContent>
-												<DialogHeader>
-													<DialogTitle>Update Price</DialogTitle>
-													{@render updatePriceForm(product)}
-												</DialogHeader>
-											</DialogContent>
-										</TableCell>
-									{:else}
-										<TableCell>{product[column.value as keyof typeof product]}</TableCell>
-									{/if}
-								{/each}
-							</TableRow>
-						{/each}
-					</TableBody>
-				</TableRoot>
+					<!-- Pagination -->
+					{#if moreThanAPage}
+						<PaginationRoot
+							bind:page={currentPage}
+							count={productsToDisplay().length}
+							onPageChange={handlePageChange}
+							perPage={+itemsPerPage}
+						>
+							{#snippet children({ pages, currentPage })}
+								<PaginationContent>
+									<PaginationItem>
+										<PaginationPrevButton class="cursor-pointer">
+											<img src={CaretIcon} class="-rotate-90" alt="caret-left" />
+										</PaginationPrevButton>
+									</PaginationItem>
+
+									{#each pages as page (page.key)}
+										{#if page.type === "ellipsis"}
+											<PaginationItem>
+												<PaginationEllipsis />
+											</PaginationItem>
+										{:else}
+											<PaginationItem>
+												<PaginationLink {page} isActive={currentPage === page.value}>
+													{page.value}
+												</PaginationLink>
+											</PaginationItem>
+										{/if}
+									{/each}
+									<PaginationItem>
+										<PaginationNextButton class="cursor-pointer">
+											<img src={CaretIcon} class="rotate-90" alt="caret-left" />
+										</PaginationNextButton>
+									</PaginationItem>
+								</PaginationContent>
+							{/snippet}
+						</PaginationRoot>
+					{/if}
+				</div>
 			</CardContent>
 		</CardRoot>
 	</div>
 </DialogRoot>
 
-{#snippet updatePriceForm(product: ProductI)}
+{#snippet tableData()}
+	<TableRoot>
+		<TableHeader>
+			<TableRow>
+				{#each PRODUCT_COLUMNS as column}
+					<TableHead>{column.label}</TableHead>
+				{/each}
+			</TableRow>
+		</TableHeader>
+		<TableBody>
+			{#each productsToDisplay() as product, i (product)}
+				<TableRow>
+					{#each PRODUCT_COLUMNS as column}
+						{#if column.value === "image"}
+							<TableCell>
+								<img class="h-16 w-20 rounded" src={product.images[0].url} alt={product.name} />
+							</TableCell>
+						{:else if column.value === "price"}
+							{#if product.price === 0}
+								<TableCell>
+									<Badge variant="secondary">Price not set</Badge>
+								</TableCell>
+							{:else}
+								<TableCell>{formatNumberWithCommas(product.price ?? 0)}</TableCell>
+							{/if}
+						{:else if column.value === "action"}
+							<TableCell>
+								<Tooltip.Provider>
+									<Tooltip.Root>
+										<Tooltip.Trigger>
+											<DialogTrigger
+												onclick={() => (selectedProduct = product)}
+												class="cursor-pointer rounded-full p-2 transition-all duration-200 ease-linear hover:bg-primary hover:text-white"
+											>
+												<PencilIcon class="size-5" />
+											</DialogTrigger>
+										</Tooltip.Trigger>
+										<Tooltip.Content class="bg-primary text-white">
+											<span>Update Inventory</span>
+										</Tooltip.Content>
+									</Tooltip.Root>
+								</Tooltip.Provider>
+
+								<DialogContent>
+									<DialogHeader>
+										<DialogTitle>Update Price and Inventory</DialogTitle>
+										{@render updateInventoryForm()}
+									</DialogHeader>
+								</DialogContent>
+							</TableCell>
+						{:else}
+							<TableCell>{product[column.value as keyof typeof product]}</TableCell>
+						{/if}
+					{/each}
+				</TableRow>
+			{/each}
+		</TableBody>
+	</TableRoot>
+{/snippet}
+
+{#snippet updateInventoryForm()}
 	<form
-		action="?/updatePrice"
+		action="?/updateInventory"
 		method="POST"
 		use:enhance={() => {
 			isLoading = true;
 			return async ({ update }) => {
+				dialogOpen = false;
 				await update();
 				isLoading = false;
 			};
 		}}
 		class="mt-4 flex flex-col gap-4"
 	>
-		<input type="text" value={product.SKU} name="sku" hidden />
-		{#each productPriceForm as input}
+		<input type="text" value={selectedProduct?.SKU} name="sku" hidden />
+		{#each productInventoryForm as input}
 			<div class="relative flex w-full flex-col gap-1.5">
 				<Label for={input.name}>{input.label}</Label>
 				<Input
 					name={input.name}
 					id={input.name}
-					value={input.name === "oldPrice" ? product.price : newPrice}
-					readonly={input.name === "oldPrice"}
 					type="number"
 					min="0"
-					oninput={(e) => handleNewPriceInput(e)}
+					step="0.01"
+					bind:value={selectedProduct[input.name as keyof SelectedProductI]}
 				/>
 			</div>
 		{/each}
-		<Button class="mt-4 cursor-pointer" type="submit" disabled={!isFormValid()}>Update Price</Button
+		<Button
+			class="mt-4 cursor-pointer"
+			type="submit"
+			disabled={!isFormValid(selectedProduct) || isLoading}
 		>
+			{#if isLoading}
+				<Spinner />
+			{:else}
+				Update
+			{/if}
+		</Button>
 	</form>
 {/snippet}

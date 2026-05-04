@@ -1,18 +1,34 @@
-<section class="grid grid-cols-4 gap-4">
+<script lang="ts">
+	import { browser } from "$app/environment";
+	import {
+		CardContent,
+		CardDescription,
+		CardFooter,
+		CardHeader,
+		Root as CardRoot,
+		CardTitle
+	} from "$lib/components/ui/card";
+	import { Skeleton } from "$lib/components/ui/skeleton";
+</script>
 
-	{#each Array(4) as _}
-		<div class="rounded-lg border border-border p-4 flex flex-col gap-4">
-
-			<!-- Card header / title -->
-			<div class="h-5 w-32 rounded bg-gray-300 animate-pulse"></div>
-
-			<!-- Card content / value -->
-			<div class="h-8 w-20 rounded bg-gray-300 animate-pulse"></div>
-
-			<!-- Card footer / description -->
-			<div class="h-4 w-40 rounded bg-gray-300 animate-pulse"></div>
-
-		</div>
-	{/each}
-
-</section>
+{#if browser}
+	<section class="grid grid-cols-4 gap-4">
+		{#each Array(4) as _}
+			<CardRoot>
+				<CardHeader>
+					<CardTitle>
+						<Skeleton class="h-5 w-32 rounded bg-gray-300"></Skeleton>
+					</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<Skeleton class="h-8 w-10 rounded bg-gray-300"></Skeleton>
+				</CardContent>
+				<CardFooter>
+					<CardDescription>
+						<Skeleton class="h-3 w-40 rounded bg-gray-300"></Skeleton>
+					</CardDescription>
+				</CardFooter>
+			</CardRoot>
+		{/each}
+	</section>
+{/if}

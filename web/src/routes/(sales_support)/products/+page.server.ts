@@ -1,15 +1,10 @@
 import { BACKEND_URL } from "$lib/constants";
-import type { FetchI, UserAuthI } from "$lib/interfaces";
+import type { FetchI, ProductStatsI } from "$lib/interfaces";
 import { fetchAndTransformProducts } from "$lib/utils";
-import { fail, redirect } from "@sveltejs/kit";
-import type { PageServerLoad } from "./$types";
+import { fail } from "@sveltejs/kit";
+import type { PageServerLoad, Actions } from "./$types";
 
-export const load: PageServerLoad = async ({ fetch, url, cookies }) => {
-const rawSession = cookies.get("session");
-if (!rawSession) throw redirect(302, "/login");
-
-const session = JSON.parse(rawSession) as UserAuthI;
-const token = session?.auth?.accessToken;
+export const load: PageServerLoad = async ({ fetch, url }) => {
 	const searchTerm = url.searchParams.get("q");
 	const page = Number(url.searchParams.get("page") ?? "1");
 	const pageSize = Number(url.searchParams.get("perPage") ?? "10");
@@ -20,7 +15,7 @@ const token = session?.auth?.accessToken;
 	const availabilitiesFilter = url.searchParams.get("availabilities")?.split(",").filter(Boolean);
 	const priceRangeFilter = url.searchParams.get("priceRange");
 
-	const productsData = await fetchAndTransformProducts({
+	const productsData = fetchAndTransformProducts({
 		fetch,
 		searchTerm,
 		page,
@@ -33,33 +28,34 @@ const token = session?.auth?.accessToken;
 		priceRangeFilter
 	});
 
-	const res = await fetchProductsStatistics(fetch, String(token ?? ""))
-	const stats = await res.json();
-	console.log("stats: ", stats);
-
+	const productStat = fetchProductsStatistics(fetch);
+	const productStatAndData = Promise.all([productsData, productStat]);
 	return {
-		productsData,
+		productStatAndData
 	};
 };
 
-
-
-
 export const actions = {
-	updatePrice: async ({ request, fetch }) => {
+	updateInventory: async ({ request, fetch }) => {
 		const formData = await request.formData();
 		const sku = formData.get("sku") as string;
-		const newPrice = Number(formData.get("newPrice"));
+		const price = Number(formData.get("price"));
+		const inventory = Number(formData.get("inventory"));
 
 		console.log("form data: ", formData);
 
 		try {
-			const res = await fetch(`${BACKEND_URL}/products/update-price`, {
-				method: "POST",
-				body: JSON.stringify({ newPrice, sku })
+			const res = await fetch(`${BACKEND_URL}/products/update-inventory`, {
+				method: "PATCH",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({ price, sku, inventory })
 			});
 
-			console.log("response: ", res);
+			if (!res.ok) {
+				return fail(res.status, { error: res.statusText });
+			}
 
 			return;
 		} catch (error) {
@@ -67,16 +63,15 @@ export const actions = {
 			return fail(400, { error: (error as Error).message });
 		}
 	}
-};
+} satisfies Actions;
 
-
-
-function fetchProductsStatistics(fetch: FetchI, token: string) {
-	return fetch(`${BACKEND_URL}/products/stats`, {
+async function fetchProductsStatistics(fetch: FetchI): Promise<ProductStatsI> {
+	const res = await fetch(`${BACKEND_URL}/products/stats`, {
 		method: "GET",
 		headers: {
-			"Content-Type": "application/json",
-			"Authorization": `Bearer ${token}`
+			"Content-Type": "application/json"
 		}
 	});
+
+	return res.json();
 }
